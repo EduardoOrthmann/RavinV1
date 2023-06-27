@@ -7,9 +7,11 @@ import order.Order;
 import table.Table;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Command {
+    private static int lastId = 0;
     private int id;
     private Table table;
     private Customer customer;
@@ -21,17 +23,17 @@ public class Command {
     private Employee createdBy;
     private Employee updatedBy;
 
-    public Command(int id, Table table, Customer customer, OrderStatus status, List<Order> orders, double totalPrice, LocalDateTime createdAt, LocalDateTime updatedAt, Employee createdBy, Employee updatedBy) {
-        this.id = id;
+    public Command(Table table, Customer customer, OrderStatus status, double totalPrice, Employee createdBy) {
+        this.id = ++lastId;
         this.table = table;
         this.customer = customer;
         this.status = status;
-        this.orders = orders;
+        this.orders = new ArrayList<>();
         this.totalPrice = totalPrice;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
+        this.updatedBy = createdBy;
     }
 
     public int getId() {

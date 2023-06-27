@@ -7,14 +7,15 @@ import interfaces.Person;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Customer extends Person {
     private Set<Allergy> allergies;
 
-    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt, Employee createdBy, Employee updatedBy, Set<Allergy> allergies) {
-        super(id, name, phoneNumber, birthDate, cpf, address, isActive, createdAt, updatedAt, createdBy, updatedBy);
-        this.allergies = allergies;
+    public Customer(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Employee createdBy) {
+        super(name, phoneNumber, birthDate, cpf, address, createdBy);
+        this.allergies = new HashSet<>();
     }
 
     public Set<Allergy> getAllergies() {
@@ -23,5 +24,12 @@ public class Customer extends Person {
 
     public void setAllergies(Set<Allergy> allergies) {
         this.allergies = allergies;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "allergies=" + allergies +
+                "} " + super.toString();
     }
 }

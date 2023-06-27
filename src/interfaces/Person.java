@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public abstract class Person {
+    private static int lastId = 0;
     private int id;
     private String name;
     private String phoneNumber;
@@ -19,18 +20,18 @@ public abstract class Person {
     private Employee createdBy;
     private Employee updatedBy;
 
-    public Person(int id,String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt, Employee createdBy, Employee updatedBy) {
-        this.id = id;
+    public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Employee createdBy) {
+        this.id = ++lastId;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
         this.cpf = cpf;
         this.address = address;
-        this.isActive = isActive;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.isActive = true;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
+        this.updatedBy = createdBy;
     }
 
     public int getId() {
@@ -119,5 +120,22 @@ public abstract class Person {
 
     public void setUpdatedBy(Employee updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", birthDate=" + birthDate +
+                ", cpf='" + cpf + '\'' +
+                ", address=" + address +
+                ", isActive=" + isActive +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", createdBy=" + createdBy +
+                ", updatedBy=" + updatedBy +
+                '}';
     }
 }

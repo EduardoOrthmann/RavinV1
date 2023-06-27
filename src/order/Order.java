@@ -5,9 +5,11 @@ import enums.ProductStatus;
 import product.Product;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Order {
+    private static int lastId = 0;
     private int id;
     private Product product;
     private Employee employee;
@@ -19,17 +21,17 @@ public class Order {
     private Employee createdBy;
     private Employee updatedBy;
 
-    public Order(int id, Product product, Employee employee, int quantity, ProductStatus status, List<String> notes, LocalDateTime createdAt, LocalDateTime updatedAt, Employee createdBy, Employee updatedBy) {
-        this.id = id;
+    public Order(Product product, Employee employee, int quantity, ProductStatus status, Employee createdBy) {
+        this.id = ++lastId;
         this.product = product;
         this.employee = employee;
         this.quantity = quantity;
         this.status = status;
-        this.notes = notes;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.notes = new ArrayList<>();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
+        this.updatedBy = createdBy;
     }
 
     public int getId() {

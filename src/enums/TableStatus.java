@@ -3,5 +3,6 @@ package enums;
 public enum TableStatus {
     AVAILABLE,
     RESERVED,
-    OCCUPIED
+    OCCUPIED,
+    UNAVAILABLE
 }

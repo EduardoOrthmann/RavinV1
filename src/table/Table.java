@@ -5,9 +5,11 @@ import employee.Employee;
 import enums.TableStatus;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 public class Table {
+    private static int lastId = 0;
     private int id;
     private String name;
     private short tableNumber;
@@ -19,17 +21,17 @@ public class Table {
     private Employee createdBy;
     private Employee updatedBy;
 
-    public Table(int id, String name, short tableNumber, short maxCapacity, TableStatus status, Set<Customer> customers, LocalDateTime createdAt, LocalDateTime updatedAt, Employee createdBy, Employee updatedBy) {
-        this.id = id;
+    public Table(String name, short tableNumber, short maxCapacity, Employee createdBy) {
+        this.id = ++lastId;
         this.name = name;
         this.tableNumber = tableNumber;
         this.maxCapacity = maxCapacity;
-        this.status = status;
-        this.customers = customers;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.status = TableStatus.AVAILABLE;
+        this.customers = new HashSet<>();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
+        this.updatedBy = createdBy;
     }
 
     public int getId() {

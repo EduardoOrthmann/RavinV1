@@ -34,7 +34,7 @@ public class OrderService {
         order.getNotes().add(note);
     }
 
-    public void addNote(Order order, String note, String updatedNote) {
+    public void updateNote(Order order, String note, String updatedNote) {
         order.getNotes().set(order.getNotes().indexOf(note), updatedNote);
     }
 

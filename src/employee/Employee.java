@@ -19,16 +19,15 @@ public class Employee extends Person {
     private LocalDate resignationDate;
     private boolean isAvailable;
 
-    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt, Employee createdBy, Employee updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, LocalDate resignationDate, boolean isAvailable) {
-        super(id, name, phoneNumber, birthDate, cpf, address, isActive, createdAt, updatedAt, createdBy, updatedBy);
+    public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Employee createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
+        super(name, phoneNumber, birthDate, cpf, address, createdBy);
         this.rg = rg;
         this.maritalStatus = maritalStatus;
         this.educationLevel = educationLevel;
         this.position = position;
         this.workCardNumber = workCardNumber;
-        this.admissionDate = admissionDate;
-        this.resignationDate = resignationDate;
-        this.isAvailable = isAvailable;
+        this.admissionDate = LocalDate.now();
+        this.isAvailable = true;
     }
 
     public String getRg() {
@@ -93,5 +92,19 @@ public class Employee extends Person {
 
     public void setAvailable(boolean available) {
         isAvailable = available;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "rg='" + rg + '\'' +
+                ", maritalStatus=" + maritalStatus +
+                ", educationLevel=" + educationLevel +
+                ", position=" + position +
+                ", workCardNumber='" + workCardNumber + '\'' +
+                ", admissionDate=" + admissionDate +
+                ", resignationDate=" + resignationDate +
+                ", isAvailable=" + isAvailable +
+                "} " + super.toString();
     }
 }

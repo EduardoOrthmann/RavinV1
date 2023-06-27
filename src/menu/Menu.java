@@ -4,9 +4,11 @@ import employee.Employee;
 import product.Product;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Menu {
+    private static int lastId = 0;
     private int id;
     private String name;
     private List<Product> products;
@@ -17,16 +19,16 @@ public class Menu {
     private Employee createdBy;
     private Employee updatedBy;
 
-    public Menu(int id, String name, List<Product> products, String menuCode, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt, Employee createdBy, Employee updatedBy) {
-        this.id = id;
+    public Menu(String name, String menuCode, Employee createdBy) {
+        this.id = ++lastId;
         this.name = name;
-        this.products = products;
+        this.products = new ArrayList<>();
         this.menuCode = menuCode;
-        this.isActive = isActive;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.isActive = true;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
+        this.updatedBy = createdBy;
     }
 
     public int getId() {

@@ -1,7 +1,6 @@
 package address;
 
 public class Address {
-    private int id;
     private String country;
     private String state;
     private String city;
@@ -9,22 +8,13 @@ public class Address {
     private String neighborhood;
     private String street;
 
-    public Address(int id, String country, String state, String city, String zipCode, String neighborhood, String street) {
-        this.id = id;
+    public Address(String country, String state, String city, String zipCode, String neighborhood, String street) {
         this.country = country;
         this.state = state;
         this.city = city;
         this.zipCode = zipCode;
         this.neighborhood = neighborhood;
         this.street = street;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getCountry() {
@@ -73,5 +63,17 @@ public class Address {
 
     public void setStreet(String street) {
         this.street = street;
+    }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "country='" + country + '\'' +
+                ", state='" + state + '\'' +
+                ", city='" + city + '\'' +
+                ", zipCode='" + zipCode + '\'' +
+                ", neighborhood='" + neighborhood + '\'' +
+                ", street='" + street + '\'' +
+                '}';
     }
 }

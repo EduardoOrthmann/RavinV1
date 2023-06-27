@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Product {
+    private static int lastId = 0;
     private int id;
     private String name;
     private String description;
@@ -20,20 +21,20 @@ public class Product {
     private Employee createdBy;
     private Employee updatedBy;
 
-    public Product(int id, String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, boolean isActive, boolean isAvailable, LocalDateTime createdAt, LocalDateTime updatedAt, Employee createdBy, Employee updatedBy) {
-        this.id = id;
+    public Product(String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, Employee createdBy) {
+        this.id = ++lastId;
         this.name = name;
         this.description = description;
         this.productCode = productCode;
         this.costPrice = costPrice;
         this.salePrice = salePrice;
         this.preparationTime = preparationTime;
-        this.isActive = isActive;
-        this.isAvailable = isAvailable;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.isActive = true;
+        this.isAvailable = true;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
+        this.updatedBy = createdBy;
     }
 
     public int getId() {
