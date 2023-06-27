@@ -51,7 +51,7 @@ public class CommandDAO  implements Crud<Command> {
     }
 
     // TODO
-    public List<Command> findByStatusAndTable(OrderStatus status, Table table) {
-        return null;
+    public boolean existsByStatusAndTable(Command command, OrderStatus status, Table table) {
+        return false;
     }
 }

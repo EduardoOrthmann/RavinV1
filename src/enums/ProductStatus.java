@@ -3,5 +3,6 @@ package enums;
 public enum ProductStatus {
     READY,
     PREPARING,
-    WAITING
+    WAITING,
+    DELIVERED
 }
