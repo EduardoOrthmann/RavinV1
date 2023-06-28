@@ -124,18 +124,18 @@ public abstract class Person {
 
     @Override
     public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", birthDate=" + birthDate +
-                ", cpf='" + cpf + '\'' +
-                ", address=" + address +
-                ", isActive=" + isActive +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", createdBy=" + createdBy +
-                ", updatedBy=" + updatedBy +
+        return "Person {" + "\n" +
+                "\tid = " + id + ",\n" +
+                "\tname = '" + name + '\'' + ",\n" +
+                "\tphoneNumber = '" + phoneNumber + '\'' + ",\n" +
+                "\tbirthDate = " + birthDate + ",\n" +
+                "\tcpf = '" + cpf + '\'' + ",\n" +
+                "\taddress =" + address + ",\n" +
+                "\tisActive = " + isActive + ",\n" +
+                "\tcreatedAt = " + createdAt + ",\n" +
+                "\tupdatedAt = " + updatedAt + ",\n" +
+                "\tcreatedBy = " + createdBy + ",\n" +
+                "\tupdatedBy = " + updatedBy + "\n" +
                 '}';
     }
 }

@@ -56,7 +56,7 @@ public class Main {
     }
 
     public static void customer() {
-        String[] customerOptions = {"findById", "findAll", "save", "update", "delete", "isBirthday", "addAllergy", "deleteAllergy"};
+        String[] customerOptions = {"findById", "findAll", "save", "update", "delete", "addAllergy", "deleteAllergy"};
 
         String selectedCustomerOption = (String) JOptionPane.showInputDialog(
                 null,
@@ -117,6 +117,15 @@ public class Main {
                                 employeeService.findById((int) createdBy)
                         )
                 );
+            }
+
+            case "delete" -> {
+                var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
+                customerService.delete(customerService.findById(id));
+            }
+
+            case "isBirthday" -> {
+
             }
         }
     }
@@ -596,8 +605,8 @@ public class Main {
 
                 var selectedTable = JOptionPane.showInputDialog(
                         null,
-                        "Select a table:",
-                        "Table",
+                        "Selecione uma mesa:",
+                        "Mesa",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         tableIds,
@@ -605,8 +614,8 @@ public class Main {
                 );
                 var selectedCustomer = JOptionPane.showInputDialog(
                         null,
-                        "Select a customer:",
-                        "Customer",
+                        "Selecione um cliente:",
+                        "Cliente",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         customerIds,
@@ -618,7 +627,7 @@ public class Main {
 
                 var status = (OrderStatus) JOptionPane.showInputDialog(
                         null,
-                        "Select a status:",
+                        "Selecione um status:",
                         "Status",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
@@ -626,10 +635,10 @@ public class Main {
                         null
                 );
 
-                var totalPrice = Double.parseDouble(JOptionPane.showInputDialog("Enter the total price:"));
+                var totalPrice = Double.parseDouble(JOptionPane.showInputDialog("Insira o preço total:"));
                 var createdBy = JOptionPane.showInputDialog(
                         null,
-                        "Quem esta criando esssa comanda?",
+                        "Quem esta criando essa comanda?",
                         "Criado por",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
