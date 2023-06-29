@@ -124,8 +124,70 @@ public class Main {
                 customerService.delete(customerService.findById(id));
             }
 
-            case "isBirthday" -> {
+            case "addAllergy" -> {
+                var customers = customerService.findAll();
+                var customerIds = customers.stream().map(Customer::getId).toArray();
 
+                if (customers.isEmpty()) {
+                    System.out.println("Por favor crie um cliente antes de adicionar uma alergia a um cliente");
+                    break;
+                }
+
+                var allergy = (Allergy) JOptionPane.showInputDialog(
+                        null,
+                        "Escolha uma alergia",
+                        "Alergias",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        Allergy.values(),
+                        null
+                );
+                var selectedCustomer = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um cliente:",
+                        "Cliente",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        customerIds,
+                        null
+                );
+
+                var customer = customerService.findById((int) selectedCustomer);
+
+                customerService.addAllergy(customer, allergy);
+            }
+
+            case "deleteAllergy" -> {
+                var customers = customerService.findAll();
+                var customerIds = customers.stream().map(Customer::getId).toArray();
+
+                if (customers.isEmpty()) {
+                    System.out.println("Por favor crie um cliente antes de remover uma alergia a um cliente");
+                    break;
+                }
+
+                var allergy = (Allergy) JOptionPane.showInputDialog(
+                        null,
+                        "Escolha uma alergia",
+                        "Alergias",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        Allergy.values(),
+                        null
+                );
+                var selectedCustomer = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um cliente:",
+                        "Cliente",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        customerIds,
+                        null
+                );
+
+                var customer = customerService.findById((int) selectedCustomer);
+
+                customerService.deleteAllergy(customer, allergy);
             }
         }
     }
@@ -305,6 +367,11 @@ public class Main {
                     );
                 }
             }
+
+            case "delete" -> {
+                var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
+                employeeService.delete(employeeService.findById(id));
+            }
         }
     }
 
@@ -370,6 +437,11 @@ public class Main {
                         )
                 );
             }
+
+            case "delete" -> {
+                var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
+                productService.delete(productService.findById(id));
+            }
         }
     }
 
@@ -423,6 +495,83 @@ public class Main {
                                 createdByEmployee
                         )
                 );
+            }
+
+            case "delete" -> {
+                var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
+                menuService.delete(menuService.findById(id));
+            }
+
+            case "addProduct" -> {
+                var menus = menuService.findAll();
+                var menuIds = menus.stream().map(Menu::getId).toArray();
+                var products = productService.findAll();
+                var productIds = products.stream().map(Product::getId).toArray();
+
+                if (menus.isEmpty() || products.isEmpty()) {
+                    System.out.println("Por favor crie um cardápio e um produto antes de adicionar um produto a um cardápio");
+                    break;
+                }
+
+                var selectedMenu = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um cardápio:",
+                        "Cardápios",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        menuIds,
+                        null
+                );
+                var selectedProduct = JOptionPane.showInputDialog(
+                        null,
+                        "Escolha um produto",
+                        "Produtos",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        productIds,
+                        null
+                );
+
+                var menu = menuService.findById((int) selectedMenu);
+                var product = productService.findById((int) selectedProduct);
+
+                menuService.addProduct(menu, product);
+            }
+
+            case "deleteProduct" -> {
+                var menus = menuService.findAll();
+                var menuIds = menus.stream().map(Menu::getId).toArray();
+                var products = productService.findAll();
+                var productIds = products.stream().map(Product::getId).toArray();
+
+                if (menus.isEmpty() || products.isEmpty()) {
+                    System.out.println("Por favor crie um cardápio e um produto antes de adicionar um produto a um cardápio");
+                    break;
+                }
+
+                var selectedMenu = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um cardápio:",
+                        "Cardápios",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        menuIds,
+                        null
+                );
+                var selectedProduct = JOptionPane.showInputDialog(
+                        null,
+                        "Escolha um produto",
+                        "Produtos",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        productIds,
+                        null
+                );
+
+                var menu = menuService.findById((int) selectedMenu);
+                var product = productService.findById((int) selectedProduct);
+
+                menuService.deleteProduct(menu, product);
             }
         }
     }
@@ -479,6 +628,83 @@ public class Main {
                                 createdByEmployee
                         )
                 );
+            }
+
+            case "delete" -> {
+                var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
+                tableService.delete(tableService.findById(id));
+            }
+
+            case "addCustomer" -> {
+                var tables = tableService.findAll();
+                var tableIds = tables.stream().map(Table::getId).toArray();
+                var customers = customerService.findAll();
+                var customerIds = customers.stream().map(Customer::getId).toArray();
+
+                if (tables.isEmpty() || customers.isEmpty()) {
+                    System.out.println("Por favor crie uma mesa e um cliente antes de adicionar um cliente a uma mesa");
+                    break;
+                }
+
+                var selectedTable = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma mesa:",
+                        "Mesas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        tableIds,
+                        null
+                );
+                var selectedCustomer = JOptionPane.showInputDialog(
+                        null,
+                        "Escolha um cliente",
+                        "Clientes",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        customerIds,
+                        null
+                );
+
+                var table = tableService.findById((int) selectedTable);
+                var customer = customerService.findById((int) selectedCustomer);
+
+                tableService.addCustomer(table, customer);
+            }
+
+            case "deleteCustomer" -> {
+                var tables = tableService.findAll();
+                var tableIds = tables.stream().map(Table::getId).toArray();
+                var customers = customerService.findAll();
+                var customerIds = customers.stream().map(Customer::getId).toArray();
+
+                if (tables.isEmpty() || customers.isEmpty()) {
+                    System.out.println("Por favor crie uma mesa e um cliente antes de deletar um cliente de uma mesa");
+                    break;
+                }
+
+                var selectedTable = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma mesa:",
+                        "Mesas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        tableIds,
+                        null
+                );
+                var selectedCustomer = JOptionPane.showInputDialog(
+                        null,
+                        "Escolha um cliente",
+                        "Clientes",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        customerIds,
+                        null
+                );
+
+                var table = tableService.findById((int) selectedTable);
+                var customer = customerService.findById((int) selectedCustomer);
+
+                tableService.deleteCustomer(table, customer);
             }
         }
     }
@@ -565,6 +791,106 @@ public class Main {
                                 createdByEmployee
                         )
                 );
+            }
+
+            case "delete" -> {
+                var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
+                orderService.delete(orderService.findById(id));
+            }
+
+            case "addNote" -> {
+                var orders = orderService.findAll();
+                var orderIds = orders.stream().map(Order::getId).toArray();
+
+                if (orders.isEmpty()) {
+                    System.out.println("Por favor crie um pedido antes de adicionar uma observação a um pedido");
+                    break;
+                }
+
+                var selectedOrder = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um pedido:",
+                        "Pedidos",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        orderIds,
+                        null
+                );
+                var note = JOptionPane.showInputDialog("Insira uma observação ao pedido");
+
+                var order = orderService.findById((int) selectedOrder);
+
+                orderService.addNote(order, note);
+            }
+
+            case "updateNote" -> {
+                var orders = orderService.findAll();
+                var orderIds = orders.stream().map(Order::getId).toArray();
+
+                if (orders.isEmpty()) {
+                    System.out.println("Por favor crie um pedido antes de atualizar uma observação a um pedido");
+                    break;
+                }
+
+                var selectedOrder = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um pedido:",
+                        "Pedidos",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        orderIds,
+                        null
+                );
+
+                var order = orderService.findById((int) selectedOrder);
+
+                var note = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma observação para atualizar:",
+                        "Observações",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        order.getNotes().toArray(),
+                        null
+                );
+
+                var updatedNote = JOptionPane.showInputDialog("Insira a atualização desejada");
+
+                orderService.updateNote(order, note, updatedNote);
+            }
+
+            case "deleteNote" -> {
+                var orders = orderService.findAll();
+                var orderIds = orders.stream().map(Order::getId).toArray();
+
+                if (orders.isEmpty()) {
+                    System.out.println("Por favor crie um pedido antes de remover uma observação de um pedido");
+                    break;
+                }
+
+                var selectedOrder = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um pedido:",
+                        "Pedidos",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        orderIds,
+                        null
+                );
+
+                var order = orderService.findById((int) selectedOrder);
+
+                var note = (String) JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma observação para deletar:",
+                        "Observações",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        order.getNotes().toArray(),
+                        null
+                );
+
+                orderService.deleteNote(order, note);
             }
         }
     }
@@ -656,6 +982,108 @@ public class Main {
                                 createdByEmployee
                         )
                 );
+            }
+
+            case "delete" -> {
+                var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
+                commandService.delete(commandService.findById(id));
+            }
+
+            case "addOrder" -> {
+                var commands = commandService.findAll();
+                var commandIds = commands.stream().map(Command::getId).toArray();
+                var orders = orderService.findAll();
+                var orderIds = orders.stream().map(Order::getId).toArray();
+
+                if (commands.isEmpty() || orders.isEmpty()) {
+                    System.out.println("Por favor crie uma comanda e um pedido antes de adicionar um pedido a uma comanda");
+                    break;
+                }
+
+                var selectedCommand = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma comanda:",
+                        "Comandas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        commandIds,
+                        null
+                );
+                var selectedOrder = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um pedido",
+                        "Pedidos",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        orderIds,
+                        null
+                );
+
+                var command = commandService.findById((int) selectedCommand);
+                var order = orderService.findById((int) selectedOrder);
+
+                commandService.addOrder(command, order);
+            }
+
+            case "deleteOrder" -> {
+                var commands = commandService.findAll();
+                var commandIds = commands.stream().map(Command::getId).toArray();
+                var orders = orderService.findAll();
+                var orderIds = orders.stream().map(Order::getId).toArray();
+
+                if (commands.isEmpty() || orders.isEmpty()) {
+                    System.out.println("Por favor crie uma comanda e um pedido antes de deletar um pedido de uma comanda");
+                    break;
+                }
+
+                var selectedCommand = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma comanda:",
+                        "Comandas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        commandIds,
+                        null
+                );
+                var selectedOrder = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um pedido",
+                        "Pedidos",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        orderIds,
+                        null
+                );
+
+                var command = commandService.findById((int) selectedCommand);
+                var order = orderService.findById((int) selectedOrder);
+
+                commandService.deleteOrder(command, order);
+            }
+
+            case "closeCommand" -> {
+                var commands = commandService.findAll();
+                var commandIds = commands.stream().map(Command::getId).toArray();
+
+                if (commands.isEmpty()) {
+                    System.out.println("Por favor crie uma comanda antes de fechar uma comanda");
+                    break;
+                }
+
+                var selectedCommand = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma comanda:",
+                        "Comandas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        commandIds,
+                        null
+                );
+                var cash = Double.parseDouble(JOptionPane.showInputDialog("Insira um valor"));
+
+                var command = commandService.findById((int) selectedCommand);
+
+                commandService.closeCommand(command, cash);
             }
         }
     }

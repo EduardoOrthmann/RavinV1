@@ -36,7 +36,7 @@ public class MenuService {
         menu.getProducts().add(product);
     }
 
-    public void deleteAllergy(Menu menu, Product product) {
+    public void deleteProduct(Menu menu, Product product) {
         menu.getProducts().remove(product);
     }
 }
