@@ -1,6 +1,6 @@
-# Table Management System for Restaurants
+# Restaurant Management System
 
-This repository contains the source code and documentation for a comprehensive Table Management System, developed as
+This repository contains the source code and documentation for a comprehensive Restaurant Management System, developed as
 part of the +Devs2Blu course. The objective of this project is to provide a robust and user-friendly solution for
 managing tables in a restaurant setting. The system is implemented in Java, leveraging its object-oriented capabilities
 to ensure extensibility and maintainability.
