@@ -6,8 +6,8 @@ import java.util.NoSuchElementException;
 public class EmployeeService {
     private final EmployeeDAO employeeDAO;
 
-    public EmployeeService() {
-        this.employeeDAO = new EmployeeDAO();
+    public EmployeeService(EmployeeDAO employeeDAO) {
+        this.employeeDAO = employeeDAO;
     }
 
     public Employee findById(int id) {

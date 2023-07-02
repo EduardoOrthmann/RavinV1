@@ -7,7 +7,6 @@ import enums.Position;
 import interfaces.Person;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class Employee extends Person {
     private String rg;
@@ -96,15 +95,15 @@ public class Employee extends Person {
 
     @Override
     public String toString() {
-        return "Employee{" +
-                "rg='" + rg + '\'' +
-                ", maritalStatus=" + maritalStatus +
-                ", educationLevel=" + educationLevel +
-                ", position=" + position +
-                ", workCardNumber='" + workCardNumber + '\'' +
-                ", admissionDate=" + admissionDate +
-                ", resignationDate=" + resignationDate +
-                ", isAvailable=" + isAvailable +
+        return "Employee {\n" +
+                "\trg = '" + rg + '\'' + "\n" +
+                "\tmaritalStatus = " + maritalStatus + "\n" +
+                "\teducationLevel = " + educationLevel + "\n" +
+                "\tposition = " + position + "\n" +
+                "\tworkCardNumber = '" + workCardNumber + '\'' + "\n" +
+                "\tadmissionDate = " + admissionDate + "\n" +
+                "\tresignationDate = " + resignationDate + "\n" +
+                "\tisAvailable = " + isAvailable + "\n" +
                 "} " + super.toString();
     }
 }

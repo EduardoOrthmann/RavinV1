@@ -9,9 +9,13 @@ import javax.swing.*;
 import java.time.LocalDate;
 
 public class EmployeeView {
-    public static void view() {
-        var employeeService = new EmployeeService();
+    public final EmployeeService employeeService;
 
+    public EmployeeView(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
+
+    public void view() {
         String[] employeeOptions = {"findById", "findAll", "save", "saveAdmin", "update", "delete"};
 
         String selectedEmployeeOption = (String) JOptionPane.showInputDialog(
@@ -37,7 +41,7 @@ public class EmployeeView {
                 var employeeIds = employees.stream().map(Employee::getId).toArray();
 
                 if (employees.isEmpty()) {
-                    System.out.println("Por favor crie um funcionário admin antes de criar um funcionário");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário admin antes de criar um funcionário");
                     break;
                 }
 
@@ -110,7 +114,7 @@ public class EmployeeView {
             }
 
             case "saveAdmin" -> {
-                if (JOptionPane.showConfirmDialog(null, "Se deseja adicionar um admin padrão?") == JOptionPane.YES_OPTION) {
+                if (JOptionPane.showConfirmDialog(null, "Deseja adicionar um admin padrão?") == JOptionPane.YES_OPTION) {
                     employeeService.save(
                             new Employee(
                                     "Eduardo",

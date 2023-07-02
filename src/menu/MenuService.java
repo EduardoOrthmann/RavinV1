@@ -8,8 +8,8 @@ import java.util.NoSuchElementException;
 public class MenuService {
     private final MenuDAO menuDAO;
 
-    public MenuService() {
-        this.menuDAO = new MenuDAO();
+    public MenuService(MenuDAO menuDAO) {
+        this.menuDAO = menuDAO;
     }
 
     public Menu findById(int id) {

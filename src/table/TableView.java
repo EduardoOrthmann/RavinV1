@@ -8,11 +8,17 @@ import employee.EmployeeService;
 import javax.swing.*;
 
 public class TableView {
-    public static void view() {
-        var tableService = new TableService();
-        var customerService = new CustomerService();
-        var employeeService = new EmployeeService();
+    private final TableService tableService;
+    private final CustomerService customerService;
+    private final EmployeeService employeeService;
 
+    public TableView(TableService tableService, CustomerService customerService, EmployeeService employeeService) {
+        this.tableService = tableService;
+        this.customerService = customerService;
+        this.employeeService = employeeService;
+    }
+
+    public void view() {
         String[] tableOptions = {"findById", "findAll", "save", "update", "delete", "addCustomer", "deleteCustomer"};
 
         String selectedTableOption = (String) JOptionPane.showInputDialog(
@@ -38,7 +44,7 @@ public class TableView {
                 var employeeIds = employees.stream().map(Employee::getId).toArray();
 
                 if (employees.isEmpty()) {
-                    System.out.println("Por favor crie um funcionário antes de criar um cliente");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário antes de criar um cliente");
                     break;
                 }
 

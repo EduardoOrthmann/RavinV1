@@ -14,6 +14,7 @@ public class Order {
     private Product product;
     private Employee employee;
     private int quantity;
+    private double price;
     private ProductStatus status;
     private List<String> notes;
     private LocalDateTime createdAt;
@@ -27,6 +28,7 @@ public class Order {
         this.employee = employee;
         this.quantity = quantity;
         this.status = status;
+        this.price = product.getSalePrice() * quantity;
         this.notes = new ArrayList<>();
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
@@ -112,5 +114,30 @@ public class Order {
 
     public void setEmployee(Employee employee) {
         this.employee = employee;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "Order {\n" +
+                "\tid = " + id + "\n" +
+                "\tproduct = " + product + "\n" +
+                "\temployee = " + employee + "\n" +
+                "\tquantity = " + quantity + "\n" +
+                "\tprice = " + price + "\n" +
+                "\tstatus = " + status + "\n" +
+                "\tnotes = " + notes + "\n" +
+                "\tcreatedAt = " + createdAt + "\n" +
+                "\tupdatedAt = " + updatedAt + "\n" +
+                "\tcreatedBy = " + createdBy + "\n" +
+                "\tupdatedBy = " + updatedBy + "\n" +
+                '}';
     }
 }

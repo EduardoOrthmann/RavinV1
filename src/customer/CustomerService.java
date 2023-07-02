@@ -9,8 +9,8 @@ import java.util.NoSuchElementException;
 public class CustomerService {
     private final CustomerDAO customerDAO;
 
-    public CustomerService() {
-        this.customerDAO = new CustomerDAO();
+    public CustomerService(CustomerDAO customerDAO) {
+        this.customerDAO = customerDAO;
     }
 
     public Customer findById(int id) {

@@ -6,8 +6,8 @@ import java.util.NoSuchElementException;
 public class ProductService {
     private final ProductDAO productDAO;
 
-    public ProductService() {
-        this.productDAO = new ProductDAO();
+    public ProductService(ProductDAO productDAO) {
+        this.productDAO = productDAO;
     }
 
     public Product findById(int id) {

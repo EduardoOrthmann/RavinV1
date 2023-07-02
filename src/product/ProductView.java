@@ -7,10 +7,15 @@ import javax.swing.*;
 import java.time.LocalTime;
 
 public class ProductView {
-    public static void view() {
-        var productService = new ProductService();
-        var employeeService = new EmployeeService();
+    private final ProductService productService;
+    public final EmployeeService employeeService;
 
+    public ProductView(ProductService productService, EmployeeService employeeService) {
+        this.productService = productService;
+        this.employeeService = employeeService;
+    }
+
+    public void view() {
         String[] productOptions = {"findById", "findAll", "save", "update", "delete"};
 
         String selectedProductOption = (String) JOptionPane.showInputDialog(
@@ -36,7 +41,7 @@ public class ProductView {
                 var employeeIds = employees.stream().map(Employee::getId).toArray();
 
                 if (employees.isEmpty()) {
-                    System.out.println("Insira um funcionário antes de inserir um produto");
+                    JOptionPane.showMessageDialog(null, "Insira um funcionário antes de inserir um produto");
                     break;
                 }
 

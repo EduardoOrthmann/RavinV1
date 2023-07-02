@@ -9,10 +9,15 @@ import javax.swing.*;
 import java.time.LocalDate;
 
 public class CustomerView {
-    public static void view() {
-        var customerService = new CustomerService();
-        var employeeService = new EmployeeService();
+    private final CustomerService customerService;
+    private final EmployeeService employeeService;
 
+    public CustomerView(CustomerService customerService, EmployeeService employeeService) {
+        this.customerService = customerService;
+        this.employeeService = employeeService;
+    }
+
+    public void view() {
         String[] customerOptions = {"findById", "findAll", "save", "update", "delete", "addAllergy", "deleteAllergy"};
 
         String selectedCustomerOption = (String) JOptionPane.showInputDialog(
@@ -38,7 +43,7 @@ public class CustomerView {
                 var employeeIds = employees.stream().map(Employee::getId).toArray();
 
                 if (employees.isEmpty()) {
-                    System.out.println("Por favor crie um funcionário antes de criar um cliente");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário antes de criar um cliente");
                     break;
                 }
 
@@ -86,7 +91,7 @@ public class CustomerView {
                 var customerIds = customers.stream().map(Customer::getId).toArray();
 
                 if (customers.isEmpty()) {
-                    System.out.println("Por favor crie um cliente antes de adicionar uma alergia a um cliente");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um cliente antes de adicionar uma alergia a um cliente");
                     break;
                 }
 
@@ -119,7 +124,7 @@ public class CustomerView {
                 var customerIds = customers.stream().map(Customer::getId).toArray();
 
                 if (customers.isEmpty()) {
-                    System.out.println("Por favor crie um cliente antes de remover uma alergia a um cliente");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um cliente antes de remover uma alergia a um cliente");
                     break;
                 }
 

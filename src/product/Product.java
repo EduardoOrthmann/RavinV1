@@ -140,4 +140,23 @@ public class Product {
     public void setUpdatedBy(Employee updatedBy) {
         this.updatedBy = updatedBy;
     }
+
+    @Override
+    public String toString() {
+        return "Product {\n" +
+                "\tid = " + id + "\n" +
+                "\tname = '" + name + '\'' + "\n" +
+                "\tdescription = '" + description + '\'' + "\n" +
+                "\tproductCode = '" + productCode + '\'' + "\n" +
+                "\tcostPrice = " + costPrice + "\n" +
+                "\tsalePrice = " + salePrice + "\n" +
+                "\tpreparationTime = " + preparationTime + "\n" +
+                "\tisActive = " + isActive + "\n" +
+                "\tisAvailable = " + isAvailable + "\n" +
+                "\tcreatedAt = " + createdAt + "\n" +
+                "\tupdatedAt = " + updatedAt + "\n" +
+                "\tcreatedBy = " + createdBy + "\n" +
+                "\tupdatedBy = " + updatedBy + "\n" +
+                '}';
+    }
 }

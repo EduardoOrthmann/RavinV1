@@ -2,7 +2,6 @@ package command;
 
 import customer.Customer;
 import employee.Employee;
-import enums.OrderStatus;
 import order.Order;
 import table.Table;
 
@@ -15,7 +14,7 @@ public class Command {
     private int id;
     private Table table;
     private Customer customer;
-    private OrderStatus status;
+    private boolean isPaid;
     private List<Order> orders;
     private double totalPrice;
     private LocalDateTime createdAt;
@@ -23,11 +22,11 @@ public class Command {
     private Employee createdBy;
     private Employee updatedBy;
 
-    public Command(Table table, Customer customer, OrderStatus status, double totalPrice, Employee createdBy) {
+    public Command(Table table, Customer customer, double totalPrice, Employee createdBy) {
         this.id = ++lastId;
         this.table = table;
         this.customer = customer;
-        this.status = status;
+        this.isPaid = false;
         this.orders = new ArrayList<>();
         this.totalPrice = totalPrice;
         this.createdAt = LocalDateTime.now();
@@ -60,12 +59,12 @@ public class Command {
         this.customer = customer;
     }
 
-    public OrderStatus getStatus() {
-        return status;
+    public boolean isPaid() {
+        return isPaid;
     }
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
+    public void setPaid(boolean paid) {
+        isPaid = paid;
     }
 
     public List<Order> getOrders() {
@@ -114,5 +113,21 @@ public class Command {
 
     public void setUpdatedBy(Employee updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    @Override
+    public String toString() {
+        return "Command {\n" +
+                "\tid = " + id + "\n" +
+                "\ttable = " + table + "\n" +
+                "\tcustomer = " + customer + "\n" +
+                "\tisPaid = " + isPaid + "\n" +
+                "\torders = " + orders + "\n" +
+                "\ttotalPrice = " + totalPrice + "\n" +
+                "\tcreatedAt = " + createdAt + "\n" +
+                "\tupdatedAt = " + updatedAt + "\n" +
+                "\tcreatedBy = " + createdBy + "\n" +
+                "\tupdatedBy = " + updatedBy + "\n" +
+                '}';
     }
 }

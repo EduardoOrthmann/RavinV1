@@ -102,4 +102,19 @@ public class Menu {
     public void setUpdatedBy(Employee updatedBy) {
         this.updatedBy = updatedBy;
     }
+
+    @Override
+    public String toString() {
+        return "Menu {\n" +
+                "\tid = " + id + "\n" +
+                "\tname = '" + name + '\'' + "\n" +
+                "\tproducts = " + products + "\n" +
+                "\tmenuCode = '" + menuCode + '\'' + "\n" +
+                "\tisActive = " + isActive + "\n" +
+                "\tcreatedAt = " + createdAt + "\n" +
+                "\tupdatedAt = " + updatedAt + "\n" +
+                "\tcreatedBy = " + createdBy + "\n" +
+                "\tupdatedBy = " + updatedBy + "\n" +
+                '}';
+    }
 }

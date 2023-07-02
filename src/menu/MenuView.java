@@ -8,11 +8,17 @@ import product.ProductService;
 import javax.swing.*;
 
 public class MenuView {
-    public static void view() {
-        var menuService = new MenuService();
-        var productService = new ProductService();
-        var employeeService = new EmployeeService();
+    private final MenuService menuService;
+    private final ProductService productService;
+    private final EmployeeService employeeService;
 
+    public MenuView(MenuService menuService, ProductService productService, EmployeeService employeeService) {
+        this.menuService = menuService;
+        this.productService = productService;
+        this.employeeService = employeeService;
+    }
+
+    public void view() {
         String[] menuOptions = {"findById", "findAll", "save", "update", "delete", "addProduct", "deleteProduct"};
 
         String selectedMenuOption = (String) JOptionPane.showInputDialog(
@@ -38,7 +44,7 @@ public class MenuView {
                 var employeeIds = employees.stream().map(Employee::getId).toArray();
 
                 if (employees.isEmpty()) {
-                    System.out.println("Por favor crie um funcionário antes de criar um cliente");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário antes de criar um cliente");
                     break;
                 }
 
@@ -76,7 +82,7 @@ public class MenuView {
                 var productIds = products.stream().map(Product::getId).toArray();
 
                 if (menus.isEmpty() || products.isEmpty()) {
-                    System.out.println("Por favor crie um cardápio e um produto antes de adicionar um produto a um cardápio");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um cardápio e um produto antes de adicionar um produto a um cardápio");
                     break;
                 }
 
@@ -112,7 +118,7 @@ public class MenuView {
                 var productIds = products.stream().map(Product::getId).toArray();
 
                 if (menus.isEmpty() || products.isEmpty()) {
-                    System.out.println("Por favor crie um cardápio e um produto antes de adicionar um produto a um cardápio");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um cardápio e um produto antes de adicionar um produto a um cardápio");
                     break;
                 }
 

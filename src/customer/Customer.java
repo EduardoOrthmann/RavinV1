@@ -6,7 +6,6 @@ import enums.Allergy;
 import interfaces.Person;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,8 +27,8 @@ public class Customer extends Person {
 
     @Override
     public String toString() {
-        return "Customer{" +
-                "allergies=" + allergies +
+        return "Customer {\n" +
+                "\tallergies = " + allergies + "\n" +
                 "} " + super.toString();
     }
 }

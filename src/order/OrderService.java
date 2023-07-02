@@ -1,13 +1,15 @@
 package order;
 
+import enums.ProductStatus;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class OrderService {
     private final OrderDAO orderDAO;
 
-    public OrderService() {
-        this.orderDAO = new OrderDAO();
+    public OrderService(OrderDAO orderDAO) {
+        this.orderDAO = orderDAO;
     }
 
     public Order findById(int id) {
@@ -40,5 +42,9 @@ public class OrderService {
 
     public void deleteNote(Order order, String note) {
         order.getNotes().remove(note);
+    }
+
+    public List<Order> findByStatusNot(ProductStatus status) {
+        return orderDAO.findByStatusNot(status);
     }
 }

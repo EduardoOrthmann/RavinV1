@@ -9,11 +9,17 @@ import product.ProductService;
 import javax.swing.*;
 
 public class OrderView {
-    public static void view() {
-        var orderService = new OrderService();
-        var productService = new ProductService();
-        var employeeService = new EmployeeService();
+    private final OrderService orderService;
+    private final ProductService productService;
+    private final EmployeeService employeeService;
 
+    public OrderView(OrderService orderService, ProductService productService, EmployeeService employeeService) {
+        this.orderService = orderService;
+        this.productService = productService;
+        this.employeeService = employeeService;
+    }
+
+    public void view() {
         String[] orderOptions = {"findById", "findAll", "save", "update", "delete", "addNote", "updateNote", "deleteNote"};
 
         String selectedOrderOption = (String) JOptionPane.showInputDialog(
@@ -41,7 +47,7 @@ public class OrderView {
                 var productIds = products.stream().map(Product::getId).toArray();
 
                 if (employees.isEmpty() || products.isEmpty()) {
-                    System.out.println("Por favor crie um funcionário e um produto antes de criar um pedido");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário e um produto antes de criar um pedido");
                     break;
                 }
 
@@ -107,7 +113,7 @@ public class OrderView {
                 var orderIds = orders.stream().map(Order::getId).toArray();
 
                 if (orders.isEmpty()) {
-                    System.out.println("Por favor crie um pedido antes de adicionar uma observação a um pedido");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um pedido antes de adicionar uma observação a um pedido");
                     break;
                 }
 
@@ -132,7 +138,7 @@ public class OrderView {
                 var orderIds = orders.stream().map(Order::getId).toArray();
 
                 if (orders.isEmpty()) {
-                    System.out.println("Por favor crie um pedido antes de atualizar uma observação a um pedido");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um pedido antes de atualizar uma observação a um pedido");
                     break;
                 }
 
@@ -168,7 +174,7 @@ public class OrderView {
                 var orderIds = orders.stream().map(Order::getId).toArray();
 
                 if (orders.isEmpty()) {
-                    System.out.println("Por favor crie um pedido antes de remover uma observação de um pedido");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um pedido antes de remover uma observação de um pedido");
                     break;
                 }
 

@@ -4,7 +4,6 @@ import customer.Customer;
 import customer.CustomerService;
 import employee.Employee;
 import employee.EmployeeService;
-import enums.OrderStatus;
 import order.Order;
 import order.OrderService;
 import table.Table;
@@ -13,13 +12,21 @@ import table.TableService;
 import javax.swing.*;
 
 public class CommandView {
-    public static void view() {
-        var commandService = new CommandService();
-        var tableService = new TableService();
-        var customerService = new CustomerService();
-        var orderService = new OrderService();
-        var employeeService = new EmployeeService();
+    private final CommandService commandService;
+    private final TableService tableService;
+    private final CustomerService customerService;
+    private final OrderService orderService;
+    private final EmployeeService employeeService;
 
+    public CommandView(CommandService commandService, TableService tableService, CustomerService customerService, OrderService orderService, EmployeeService employeeService) {
+        this.commandService = commandService;
+        this.tableService = tableService;
+        this.customerService = customerService;
+        this.orderService = orderService;
+        this.employeeService = employeeService;
+    }
+
+    public void view() {
         String[] orderOptions = {"findById", "findAll", "save", "update", "delete", "addOrder", "deleteOrder", "closeCommand"};
 
         String selectedOrderOption = (String) JOptionPane.showInputDialog(
@@ -49,7 +56,7 @@ public class CommandView {
                 var tableIds = tables.stream().map(Table::getId).toArray();
 
                 if (employees.isEmpty() || customers.isEmpty() || tables.isEmpty()) {
-                    System.out.println("Por favor crie um funcionário e um cliente e uma mesa antes de criar um pedido");
+                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário e um cliente e uma mesa antes de criar um pedido");
                     break;
                 }
 
@@ -75,16 +82,6 @@ public class CommandView {
                 var table = tableService.findById((int) selectedTable);
                 var customer = customerService.findById((int) selectedCustomer);
 
-                var status = (OrderStatus) JOptionPane.showInputDialog(
-                        null,
-                        "Selecione um status:",
-                        "Status",
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        OrderStatus.values(),
-                        null
-                );
-
                 var totalPrice = Double.parseDouble(JOptionPane.showInputDialog("Insira o preço total:"));
                 var createdBy = JOptionPane.showInputDialog(
                         null,
@@ -101,7 +98,6 @@ public class CommandView {
                         new Command(
                                 table,
                                 customer,
-                                status,
                                 totalPrice,
                                 createdByEmployee
                         )
@@ -120,7 +116,7 @@ public class CommandView {
                 var orderIds = orders.stream().map(Order::getId).toArray();
 
                 if (commands.isEmpty() || orders.isEmpty()) {
-                    System.out.println("Por favor crie uma comanda e um pedido antes de adicionar um pedido a uma comanda");
+                    JOptionPane.showMessageDialog(null, "Por favor crie uma comanda e um pedido antes de adicionar um pedido a uma comanda");
                     break;
                 }
 
@@ -156,7 +152,7 @@ public class CommandView {
                 var orderIds = orders.stream().map(Order::getId).toArray();
 
                 if (commands.isEmpty() || orders.isEmpty()) {
-                    System.out.println("Por favor crie uma comanda e um pedido antes de deletar um pedido de uma comanda");
+                    JOptionPane.showMessageDialog(null, "Por favor crie uma comanda e um pedido antes de deletar um pedido de uma comanda");
                     break;
                 }
 
@@ -190,7 +186,7 @@ public class CommandView {
                 var commandIds = commands.stream().map(Command::getId).toArray();
 
                 if (commands.isEmpty()) {
-                    System.out.println("Por favor crie uma comanda antes de fechar uma comanda");
+                    JOptionPane.showMessageDialog(null, "Por favor crie uma comanda antes de fechar uma comanda");
                     break;
                 }
 

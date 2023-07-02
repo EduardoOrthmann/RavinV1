@@ -67,13 +67,13 @@ public class Address {
 
     @Override
     public String toString() {
-        return "Address{" +
-                "country='" + country + '\'' +
-                ", state='" + state + '\'' +
-                ", city='" + city + '\'' +
-                ", zipCode='" + zipCode + '\'' +
-                ", neighborhood='" + neighborhood + '\'' +
-                ", street='" + street + '\'' +
+        return "Address {\n" +
+                "\tcountry = '" + country + '\'' + "\n" +
+                "\tstate = '" + state + '\'' + "\n" +
+                "\tcity = '" + city + '\'' + "\n" +
+                "\tzipCode = '" + zipCode + '\'' + "\n" +
+                "\tneighborhood = '" + neighborhood + '\'' + "\n" +
+                "\tstreet = '" + street + '\'' + "\n" +
                 '}';
     }
 }

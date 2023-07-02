@@ -1,23 +1,38 @@
 package payment;
 
+import enums.PaymentMethod;
+
 public class PaymentService {
-    // TODO
-    public double pay(double cash) {
-        return 0;
+    public void processPayment(PaymentMethod paymentMethod, double amount) {
+        switch (paymentMethod) {
+            case CASH -> processCashPayment(amount);
+            case CREDIT_CARD -> processCreditCardPayment(amount);
+            case DEBIT_CARD -> processDebitCardPayment(amount);
+            default -> System.out.println("Tipo de pagamento inválido");
+        }
     }
 
-    // TODO
-    public double applyDiscount(int discount) {
-        return 0;
+    private void processCashPayment(double amount) {
+        printReceipt("Processando pagamento em dinheiro de R$ " + amount);
     }
 
-    // TODO
-    public void printReceipt() {
-
+    private void processCreditCardPayment(double amount) {
+        printReceipt("Processando pagamento por cartão de crédito de R$ " + amount);
     }
 
-    // TODO
-    public double calculateTotalPrice() {
-        return 0;
+    private void processDebitCardPayment(double amount) {
+        printReceipt("Processando pagamento por cartão de débito de R$ " + amount);
+    }
+
+    public double applyDiscount(double amount, double discount) {
+        return amount - (amount * discount / 100);
+    }
+
+    private void printReceipt(String message) {
+        System.out.println("===== NOTA FISCAL =====");
+        System.out.println("-----------------------");
+        System.out.println(message);
+        System.out.println("-----------------------");
+        System.out.println("=======================");
     }
 }

@@ -1,8 +1,6 @@
 package command;
 
-import enums.OrderStatus;
 import interfaces.Crud;
-import table.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,13 +43,9 @@ public class CommandDAO  implements Crud<Command> {
         this.commandList.remove(command);
     }
 
-    // TODO
-    public List<Command> findByStatus(OrderStatus status) {
-        return null;
-    }
-
-    // TODO
-    public boolean existsByStatusAndTable(Command command, OrderStatus status, Table table) {
-        return false;
+    public List<Command> findByIsPaid(boolean isPaid) {
+        return this.commandList.stream()
+                .filter(command -> command.isPaid() == isPaid)
+                .toList();
     }
 }

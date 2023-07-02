@@ -8,8 +8,8 @@ import java.util.NoSuchElementException;
 public class TableService {
     private final TableDAO tableDAO;
 
-    public TableService() {
-        this.tableDAO = new TableDAO();
+    public TableService(TableDAO tableDAO) {
+        this.tableDAO = tableDAO;
     }
 
     public Table findById(int id) {
@@ -41,12 +41,11 @@ public class TableService {
     }
 
     // TODO
-    public boolean hasOppenedOrders(Table table) {
+    public boolean hasOpenOrders(Table table) {
         return false;
     }
 
-    // TODO
     public boolean isAtMaxCapacity(Table table) {
-        return false;
+        return table.getCustomers().size() == table.getMaxCapacity();
     }
 }

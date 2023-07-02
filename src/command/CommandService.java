@@ -1,7 +1,6 @@
 package command;
 
 import order.Order;
-import product.Product;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -9,8 +8,8 @@ import java.util.NoSuchElementException;
 public class CommandService {
     private final CommandDAO commandDAO;
 
-    public CommandService() {
-        this.commandDAO = new CommandDAO();
+    public CommandService(CommandDAO commandDAO) {
+        this.commandDAO = commandDAO;
     }
 
     public Command findById(int id) {
@@ -43,6 +42,9 @@ public class CommandService {
 
     // TODO
     public void closeCommand(Command command, double cash) {
+    }
 
+    // TODO
+    public void updateTotalPrice(Command command) {
     }
 }

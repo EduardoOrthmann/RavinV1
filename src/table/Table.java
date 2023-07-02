@@ -113,4 +113,20 @@ public class Table {
     public void setUpdatedBy(Employee updatedBy) {
         this.updatedBy = updatedBy;
     }
+
+    @Override
+    public String toString() {
+        return "Table {\n" +
+                "\tid = " + id + "\n" +
+                "\tname = '" + name + '\'' + "\n" +
+                "\ttableNumber = " + tableNumber + "\n" +
+                "\tmaxCapacity = " + maxCapacity + "\n" +
+                "\tstatus = " + status + "\n" +
+                "\tcustomers = " + customers + "\n" +
+                "\tcreatedAt = " + createdAt + "\n" +
+                "\tupdatedAt = " + updatedAt + "\n" +
+                "\tcreatedBy = " + createdBy + "\n" +
+                "\tupdatedBy = " + updatedBy + "\n" +
+                '}';
+    }
 }
