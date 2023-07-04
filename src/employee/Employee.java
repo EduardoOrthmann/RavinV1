@@ -29,6 +29,18 @@ public class Employee extends Person {
         this.isAvailable = true;
     }
 
+    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, Employee updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, LocalDate resignationDate, boolean isAvailable) {
+        super(id, name, phoneNumber, birthDate, cpf, address, isActive, updatedBy);
+        this.rg = rg;
+        this.maritalStatus = maritalStatus;
+        this.educationLevel = educationLevel;
+        this.position = position;
+        this.workCardNumber = workCardNumber;
+        this.admissionDate = admissionDate;
+        this.resignationDate = resignationDate;
+        this.isAvailable = isAvailable;
+    }
+
     public String getRg() {
         return rg;
     }
@@ -85,11 +97,11 @@ public class Employee extends Person {
         this.resignationDate = resignationDate;
     }
 
-    public boolean isAvailable() {
+    public boolean getIsAvailable() {
         return isAvailable;
     }
 
-    public void setAvailable(boolean available) {
+    public void setIsAvailable(boolean available) {
         isAvailable = available;
     }
 

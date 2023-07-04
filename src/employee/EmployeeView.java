@@ -1,6 +1,8 @@
 package employee;
 
 import address.Address;
+import components.BooleanField;
+import components.LocalDateField;
 import enums.EducationLevel;
 import enums.MaritalStatus;
 import enums.Position;
@@ -47,11 +49,9 @@ public class EmployeeView {
 
                 var name = JOptionPane.showInputDialog("Insira um nome:");
                 var phoneNumber = JOptionPane.showInputDialog("Insira um número de celular:");
-                var dayOfBirthDate = Integer.parseInt(JOptionPane.showInputDialog("Insira o dia do nascimento:"));
-                var monthOfBirthDate = Integer.parseInt(JOptionPane.showInputDialog("Insira o mês do nascimento:"));
-                var yearOfBirthDate = Integer.parseInt(JOptionPane.showInputDialog("Insira o ano do nascimento:"));
+                var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data do nascimento:");
                 var cpf = JOptionPane.showInputDialog("Insira o cpf:");
-                var createdBy = JOptionPane.showInputDialog(
+                var selectedCreatedBy = JOptionPane.showInputDialog(
                         null,
                         "Quem está criando esse funcionário?",
                         "Criado por",
@@ -96,14 +96,16 @@ public class EmployeeView {
                 );
                 var workCardNumber = JOptionPane.showInputDialog("Insira o número da carteira de trabalho:");
 
+                var createdBy = employeeService.findById((int) selectedCreatedBy);
+
                 employeeService.save(
                         new Employee(
                                 name,
                                 phoneNumber,
-                                LocalDate.of(yearOfBirthDate, monthOfBirthDate, dayOfBirthDate),
+                                birthDate,
                                 cpf,
                                 new Address(country, state, city, zipCode, neighborhood, street),
-                                employeeService.findById((int) createdBy),
+                                createdBy,
                                 rg,
                                 maritalStatus,
                                 educationLevel,
@@ -133,9 +135,7 @@ public class EmployeeView {
                 } else {
                     var name = JOptionPane.showInputDialog("Insira um nome:");
                     var phoneNumber = JOptionPane.showInputDialog("Insira um número de celular:");
-                    var dayOfBirthDate = Integer.parseInt(JOptionPane.showInputDialog("Insira o dia do nascimento:"));
-                    var monthOfBirthDate = Integer.parseInt(JOptionPane.showInputDialog("Insira o mês do nascimento:"));
-                    var yearOfBirthDate = Integer.parseInt(JOptionPane.showInputDialog("Insira o ano do nascimento:"));
+                    var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data do nascimento:");
                     var cpf = JOptionPane.showInputDialog("Insira o cpf:");
                     var country = JOptionPane.showInputDialog("Insira o país:");
                     var state = JOptionPane.showInputDialog("Insira o estado:");
@@ -177,7 +177,7 @@ public class EmployeeView {
                             new Employee(
                                     name,
                                     phoneNumber,
-                                    LocalDate.of(yearOfBirthDate, monthOfBirthDate, dayOfBirthDate),
+                                    birthDate,
                                     cpf,
                                     new Address(country, state, city, zipCode, neighborhood, street),
                                     null,
@@ -189,6 +189,104 @@ public class EmployeeView {
                             )
                     );
                 }
+            }
+
+            case "update" -> {
+                var employees = employeeService.findAll();
+                var employeeIds = employees.stream().map(Employee::getId).toArray();
+
+                if (employees.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário antes de atualizar um funcionário");
+                    break;
+                }
+
+                var id = (int) JOptionPane.showInputDialog(
+                        null,
+                        "Que funcionário você deseja alterar?",
+                        "Alterar",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        null
+                );
+
+                var employee = employeeService.findById(id);
+
+                var name = JOptionPane.showInputDialog("Insira um nome:", employee.getName());
+                var phoneNumber = JOptionPane.showInputDialog("Insira um número de celular:", employee.getPhoneNumber());
+                var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data de nascimento:", employee.getBirthDate());
+                var cpf = JOptionPane.showInputDialog("Insira o cpf:", employee.getCpf());
+                var country = JOptionPane.showInputDialog("Insira o país:", employee.getAddress().getCountry());
+                var state = JOptionPane.showInputDialog("Insira o estado:", employee.getAddress().getState());
+                var city = JOptionPane.showInputDialog("Insira a cidade:", employee.getAddress().getCity());
+                var zipCode = JOptionPane.showInputDialog("Insira o CEP:", employee.getAddress().getZipCode());
+                var neighborhood = JOptionPane.showInputDialog("Insira o bairro:", employee.getAddress().getNeighborhood());
+                var street = JOptionPane.showInputDialog("Insira a rua:", employee.getAddress().getStreet());
+                var isActive = BooleanField.showInputBooleanDialog("É um usuário ativo?", employee.getIsActive());
+                var selectedUpdatedBy = JOptionPane.showInputDialog(
+                        null,
+                        "Quem está atualizando esse funcionário?",
+                        "Atualizado por",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        null
+                );
+                var rg = JOptionPane.showInputDialog("Insira o rg:", employee.getRg());
+                var maritalStatus = (MaritalStatus) JOptionPane.showInputDialog(
+                        null,
+                        "Insira um estado civil:",
+                        "Estado civil",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        MaritalStatus.values(),
+                        employee.getMaritalStatus()
+                );
+                var educationLevel = (EducationLevel) JOptionPane.showInputDialog(
+                        null,
+                        "Insira um nível de educação:",
+                        "Nível de educação",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        EducationLevel.values(),
+                        employee.getEducationLevel()
+                );
+                var position = (Position) JOptionPane.showInputDialog(
+                        null,
+                        "Insira um cargo:",
+                        "Cargo",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        Position.values(),
+                        employee.getPosition()
+                );
+                var workCardNumber = JOptionPane.showInputDialog("Insira o número da carteira de trabalho:", employee.getWorkCardNumber());
+                var admissionDate = LocalDateField.showInputLocalDateDialog("Insira a data de admissão:", employee.getAdmissionDate());
+                var resignationDate = LocalDateField.showInputLocalDateDialog("Insira a data de demissão:", employee.getResignationDate());
+                var isAvailable = BooleanField.showInputBooleanDialog("O usuário está disponível?", employee.getIsAvailable());
+
+                var updatedBy = employeeService.findById((int) selectedUpdatedBy);
+
+                employeeService.update(
+                    new Employee(
+                            id,
+                            name,
+                            phoneNumber,
+                            birthDate,
+                            cpf,
+                            new Address(country, state, city, zipCode, neighborhood, street),
+                            isActive,
+                            updatedBy,
+                            rg,
+                            maritalStatus,
+                            educationLevel,
+                            position,
+                            workCardNumber,
+                            admissionDate,
+                            resignationDate,
+                            isAvailable
+                    )
+                );
             }
 
             case "delete" -> {
