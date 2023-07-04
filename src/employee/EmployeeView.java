@@ -1,6 +1,7 @@
 package employee;
 
 import address.Address;
+import components.AddressForm;
 import components.BooleanField;
 import components.LocalDateField;
 import enums.EducationLevel;
@@ -60,12 +61,7 @@ public class EmployeeView {
                         employeeIds,
                         null
                 );
-                var country = JOptionPane.showInputDialog("Insira o país:");
-                var state = JOptionPane.showInputDialog("Insira o estado:");
-                var city = JOptionPane.showInputDialog("Insira a cidade:");
-                var zipCode = JOptionPane.showInputDialog("Insira o CEP:");
-                var neighborhood = JOptionPane.showInputDialog("Insira o bairro:");
-                var street = JOptionPane.showInputDialog("Insira a rua:");
+                var address = AddressForm.showInputLocalDateDialog("Insira o endereço");
                 var rg = JOptionPane.showInputDialog("Insira o rg:");
                 var maritalStatus = (MaritalStatus) JOptionPane.showInputDialog(
                         null,
@@ -104,7 +100,7 @@ public class EmployeeView {
                                 phoneNumber,
                                 birthDate,
                                 cpf,
-                                new Address(country, state, city, zipCode, neighborhood, street),
+                                address,
                                 createdBy,
                                 rg,
                                 maritalStatus,
@@ -137,12 +133,7 @@ public class EmployeeView {
                     var phoneNumber = JOptionPane.showInputDialog("Insira um número de celular:");
                     var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data do nascimento:");
                     var cpf = JOptionPane.showInputDialog("Insira o cpf:");
-                    var country = JOptionPane.showInputDialog("Insira o país:");
-                    var state = JOptionPane.showInputDialog("Insira o estado:");
-                    var city = JOptionPane.showInputDialog("Insira a cidade:");
-                    var zipCode = JOptionPane.showInputDialog("Insira o CEP:");
-                    var neighborhood = JOptionPane.showInputDialog("Insira o bairro:");
-                    var street = JOptionPane.showInputDialog("Insira a rua:");
+                    var address = AddressForm.showInputLocalDateDialog("Insira o endereço");
                     var rg = JOptionPane.showInputDialog("Insira o rg:");
                     var maritalStatus = (MaritalStatus) JOptionPane.showInputDialog(
                             null,
@@ -179,7 +170,7 @@ public class EmployeeView {
                                     phoneNumber,
                                     birthDate,
                                     cpf,
-                                    new Address(country, state, city, zipCode, neighborhood, street),
+                                    address,
                                     null,
                                     rg,
                                     maritalStatus,
@@ -216,13 +207,7 @@ public class EmployeeView {
                 var phoneNumber = JOptionPane.showInputDialog("Insira um número de celular:", employee.getPhoneNumber());
                 var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data de nascimento:", employee.getBirthDate());
                 var cpf = JOptionPane.showInputDialog("Insira o cpf:", employee.getCpf());
-                var country = JOptionPane.showInputDialog("Insira o país:", employee.getAddress().getCountry());
-                var state = JOptionPane.showInputDialog("Insira o estado:", employee.getAddress().getState());
-                var city = JOptionPane.showInputDialog("Insira a cidade:", employee.getAddress().getCity());
-                var zipCode = JOptionPane.showInputDialog("Insira o CEP:", employee.getAddress().getZipCode());
-                var neighborhood = JOptionPane.showInputDialog("Insira o bairro:", employee.getAddress().getNeighborhood());
-                var street = JOptionPane.showInputDialog("Insira a rua:", employee.getAddress().getStreet());
-                var isActive = BooleanField.showInputBooleanDialog("É um usuário ativo?", employee.getIsActive());
+                var address = AddressForm.showInputLocalDateDialog("Insira o endereço", employee.getAddress());
                 var selectedUpdatedBy = JOptionPane.showInputDialog(
                         null,
                         "Quem está atualizando esse funcionário?",
@@ -262,7 +247,11 @@ public class EmployeeView {
                 );
                 var workCardNumber = JOptionPane.showInputDialog("Insira o número da carteira de trabalho:", employee.getWorkCardNumber());
                 var admissionDate = LocalDateField.showInputLocalDateDialog("Insira a data de admissão:", employee.getAdmissionDate());
-                var resignationDate = LocalDateField.showInputLocalDateDialog("Insira a data de demissão:", employee.getResignationDate());
+
+                LocalDate resignationDate = null;
+                if (employee.getResignationDate() != null) {
+                    resignationDate = LocalDateField.showInputLocalDateDialog("Insira a data de demissão:", employee.getResignationDate());
+                }
                 var isAvailable = BooleanField.showInputBooleanDialog("O usuário está disponível?", employee.getIsAvailable());
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy);
@@ -274,8 +263,7 @@ public class EmployeeView {
                             phoneNumber,
                             birthDate,
                             cpf,
-                            new Address(country, state, city, zipCode, neighborhood, street),
-                            isActive,
+                            address,
                             updatedBy,
                             rg,
                             maritalStatus,

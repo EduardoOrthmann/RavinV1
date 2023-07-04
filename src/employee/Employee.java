@@ -29,8 +29,8 @@ public class Employee extends Person {
         this.isAvailable = true;
     }
 
-    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, Employee updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, LocalDate resignationDate, boolean isAvailable) {
-        super(id, name, phoneNumber, birthDate, cpf, address, isActive, updatedBy);
+    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Employee updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, LocalDate resignationDate, boolean isAvailable) {
+        super(id, name, phoneNumber, birthDate, cpf, address, updatedBy);
         this.rg = rg;
         this.maritalStatus = maritalStatus;
         this.educationLevel = educationLevel;

@@ -1,6 +1,7 @@
 package customer;
 
 import address.Address;
+import components.AddressForm;
 import components.LocalDateField;
 import employee.Employee;
 import employee.EmployeeService;
@@ -51,12 +52,7 @@ public class CustomerView {
                 var phoneNumber = JOptionPane.showInputDialog("Insira um número de celular:");
                 var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data do nascimento:");
                 var cpf = JOptionPane.showInputDialog("Insira o cpf:");
-                var country = JOptionPane.showInputDialog("Insira o país:");
-                var state = JOptionPane.showInputDialog("Insira o estado:");
-                var city = JOptionPane.showInputDialog("Insira a cidade:");
-                var zipCode = JOptionPane.showInputDialog("Insira o CEP:");
-                var neighborhood = JOptionPane.showInputDialog("Insira o bairro:");
-                var street = JOptionPane.showInputDialog("Insira a rua:");
+                var address = AddressForm.showInputLocalDateDialog("Insira o endereço");
                 var selectedCreatedBy = JOptionPane.showInputDialog(
                         null,
                         "Quem está criando esse cliente?",
@@ -75,7 +71,7 @@ public class CustomerView {
                                 phoneNumber,
                                 birthDate,
                                 cpf,
-                                new Address(country, state, city, zipCode, neighborhood, street),
+                                address,
                                 createdBy
                         )
                 );
