@@ -1,9 +1,9 @@
 package employee;
 
 import address.Address;
-import components.AddressForm;
-import components.BooleanField;
-import components.LocalDateField;
+import templates.AddressForm;
+import templates.BooleanField;
+import templates.LocalDateField;
 import enums.EducationLevel;
 import enums.MaritalStatus;
 import enums.Position;

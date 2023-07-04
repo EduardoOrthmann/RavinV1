@@ -1,8 +1,7 @@
 package customer;
 
-import address.Address;
-import components.AddressForm;
-import components.LocalDateField;
+import templates.AddressForm;
+import templates.LocalDateField;
 import employee.Employee;
 import employee.EmployeeService;
 import enums.Allergy;
@@ -73,6 +72,59 @@ public class CustomerView {
                                 cpf,
                                 address,
                                 createdBy
+                        )
+                );
+            }
+
+            case "update" -> {
+                var customers = customerService.findAll();
+                var customerIds = customers.stream().map(Customer::getId).toArray();
+                var employees = employeeService.findAll();
+                var employeeIds = employees.stream().map(Employee::getId).toArray();
+
+                if (customers.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor crie um cliente antes de atualizar um cliente");
+                    break;
+                }
+
+                var id = (int) JOptionPane.showInputDialog(
+                        null,
+                        "Que cliente você deseja alterar?",
+                        "Alterar",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        customerIds,
+                        null
+                );
+
+                var customer = customerService.findById(id);
+
+                var name = JOptionPane.showInputDialog("Insira um nome:", customer.getName());
+                var phoneNumber = JOptionPane.showInputDialog("Insira um número de celular:", customer.getPhoneNumber());
+                var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data do nascimento:", customer.getBirthDate());
+                var cpf = JOptionPane.showInputDialog("Insira o cpf:", customer.getCpf());
+                var address = AddressForm.showInputLocalDateDialog("Insira o endereço", customer.getAddress());
+                var selectedUpdatedBy = JOptionPane.showInputDialog(
+                        null,
+                        "Quem está alterando esse cliente?",
+                        "Alterado por",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        null
+                );
+
+                var updatedBy = employeeService.findById((int) selectedUpdatedBy);
+
+                customerService.update(
+                        new Customer(
+                                id,
+                                name,
+                                phoneNumber,
+                                birthDate,
+                                cpf,
+                                address,
+                                updatedBy
                         )
                 );
             }
