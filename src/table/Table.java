@@ -1,7 +1,7 @@
 package table;
 
 import customer.Customer;
-import employee.Employee;
+import enums.Role;
 import enums.TableStatus;
 
 import java.time.LocalDateTime;
@@ -18,10 +18,10 @@ public class Table {
     private Set<Customer> customers;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Employee createdBy;
-    private Employee updatedBy;
+    private Role createdBy;
+    private Role updatedBy;
 
-    public Table(String name, short tableNumber, short maxCapacity, Employee createdBy) {
+    public Table(String name, short tableNumber, short maxCapacity, Role createdBy) {
         this.id = ++lastId;
         this.name = name;
         this.tableNumber = tableNumber;
@@ -98,19 +98,19 @@ public class Table {
         this.updatedAt = updatedAt;
     }
 
-    public Employee getCreatedBy() {
+    public Role getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Employee createdBy) {
+    public void setCreatedBy(Role createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Employee getUpdatedBy() {
+    public Role getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Employee updatedBy) {
+    public void setUpdatedBy(Role updatedBy) {
         this.updatedBy = updatedBy;
     }
 

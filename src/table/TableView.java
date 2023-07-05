@@ -60,7 +60,7 @@ public class TableView {
                         employeeIds,
                         null
                 );
-                var createdByEmployee = employeeService.findById((int) createdBy);
+                var createdByEmployee = employeeService.findById((int) createdBy).getRole();
 
                 tableService.save(
                         new Table(

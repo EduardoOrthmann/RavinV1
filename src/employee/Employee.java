@@ -4,6 +4,7 @@ import address.Address;
 import enums.EducationLevel;
 import enums.MaritalStatus;
 import enums.Position;
+import enums.Role;
 import interfaces.Person;
 
 import java.time.LocalDate;
@@ -18,8 +19,8 @@ public class Employee extends Person {
     private LocalDate resignationDate;
     private boolean isAvailable;
 
-    public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Employee createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
-        super(name, phoneNumber, birthDate, cpf, address, createdBy);
+    public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
+        super(name, phoneNumber, birthDate, cpf, address, role, createdBy);
         this.rg = rg;
         this.maritalStatus = maritalStatus;
         this.educationLevel = educationLevel;

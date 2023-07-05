@@ -1,6 +1,6 @@
 package product;
 
-import employee.Employee;
+import enums.Role;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -18,10 +18,10 @@ public class Product {
     private boolean isAvailable;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Employee createdBy;
-    private Employee updatedBy;
+    private Role createdBy;
+    private Role updatedBy;
 
-    public Product(String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, Employee createdBy) {
+    public Product(String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, Role createdBy) {
         this.id = ++lastId;
         this.name = name;
         this.description = description;
@@ -42,6 +42,7 @@ public class Product {
     }
 
     public int getId() {
+        this.updatedAt = LocalDateTime.now();
         return id;
     }
 
@@ -121,19 +122,19 @@ public class Product {
         return updatedAt;
     }
 
-    public Employee getCreatedBy() {
+    public Role getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Employee createdBy) {
+    public void setCreatedBy(Role createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Employee getUpdatedBy() {
+    public Role getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Employee updatedBy) {
+    public void setUpdatedBy(Role updatedBy) {
         this.updatedBy = updatedBy;
     }
 

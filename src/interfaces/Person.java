@@ -1,7 +1,7 @@
 package interfaces;
 
 import address.Address;
-import employee.Employee;
+import enums.Role;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,10 +17,12 @@ public abstract class Person {
     private boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Employee createdBy;
-    private Employee updatedBy;
+    private Role role;
+    private Role createdBy;
+    private Role updatedBy;
 
-    public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Employee createdBy) {
+    public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role createdBy) {
+        this.role = role;
         this.id = ++lastId;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -39,6 +41,7 @@ public abstract class Person {
     }
 
     public int getId() {
+        this.updatedAt = LocalDateTime.now();
         return id;
     }
 
@@ -102,19 +105,19 @@ public abstract class Person {
         return updatedAt;
     }
 
-    public Employee getCreatedBy() {
+    public Role getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Employee createdBy) {
+    public void setCreatedBy(Role createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Employee getUpdatedBy() {
+    public Role getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Employee updatedBy) {
+    public void setUpdatedBy(Role updatedBy) {
         this.updatedBy = updatedBy;
     }
 
@@ -133,5 +136,13 @@ public abstract class Person {
                 "\tcreatedBy = " + createdBy + ",\n" +
                 "\tupdatedBy = " + updatedBy + "\n" +
                 '}';
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

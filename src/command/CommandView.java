@@ -91,7 +91,7 @@ public class CommandView {
                         employeeIds,
                         null
                 );
-                var createdByEmployee = employeeService.findById((int) createdBy);
+                var createdByEmployee = employeeService.findById((int) createdBy).getRole();
 
                 commandService.save(
                         new Command(

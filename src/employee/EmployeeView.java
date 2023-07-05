@@ -1,6 +1,7 @@
 package employee;
 
 import address.Address;
+import enums.Role;
 import templates.AddressForm;
 import templates.BooleanField;
 import templates.LocalDateField;
@@ -62,6 +63,15 @@ public class EmployeeView {
                         null
                 );
                 var address = AddressForm.showInputLocalDateDialog("Insira o endereço");
+                var role = (Role) JOptionPane.showInputDialog(
+                        null,
+                        "Insira um nível de acesso:",
+                        "Nível de acesso",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        Role.values(),
+                        null
+                );
                 var rg = JOptionPane.showInputDialog("Insira o rg:");
                 var maritalStatus = (MaritalStatus) JOptionPane.showInputDialog(
                         null,
@@ -92,7 +102,7 @@ public class EmployeeView {
                 );
                 var workCardNumber = JOptionPane.showInputDialog("Insira o número da carteira de trabalho:");
 
-                var createdBy = employeeService.findById((int) selectedCreatedBy);
+                var createdBy = employeeService.findById((int) selectedCreatedBy).getRole();
 
                 employeeService.save(
                         new Employee(
@@ -101,6 +111,7 @@ public class EmployeeView {
                                 birthDate,
                                 cpf,
                                 address,
+                                role,
                                 createdBy,
                                 rg,
                                 maritalStatus,
@@ -120,7 +131,8 @@ public class EmployeeView {
                                     LocalDate.of(2003, 11, 27),
                                     "11111111111",
                                     new Address("Brasil", "SC", "Blumenau", "89022110", "Velha", "Rua dos caçadores"),
-                                    null,
+                                    Role.ADMIN,
+                                    Role.ADMIN,
                                     "123123123",
                                     MaritalStatus.SINGLE,
                                     EducationLevel.HIGHER_EDUCATION,
@@ -171,7 +183,8 @@ public class EmployeeView {
                                     birthDate,
                                     cpf,
                                     address,
-                                    null,
+                                    Role.ADMIN,
+                                    Role.ADMIN,
                                     rg,
                                     maritalStatus,
                                     educationLevel,
@@ -208,14 +221,14 @@ public class EmployeeView {
                 var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data de nascimento:", employee.getBirthDate());
                 var cpf = JOptionPane.showInputDialog("Insira o cpf:", employee.getCpf());
                 var address = AddressForm.showInputLocalDateDialog("Insira o endereço", employee.getAddress());
-                var selectedUpdatedBy = JOptionPane.showInputDialog(
+                var role = (Role) JOptionPane.showInputDialog(
                         null,
-                        "Quem está atualizando esse funcionário?",
-                        "Atualizado por",
+                        "Insira um nível de acesso:",
+                        "Nível de acesso",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
-                        employeeIds,
-                        null
+                        Role.values(),
+                        employee.getRole()
                 );
                 var rg = JOptionPane.showInputDialog("Insira o rg:", employee.getRg());
                 var maritalStatus = (MaritalStatus) JOptionPane.showInputDialog(
@@ -254,15 +267,25 @@ public class EmployeeView {
                 }
 
                 var isAvailable = BooleanField.showInputBooleanDialog("O usuário está disponível?", employee.isAvailable());
+                var selectedUpdatedBy = JOptionPane.showInputDialog(
+                        null,
+                        "Quem está atualizando esse funcionário?",
+                        "Atualizado por",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        null
+                );
 
-                var updatedBy = employeeService.findById((int) selectedUpdatedBy);
+                var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
-                // TODO: find a way to set the updatedAt not calling its setter
+                // TODO: find a way to set the updatedAt without calling its setter
                 employee.setName(name);
                 employee.setPhoneNumber(phoneNumber);
                 employee.setBirthDate(birthDate);
                 employee.setCpf(cpf);
                 employee.setAddress(address);
+                employee.setRole(role);
                 employee.setRg(rg);
                 employee.setMaritalStatus(maritalStatus);
                 employee.setEducationLevel(educationLevel);
@@ -271,8 +294,7 @@ public class EmployeeView {
                 employee.setAdmissionDate(admissionDate);
                 employee.setResignationDate(resignationDate);
                 employee.setAvailable(isAvailable);
-                // TODO: find way to avoid recursion caused by updatedBy in the toString when updating employee
-                // employee.setUpdatedBy(updatedBy);
+                employee.setUpdatedBy(updatedBy);
 
                 employeeService.update(employee);
             }

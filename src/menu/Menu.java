@@ -1,6 +1,6 @@
 package menu;
 
-import employee.Employee;
+import enums.Role;
 import product.Product;
 
 import java.time.LocalDateTime;
@@ -16,10 +16,10 @@ public class Menu {
     private boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Employee createdBy;
-    private Employee updatedBy;
+    private Role createdBy;
+    private Role updatedBy;
 
-    public Menu(String name, String menuCode, Employee createdBy) {
+    public Menu(String name, String menuCode, Role createdBy) {
         this.id = ++lastId;
         this.name = name;
         this.products = new ArrayList<>();
@@ -29,13 +29,6 @@ public class Menu {
         this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
         this.updatedBy = createdBy;
-    }
-
-    public Menu(int id, String name, String menuCode, Employee updatedBy) {
-        this.id = id;
-        this.name = name;
-        this.menuCode = menuCode;
-        this.updatedBy = updatedBy;
     }
 
     public int getId() {
@@ -94,19 +87,19 @@ public class Menu {
         this.updatedAt = updatedAt;
     }
 
-    public Employee getCreatedBy() {
+    public Role getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Employee createdBy) {
+    public void setCreatedBy(Role createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Employee getUpdatedBy() {
+    public Role getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Employee updatedBy) {
+    public void setUpdatedBy(Role updatedBy) {
         this.updatedBy = updatedBy;
     }
 

@@ -63,7 +63,7 @@ public class ProductView {
                 );
 
                 var preparationTime = LocalTime.of(hourOfPreparation, minuteOfPreparation);
-                var createdByEmployee = employeeService.findById((int) createdBy);
+                var createdByEmployee = employeeService.findById((int) createdBy).getRole();
 
                 productService.save(
                         new Product(

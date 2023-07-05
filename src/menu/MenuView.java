@@ -59,7 +59,7 @@ public class MenuView {
                         employeeIds,
                         null
                 );
-                var createdByEmployee = employeeService.findById((int) createdBy);
+                var createdByEmployee = employeeService.findById((int) createdBy).getRole();
 
                 menuService.save(
                         new Menu(

@@ -2,6 +2,7 @@ package order;
 
 import employee.Employee;
 import enums.ProductStatus;
+import enums.Role;
 import product.Product;
 
 import java.time.LocalDateTime;
@@ -19,10 +20,10 @@ public class Order {
     private List<String> notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Employee createdBy;
-    private Employee updatedBy;
+    private Role createdBy;
+    private Role updatedBy;
 
-    public Order(Product product, Employee employee, int quantity, ProductStatus status, Employee createdBy) {
+    public Order(Product product, Employee employee, int quantity, ProductStatus status, Role createdBy) {
         this.id = ++lastId;
         this.product = product;
         this.employee = employee;
@@ -92,19 +93,19 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
-    public Employee getCreatedBy() {
+    public Role getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Employee createdBy) {
+    public void setCreatedBy(Role createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Employee getUpdatedBy() {
+    public Role getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Employee updatedBy) {
+    public void setUpdatedBy(Role updatedBy) {
         this.updatedBy = updatedBy;
     }
 

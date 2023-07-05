@@ -90,7 +90,7 @@ public class OrderView {
                         employeeIds,
                         null
                 );
-                var createdByEmployee = employeeService.findById((int) createdBy);
+                var createdByEmployee = employeeService.findById((int) createdBy).getRole();
 
                 orderService.save(
                         new Order(

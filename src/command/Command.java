@@ -1,7 +1,7 @@
 package command;
 
 import customer.Customer;
-import employee.Employee;
+import enums.Role;
 import order.Order;
 import table.Table;
 
@@ -19,10 +19,10 @@ public class Command {
     private double totalPrice;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Employee createdBy;
-    private Employee updatedBy;
+    private Role createdBy;
+    private Role updatedBy;
 
-    public Command(Table table, Customer customer, Employee createdBy) {
+    public Command(Table table, Customer customer, Role createdBy) {
         this.id = ++lastId;
         this.table = table;
         this.customer = customer;
@@ -99,19 +99,19 @@ public class Command {
         this.updatedAt = updatedAt;
     }
 
-    public Employee getCreatedBy() {
+    public Role getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Employee createdBy) {
+    public void setCreatedBy(Role createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Employee getUpdatedBy() {
+    public Role getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Employee updatedBy) {
+    public void setUpdatedBy(Role updatedBy) {
         this.updatedBy = updatedBy;
     }
 

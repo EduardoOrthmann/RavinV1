@@ -1,5 +1,6 @@
 package customer;
 
+import enums.Role;
 import templates.AddressForm;
 import templates.LocalDateField;
 import employee.Employee;
@@ -52,6 +53,15 @@ public class CustomerView {
                 var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data do nascimento:");
                 var cpf = JOptionPane.showInputDialog("Insira o cpf:");
                 var address = AddressForm.showInputLocalDateDialog("Insira o endereço");
+                var role = (Role) JOptionPane.showInputDialog(
+                        null,
+                        "Insira um nível de acesso:",
+                        "Nível de acesso",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        Role.values(),
+                        null
+                );
                 var selectedCreatedBy = JOptionPane.showInputDialog(
                         null,
                         "Quem está criando esse cliente?",
@@ -62,7 +72,7 @@ public class CustomerView {
                         null
                 );
 
-                var createdBy = employeeService.findById((int) selectedCreatedBy);
+                var createdBy = employeeService.findById((int) selectedCreatedBy).getRole();
 
                 customerService.save(
                         new Customer(
@@ -71,6 +81,7 @@ public class CustomerView {
                                 birthDate,
                                 cpf,
                                 address,
+                                role,
                                 createdBy
                         )
                 );
@@ -104,6 +115,15 @@ public class CustomerView {
                 var birthDate = LocalDateField.showInputLocalDateDialog("Insira a data do nascimento:", customer.getBirthDate());
                 var cpf = JOptionPane.showInputDialog("Insira o cpf:", customer.getCpf());
                 var address = AddressForm.showInputLocalDateDialog("Insira o endereço", customer.getAddress());
+                var role = (Role) JOptionPane.showInputDialog(
+                        null,
+                        "Insira um nível de acesso:",
+                        "Nível de acesso",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        Role.values(),
+                        customer.getRole()
+                );
                 var selectedUpdatedBy = JOptionPane.showInputDialog(
                         null,
                         "Quem está alterando esse cliente?",
@@ -114,13 +134,14 @@ public class CustomerView {
                         null
                 );
 
-                var updatedBy = employeeService.findById((int) selectedUpdatedBy);
+                var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
                 customer.setName(name);
                 customer.setPhoneNumber(phoneNumber);
                 customer.setBirthDate(birthDate);
                 customer.setCpf(cpf);
                 customer.setAddress(address);
+                customer.setRole(role);
                 customer.setUpdatedBy(updatedBy);
 
                 customerService.update(customer);
