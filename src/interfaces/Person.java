@@ -34,15 +34,8 @@ public abstract class Person {
         this.updatedBy = createdBy;
     }
 
-    public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Employee updatedBy) {
-        this.id = id;
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.birthDate = birthDate;
-        this.cpf = cpf;
-        this.address = address;
+    public Person() {
         this.updatedAt = LocalDateTime.now();
-        this.updatedBy = updatedBy;
     }
 
     public int getId() {

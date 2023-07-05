@@ -252,29 +252,28 @@ public class EmployeeView {
                 if (employee.getResignationDate() != null) {
                     resignationDate = LocalDateField.showInputLocalDateDialog("Insira a data de demissão:", employee.getResignationDate());
                 }
+
                 var isAvailable = BooleanField.showInputBooleanDialog("O usuário está disponível?", employee.getIsAvailable());
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy);
 
-                employeeService.update(
-                    new Employee(
-                            id,
-                            name,
-                            phoneNumber,
-                            birthDate,
-                            cpf,
-                            address,
-                            updatedBy,
-                            rg,
-                            maritalStatus,
-                            educationLevel,
-                            position,
-                            workCardNumber,
-                            admissionDate,
-                            resignationDate,
-                            isAvailable
-                    )
-                );
+                employee.setName(name);
+                employee.setPhoneNumber(phoneNumber);
+                employee.setBirthDate(birthDate);
+                employee.setCpf(cpf);
+                employee.setAddress(address);
+                employee.setRg(rg);
+                employee.setMaritalStatus(maritalStatus);
+                employee.setEducationLevel(educationLevel);
+                employee.setPosition(position);
+                employee.setWorkCardNumber(workCardNumber);
+                employee.setAdmissionDate(admissionDate);
+                employee.setResignationDate(resignationDate);
+                employee.setIsAvailable(isAvailable);
+                // TODO: find way to avoid recursion caused by updatedBy in the toString when updating employee
+                // employee.setUpdatedBy(updatedBy);
+
+                employeeService.update(employee);
             }
 
             case "delete" -> {

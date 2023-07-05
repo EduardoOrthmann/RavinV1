@@ -116,17 +116,14 @@ public class CustomerView {
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy);
 
-                customerService.update(
-                        new Customer(
-                                id,
-                                name,
-                                phoneNumber,
-                                birthDate,
-                                cpf,
-                                address,
-                                updatedBy
-                        )
-                );
+                customer.setName(name);
+                customer.setPhoneNumber(phoneNumber);
+                customer.setBirthDate(birthDate);
+                customer.setCpf(cpf);
+                customer.setAddress(address);
+                customer.setUpdatedBy(updatedBy);
+
+                customerService.update(customer);
             }
 
             case "delete" -> {
