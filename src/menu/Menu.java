@@ -31,6 +31,13 @@ public class Menu {
         this.updatedBy = createdBy;
     }
 
+    public Menu(int id, String name, String menuCode, Employee updatedBy) {
+        this.id = id;
+        this.name = name;
+        this.menuCode = menuCode;
+        this.updatedBy = updatedBy;
+    }
+
     public int getId() {
         return id;
     }

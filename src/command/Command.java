@@ -22,13 +22,13 @@ public class Command {
     private Employee createdBy;
     private Employee updatedBy;
 
-    public Command(Table table, Customer customer, double totalPrice, Employee createdBy) {
+    public Command(Table table, Customer customer, Employee createdBy) {
         this.id = ++lastId;
         this.table = table;
         this.customer = customer;
         this.isPaid = false;
         this.orders = new ArrayList<>();
-        this.totalPrice = totalPrice;
+        this.totalPrice = 0;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;

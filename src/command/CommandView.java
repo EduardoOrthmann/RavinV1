@@ -82,7 +82,6 @@ public class CommandView {
                 var table = tableService.findById((int) selectedTable);
                 var customer = customerService.findById((int) selectedCustomer);
 
-                var totalPrice = Double.parseDouble(JOptionPane.showInputDialog("Insira o preço total:"));
                 var createdBy = JOptionPane.showInputDialog(
                         null,
                         "Quem esta criando essa comanda?",
@@ -98,7 +97,6 @@ public class CommandView {
                         new Command(
                                 table,
                                 customer,
-                                totalPrice,
                                 createdByEmployee
                         )
                 );
