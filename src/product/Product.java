@@ -37,6 +37,10 @@ public class Product {
         this.updatedBy = createdBy;
     }
 
+    public Product() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public int getId() {
         return id;
     }
@@ -113,16 +117,8 @@ public class Product {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public Employee getCreatedBy() {

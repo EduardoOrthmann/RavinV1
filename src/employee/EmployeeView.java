@@ -253,10 +253,11 @@ public class EmployeeView {
                     resignationDate = LocalDateField.showInputLocalDateDialog("Insira a data de demissão:", employee.getResignationDate());
                 }
 
-                var isAvailable = BooleanField.showInputBooleanDialog("O usuário está disponível?", employee.getIsAvailable());
+                var isAvailable = BooleanField.showInputBooleanDialog("O usuário está disponível?", employee.isAvailable());
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy);
 
+                // TODO: find a way to set the updatedAt not calling its setter
                 employee.setName(name);
                 employee.setPhoneNumber(phoneNumber);
                 employee.setBirthDate(birthDate);
@@ -269,7 +270,7 @@ public class EmployeeView {
                 employee.setWorkCardNumber(workCardNumber);
                 employee.setAdmissionDate(admissionDate);
                 employee.setResignationDate(resignationDate);
-                employee.setIsAvailable(isAvailable);
+                employee.setAvailable(isAvailable);
                 // TODO: find way to avoid recursion caused by updatedBy in the toString when updating employee
                 // employee.setUpdatedBy(updatedBy);
 

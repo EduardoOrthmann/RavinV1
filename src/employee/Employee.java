@@ -89,11 +89,11 @@ public class Employee extends Person {
         this.resignationDate = resignationDate;
     }
 
-    public boolean getIsAvailable() {
+    public boolean isAvailable() {
         return isAvailable;
     }
 
-    public void setIsAvailable(boolean available) {
+    public void setAvailable(boolean available) {
         isAvailable = available;
     }
 
