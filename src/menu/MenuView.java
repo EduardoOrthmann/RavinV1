@@ -70,6 +70,51 @@ public class MenuView {
                 );
             }
 
+            case "update " -> {
+                var menus = menuService.findAll();
+                var menuIds = menus.stream().map(Menu::getId).toArray();
+                var employees = employeeService.findAll();
+                var employeeIds = employees.stream().map(Employee::getId).toArray();
+
+                if (menus.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor crie um menu antes de atualizar um menu");
+                    break;
+                }
+
+                var id = (int) JOptionPane.showInputDialog(
+                        null,
+                        "Qual menu você deseja alterar?",
+                        "Alterar",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        menuIds,
+                        null
+                );
+
+                var menu = menuService.findById(id);
+
+                var name = JOptionPane.showInputDialog("Insira um nome:", menu.getName());
+                var menuCode = JOptionPane.showInputDialog("Insira o código do menu:", menu.getMenuCode());
+                var selectedUpdatedBy = JOptionPane.showInputDialog(
+                        null,
+                        "Quem está alterando esse menu?",
+                        "Alterado por",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        null
+                );
+
+                var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
+
+                menu.setId(id);
+                menu.setName(name);
+                menu.setMenuCode(menuCode);
+                menu.setUpdatedBy(updatedBy);
+
+                menuService.update(menu);
+            }
+
             case "delete" -> {
                 var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
                 menuService.delete(menuService.findById(id));

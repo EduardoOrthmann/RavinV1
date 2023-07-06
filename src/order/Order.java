@@ -42,6 +42,7 @@ public class Order {
     }
 
     public void setId(int id) {
+        this.updatedAt = LocalDateTime.now();
         this.id = id;
     }
 

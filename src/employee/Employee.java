@@ -30,10 +30,6 @@ public class Employee extends Person {
         this.isAvailable = true;
     }
 
-    public Employee() {
-        super();
-    }
-
     public String getRg() {
         return rg;
     }

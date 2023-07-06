@@ -36,16 +36,12 @@ public abstract class Person {
         this.updatedBy = createdBy;
     }
 
-    public Person() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public int getId() {
-        this.updatedAt = LocalDateTime.now();
         return id;
     }
 
     public void setId(int id) {
+        this.updatedAt = LocalDateTime.now();
         this.id = id;
     }
 

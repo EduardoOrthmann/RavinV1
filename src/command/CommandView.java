@@ -102,6 +102,77 @@ public class CommandView {
                 );
             }
 
+            case "update" -> {
+                var commands = commandService.findAll();
+                var commandIds = commands.stream().map(Command::getId).toArray();
+                var employees = employeeService.findAll();
+                var employeeIds = employees.stream().map(Employee::getId).toArray();
+                var tables = tableService.findAll();
+                var tableIds = tables.stream().map(Table::getId).toArray();
+                var customers = customerService.findAll();
+                var customerIds = customers.stream().map(Customer::getId).toArray();
+
+                if (commands.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor crie um comando antes de atualizar um comando");
+                    break;
+                }
+
+                var id = (int) JOptionPane.showInputDialog(
+                        null,
+                        "Qual comando você deseja alterar?",
+                        "Alterar",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        commandIds,
+                        null
+                );
+
+                var command = commandService.findById(id);
+
+                var selectedTable = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma mesa:",
+                        "Mesa",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        tableIds,
+                        command.getTable()
+                );
+
+                var table = tableService.findById((int) selectedTable);
+
+                var selectedCustomer = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um cliente:",
+                        "Cliente",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        customerIds,
+                        command.getCustomer()
+                );
+
+                var customer = customerService.findById((int) selectedCustomer);
+
+                var selectedUpdatedBy = JOptionPane.showInputDialog(
+                        null,
+                        "Quem está alterando esse comando?",
+                        "Alterado por",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        null
+                );
+
+                var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
+
+                command.setId(id);
+                command.setTable(table);
+                command.setCustomer(customer);
+                command.setUpdatedBy(updatedBy);
+
+                commandService.update(command);
+            }
+
             case "delete" -> {
                 var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
                 commandService.delete(commandService.findById(id));

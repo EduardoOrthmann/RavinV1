@@ -4,6 +4,7 @@ import customer.Customer;
 import customer.CustomerService;
 import employee.Employee;
 import employee.EmployeeService;
+import enums.TableStatus;
 
 import javax.swing.*;
 
@@ -75,6 +76,65 @@ public class TableView {
             case "delete" -> {
                 var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
                 tableService.delete(tableService.findById(id));
+            }
+
+            case "update" -> {
+                var tables = tableService.findAll();
+                var tableIds = tables.stream().map(Table::getId).toArray();
+                var employees = employeeService.findAll();
+                var employeeIds = employees.stream().map(Employee::getId).toArray();
+
+                if (tables.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor crie uma mesa antes de atualizar uma mesa");
+                    break;
+                }
+
+                var id = (int) JOptionPane.showInputDialog(
+                        null,
+                        "Qual mesa você deseja alterar?",
+                        "Alterar",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        tableIds,
+                        null
+                );
+
+                var table = tableService.findById(id);
+
+                var name = JOptionPane.showInputDialog("Insira um nome:", table.getName());
+                var tableNumber = Short.parseShort(JOptionPane.showInputDialog("Insira o número da mesa:", table.getTableNumber()));
+                var maxCapacity = Short.parseShort(JOptionPane.showInputDialog("Insira a capacidade máxima:", table.getMaxCapacity()));
+                var selectedStatus = JOptionPane.showInputDialog(
+                        null,
+                        "Qual é o status dessa mesa?",
+                        "Status",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        TableStatus.values(),
+                        table.getStatus()
+                );
+
+                var status = (TableStatus) selectedStatus;
+                var selectedUpdatedBy = JOptionPane.showInputDialog(
+                        null,
+                        "Quem está alterando essa mesa?",
+                        "Alterado por",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        null
+                );
+
+                var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
+
+                table.setId(id);
+                table.setName(name);
+                table.setTableNumber(tableNumber);
+                table.setMaxCapacity(maxCapacity);
+                table.setStatus(status);
+                table.setUpdatedBy(updatedBy);
+
+                tableService.update(table);
             }
 
             case "addCustomer" -> {

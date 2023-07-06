@@ -12,13 +12,9 @@ import java.util.Set;
 public class Customer extends Person {
     private Set<Allergy> allergies;
 
-    public Customer(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role createdBy) {
-        super(name, phoneNumber, birthDate, cpf, address, role, createdBy);
+    public Customer(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role createdBy) {
+        super(name, phoneNumber, birthDate, cpf, address, Role.USER, createdBy);
         this.allergies = new HashSet<>();
-    }
-
-    public Customer() {
-        super();
     }
 
     public Set<Allergy> getAllergies() {

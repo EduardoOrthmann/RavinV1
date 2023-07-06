@@ -103,6 +103,89 @@ public class OrderView {
                 );
             }
 
+            case "update" -> {
+                var orders = orderService.findAll();
+                var orderIds = orders.stream().map(Order::getId).toArray();
+                var products = productService.findAll();
+                var productIds = products.stream().map(Product::getId).toArray();
+                var employees = employeeService.findAll();
+                var employeeIds = employees.stream().map(Employee::getId).toArray();
+
+                if (orders.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor crie um pedido antes de atualizar um pedido");
+                    break;
+                }
+
+                var id = (int) JOptionPane.showInputDialog(
+                        null,
+                        "Qual pedido você deseja alterar?",
+                        "Alterar",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        orderIds,
+                        null
+                );
+
+                var order = orderService.findById(id);
+
+                var selectedProduct = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um produto:",
+                        "Produto",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        productIds,
+                        order.getProduct()
+                );
+
+                var product = productService.findById((int) selectedProduct);
+
+                var selectedEmployee = JOptionPane.showInputDialog(
+                        null,
+                        "Quem atendeu este pedido:",
+                        "Funcionário",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        order.getEmployee()
+                );
+
+                var employee = employeeService.findById((int) selectedEmployee);
+
+                var quantity = Integer.parseInt(JOptionPane.showInputDialog("Insira a quantidade:", order.getQuantity()));
+
+                var status = (ProductStatus) JOptionPane.showInputDialog(
+                        null,
+                        "Qual é o status desse pedido?",
+                        "Status",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        ProductStatus.values(),
+                        order.getStatus()
+                );
+
+                var selectedUpdatedBy = JOptionPane.showInputDialog(
+                        null,
+                        "Quem está alterando esse pedido?",
+                        "Alterado por",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        null
+                );
+
+                var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
+
+                order.setId(id);
+                order.setProduct(product);
+                order.setEmployee(employee);
+                order.setQuantity(quantity);
+                order.setStatus(status);
+                order.setUpdatedBy(updatedBy);
+
+                orderService.update(order);
+            }
+
             case "delete" -> {
                 var id = Integer.parseInt(JOptionPane.showInputDialog("Insira um id:"));
                 orderService.delete(orderService.findById(id));

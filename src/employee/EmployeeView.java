@@ -132,7 +132,7 @@ public class EmployeeView {
                                     "11111111111",
                                     new Address("Brasil", "SC", "Blumenau", "89022110", "Velha", "Rua dos caçadores"),
                                     Role.ADMIN,
-                                    Role.ADMIN,
+                                    Role.SYSTEM,
                                     "123123123",
                                     MaritalStatus.SINGLE,
                                     EducationLevel.HIGHER_EDUCATION,
@@ -184,7 +184,7 @@ public class EmployeeView {
                                     cpf,
                                     address,
                                     Role.ADMIN,
-                                    Role.ADMIN,
+                                    Role.SYSTEM,
                                     rg,
                                     maritalStatus,
                                     educationLevel,
@@ -279,7 +279,7 @@ public class EmployeeView {
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
-                // TODO: find a way to set the updatedAt without calling its setter
+                employee.setId(id);
                 employee.setName(name);
                 employee.setPhoneNumber(phoneNumber);
                 employee.setBirthDate(birthDate);

@@ -37,16 +37,12 @@ public class Product {
         this.updatedBy = createdBy;
     }
 
-    public Product() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public int getId() {
-        this.updatedAt = LocalDateTime.now();
         return id;
     }
 
     public void setId(int id) {
+        this.updatedAt = LocalDateTime.now();
         this.id = id;
     }
 

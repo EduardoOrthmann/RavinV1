@@ -2,6 +2,8 @@ package product;
 
 import employee.Employee;
 import employee.EmployeeService;
+import templates.BooleanField;
+import templates.LocalTimeField;
 
 import javax.swing.*;
 import java.time.LocalTime;
@@ -76,6 +78,61 @@ public class ProductView {
                                 createdByEmployee
                         )
                 );
+            }
+
+            case "update" -> {
+                var products = productService.findAll();
+                var productIds = products.stream().map(Product::getId).toArray();
+                var employees = employeeService.findAll();
+                var employeeIds = employees.stream().map(Employee::getId).toArray();
+
+                if (products.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor crie um produto antes de atualizar um produto");
+                    break;
+                }
+
+                var id = (int) JOptionPane.showInputDialog(
+                        null,
+                        "Qual produto você deseja alterar?",
+                        "Alterar",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        productIds,
+                        null
+                );
+
+                var product = productService.findById(id);
+
+                var name = JOptionPane.showInputDialog("Insira um nome:", product.getName());
+                var description = JOptionPane.showInputDialog("Insira uma descrição:", product.getDescription());
+                var productCode = JOptionPane.showInputDialog("Insira o código do produto:", product.getProductCode());
+                var costPrice = Double.parseDouble(JOptionPane.showInputDialog("Insira o preço de custo:", product.getCostPrice()));
+                var salePrice = Double.parseDouble(JOptionPane.showInputDialog("Insira o preço de venda:", product.getSalePrice()));
+                var isAvailable = BooleanField.showInputBooleanDialog("O produto está disponível?", product.isAvailable());
+                var preparationTime = LocalTimeField.showInputLocalTimeDialog("Insira o tempo de preparação:", product.getPreparationTime());
+                var selectedUpdatedBy = JOptionPane.showInputDialog(
+                        null,
+                        "Quem está alterando esse produto?",
+                        "Alterado por",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        employeeIds,
+                        null
+                );
+
+                var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
+
+                product.setId(id);
+                product.setName(name);
+                product.setDescription(description);
+                product.setProductCode(productCode);
+                product.setCostPrice(costPrice);
+                product.setSalePrice(salePrice);
+                product.setPreparationTime(preparationTime);
+                product.setAvailable(isAvailable);
+                product.setUpdatedBy(updatedBy);
+
+                productService.update(product);
             }
 
             case "delete" -> {

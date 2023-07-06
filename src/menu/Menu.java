@@ -36,6 +36,7 @@ public class Menu {
     }
 
     public void setId(int id) {
+        this.updatedAt = LocalDateTime.now();
         this.id = id;
     }
 
