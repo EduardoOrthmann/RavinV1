@@ -8,6 +8,7 @@ import order.Order;
 import order.OrderService;
 import table.Table;
 import table.TableService;
+import utils.ObjectUtils;
 
 import javax.swing.*;
 
@@ -165,10 +166,14 @@ public class CommandView {
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
-                command.setId(id);
-                command.setTable(table);
-                command.setCustomer(customer);
-                command.setUpdatedBy(updatedBy);
+                var updatedCommand = new Command(
+                        id,
+                        table,
+                        customer,
+                        updatedBy
+                );
+
+                ObjectUtils.copyNonNullFields(updatedCommand, command);
 
                 commandService.update(command);
             }

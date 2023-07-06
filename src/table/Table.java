@@ -34,12 +34,21 @@ public class Table {
         this.updatedBy = createdBy;
     }
 
+    public Table(int id, String name, short tableNumber, short maxCapacity, TableStatus status, Role updatedBy) {
+        this.id = id;
+        this.name = name;
+        this.tableNumber = tableNumber;
+        this.maxCapacity = maxCapacity;
+        this.status = status;
+        this.updatedAt = LocalDateTime.now();
+        this.updatedBy = updatedBy;
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
-        this.updatedAt = LocalDateTime.now();
         this.id = id;
     }
 

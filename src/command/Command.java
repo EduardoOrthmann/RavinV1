@@ -35,6 +35,14 @@ public class Command {
         this.updatedBy = createdBy;
     }
 
+    public Command(int id, Table table, Customer customer, Role updatedBy) {
+        this.id = id;
+        this.table = table;
+        this.customer = customer;
+        this.updatedAt = LocalDateTime.now();
+        this.updatedBy = updatedBy;
+    }
+
     public int getId() {
         return id;
     }

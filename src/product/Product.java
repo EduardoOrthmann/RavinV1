@@ -37,12 +37,24 @@ public class Product {
         this.updatedBy = createdBy;
     }
 
+    public Product(int id, String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, boolean isAvailable, Role updatedBy) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.productCode = productCode;
+        this.costPrice = costPrice;
+        this.salePrice = salePrice;
+        this.preparationTime = preparationTime;
+        this.isAvailable = isAvailable;
+        this.updatedAt = LocalDateTime.now();
+        this.updatedBy = updatedBy;
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
-        this.updatedAt = LocalDateTime.now();
         this.id = id;
     }
 

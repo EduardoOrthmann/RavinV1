@@ -4,6 +4,7 @@ import employee.Employee;
 import employee.EmployeeService;
 import templates.BooleanField;
 import templates.LocalTimeField;
+import utils.ObjectUtils;
 
 import javax.swing.*;
 import java.time.LocalTime;
@@ -122,15 +123,19 @@ public class ProductView {
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
-                product.setId(id);
-                product.setName(name);
-                product.setDescription(description);
-                product.setProductCode(productCode);
-                product.setCostPrice(costPrice);
-                product.setSalePrice(salePrice);
-                product.setPreparationTime(preparationTime);
-                product.setAvailable(isAvailable);
-                product.setUpdatedBy(updatedBy);
+                var updatedProduct = new Product(
+                        id,
+                        name,
+                        description,
+                        productCode,
+                        costPrice,
+                        salePrice,
+                        preparationTime,
+                        isAvailable,
+                        updatedBy
+                );
+
+                ObjectUtils.copyNonNullFields(updatedProduct, product);
 
                 productService.update(product);
             }

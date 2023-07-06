@@ -17,6 +17,10 @@ public class Customer extends Person {
         this.allergies = new HashSet<>();
     }
 
+    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role updatedBy) {
+        super(id, name, phoneNumber, birthDate, cpf, address, Role.USER, updatedBy);
+    }
+
     public Set<Allergy> getAllergies() {
         return allergies;
     }

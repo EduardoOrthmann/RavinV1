@@ -5,6 +5,7 @@ import templates.LocalDateField;
 import employee.Employee;
 import employee.EmployeeService;
 import enums.Allergy;
+import utils.ObjectUtils;
 
 import javax.swing.*;
 
@@ -116,13 +117,17 @@ public class CustomerView {
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
-                customer.setId(id);
-                customer.setName(name);
-                customer.setPhoneNumber(phoneNumber);
-                customer.setBirthDate(birthDate);
-                customer.setCpf(cpf);
-                customer.setAddress(address);
-                customer.setUpdatedBy(updatedBy);
+                var updatedCustomer = new Customer(
+                        id,
+                        name,
+                        phoneNumber,
+                        birthDate,
+                        cpf,
+                        address,
+                        updatedBy
+                );
+
+                ObjectUtils.copyNonNullFields(updatedCustomer, customer);
 
                 customerService.update(customer);
             }

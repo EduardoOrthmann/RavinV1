@@ -5,6 +5,7 @@ import employee.EmployeeService;
 import enums.ProductStatus;
 import product.Product;
 import product.ProductService;
+import utils.ObjectUtils;
 
 import javax.swing.*;
 
@@ -176,12 +177,16 @@ public class OrderView {
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
-                order.setId(id);
-                order.setProduct(product);
-                order.setEmployee(employee);
-                order.setQuantity(quantity);
-                order.setStatus(status);
-                order.setUpdatedBy(updatedBy);
+                var updatedOrder = new Order(
+                        id,
+                        product,
+                        employee,
+                        quantity,
+                        status,
+                        updatedBy
+                );
+
+                ObjectUtils.copyNonNullFields(updatedOrder, order);
 
                 orderService.update(order);
             }

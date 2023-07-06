@@ -8,6 +8,7 @@ import templates.LocalDateField;
 import enums.EducationLevel;
 import enums.MaritalStatus;
 import enums.Position;
+import utils.ObjectUtils;
 
 import javax.swing.*;
 import java.time.LocalDate;
@@ -279,22 +280,26 @@ public class EmployeeView {
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
-                employee.setId(id);
-                employee.setName(name);
-                employee.setPhoneNumber(phoneNumber);
-                employee.setBirthDate(birthDate);
-                employee.setCpf(cpf);
-                employee.setAddress(address);
-                employee.setRole(role);
-                employee.setRg(rg);
-                employee.setMaritalStatus(maritalStatus);
-                employee.setEducationLevel(educationLevel);
-                employee.setPosition(position);
-                employee.setWorkCardNumber(workCardNumber);
-                employee.setAdmissionDate(admissionDate);
-                employee.setResignationDate(resignationDate);
-                employee.setAvailable(isAvailable);
-                employee.setUpdatedBy(updatedBy);
+                var updatedEmployee = new Employee(
+                  id,
+                  name,
+                  phoneNumber,
+                  birthDate,
+                  cpf,
+                  address,
+                  role,
+                  updatedBy,
+                  rg,
+                  maritalStatus,
+                  educationLevel,
+                  position,
+                  workCardNumber,
+                  admissionDate,
+                  resignationDate,
+                  isAvailable
+                );
+
+                ObjectUtils.copyNonNullFields(updatedEmployee, employee);
 
                 employeeService.update(employee);
             }

@@ -31,12 +31,19 @@ public class Menu {
         this.updatedBy = createdBy;
     }
 
+    public Menu(int id, String name, String menuCode, Role updatedBy) {
+        this.id = id;
+        this.name = name;
+        this.menuCode = menuCode;
+        this.updatedAt = LocalDateTime.now();
+        this.updatedBy = updatedBy;
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
-        this.updatedAt = LocalDateTime.now();
         this.id = id;
     }
 

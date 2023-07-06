@@ -5,6 +5,7 @@ import customer.CustomerService;
 import employee.Employee;
 import employee.EmployeeService;
 import enums.TableStatus;
+import utils.ObjectUtils;
 
 import javax.swing.*;
 
@@ -127,12 +128,16 @@ public class TableView {
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
-                table.setId(id);
-                table.setName(name);
-                table.setTableNumber(tableNumber);
-                table.setMaxCapacity(maxCapacity);
-                table.setStatus(status);
-                table.setUpdatedBy(updatedBy);
+                var updatedTable = new Table(
+                        id,
+                        name,
+                        tableNumber,
+                        maxCapacity,
+                        status,
+                        updatedBy
+                );
+
+                ObjectUtils.copyNonNullFields(updatedTable, table);
 
                 tableService.update(table);
             }

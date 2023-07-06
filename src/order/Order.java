@@ -37,12 +37,21 @@ public class Order {
         this.updatedBy = createdBy;
     }
 
+    public Order(int id, Product product, Employee employee, int quantity, ProductStatus status, Role updatedBy) {
+        this.id = id;
+        this.product = product;
+        this.employee = employee;
+        this.quantity = quantity;
+        this.status = status;
+        this.updatedAt = LocalDateTime.now();
+        this.updatedBy = updatedBy;
+    }
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
-        this.updatedAt = LocalDateTime.now();
         this.id = id;
     }
 

@@ -4,6 +4,7 @@ import employee.Employee;
 import employee.EmployeeService;
 import product.Product;
 import product.ProductService;
+import utils.ObjectUtils;
 
 import javax.swing.*;
 
@@ -70,7 +71,7 @@ public class MenuView {
                 );
             }
 
-            case "update " -> {
+            case "update" -> {
                 var menus = menuService.findAll();
                 var menuIds = menus.stream().map(Menu::getId).toArray();
                 var employees = employeeService.findAll();
@@ -107,10 +108,14 @@ public class MenuView {
 
                 var updatedBy = employeeService.findById((int) selectedUpdatedBy).getRole();
 
-                menu.setId(id);
-                menu.setName(name);
-                menu.setMenuCode(menuCode);
-                menu.setUpdatedBy(updatedBy);
+                var updatedMenu = new Menu(
+                  id,
+                  name,
+                  menuCode,
+                  updatedBy
+                );
+
+                ObjectUtils.copyNonNullFields(updatedMenu, menu);
 
                 menuService.update(menu);
             }
