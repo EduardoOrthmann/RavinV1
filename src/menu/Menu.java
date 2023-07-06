@@ -26,9 +26,7 @@ public class Menu {
         this.menuCode = menuCode;
         this.isActive = true;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = createdBy;
     }
 
     public Menu(int id, String name, String menuCode, Role updatedBy) {

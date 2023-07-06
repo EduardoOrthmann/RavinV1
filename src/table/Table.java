@@ -29,9 +29,7 @@ public class Table {
         this.status = TableStatus.AVAILABLE;
         this.customers = new HashSet<>();
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = createdBy;
     }
 
     public Table(int id, String name, short tableNumber, short maxCapacity, TableStatus status, Role updatedBy) {

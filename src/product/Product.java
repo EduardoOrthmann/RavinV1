@@ -32,9 +32,7 @@ public class Product {
         this.isActive = true;
         this.isAvailable = true;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = createdBy;
     }
 
     public Product(int id, String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, boolean isAvailable, Role updatedBy) {

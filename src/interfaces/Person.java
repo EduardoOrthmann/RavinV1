@@ -31,9 +31,7 @@ public abstract class Person {
         this.address = address;
         this.isActive = true;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = createdBy;
     }
 
     public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role updatedBy) {

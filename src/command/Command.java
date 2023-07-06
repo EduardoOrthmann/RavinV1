@@ -30,9 +30,7 @@ public class Command {
         this.orders = new ArrayList<>();
         this.totalPrice = 0;
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = createdBy;
     }
 
     public Command(int id, Table table, Customer customer, Role updatedBy) {

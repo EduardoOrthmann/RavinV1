@@ -32,9 +32,7 @@ public class Order {
         this.price = product.getSalePrice() * quantity;
         this.notes = new ArrayList<>();
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
         this.createdBy = createdBy;
-        this.updatedBy = createdBy;
     }
 
     public Order(int id, Product product, Employee employee, int quantity, ProductStatus status, Role updatedBy) {
