@@ -84,7 +84,7 @@ public class OrderView {
                 );
                 var createdBy = JOptionPane.showInputDialog(
                         null,
-                        "Quem esta criando esse cardápio?",
+                        "Quem esta criando esse pedido?",
                         "Criado por",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
