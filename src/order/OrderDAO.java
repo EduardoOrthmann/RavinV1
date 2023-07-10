@@ -1,6 +1,6 @@
 package order;
 
-import enums.ProductStatus;
+import enums.OrderStatus;
 import interfaces.Crud;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class OrderDAO implements Crud<Order> {
         this.orderList.remove(order);
     }
 
-    public List<Order> findByStatusNot(ProductStatus status) {
+    public List<Order> findByStatusNot(OrderStatus status) {
         return this.orderList.stream()
                 .filter(order -> order.getStatus() != status)
                 .toList();

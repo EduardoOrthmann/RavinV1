@@ -1,6 +1,6 @@
 package order;
 
-import enums.ProductStatus;
+import enums.OrderStatus;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -44,7 +44,7 @@ public class OrderService {
         order.getNotes().remove(note);
     }
 
-    public List<Order> findByStatusNot(ProductStatus status) {
+    public List<Order> findByStatusNot(OrderStatus status) {
         return orderDAO.findByStatusNot(status);
     }
 }

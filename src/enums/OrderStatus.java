@@ -1,6 +1,6 @@
 package enums;
 
-public enum ProductStatus {
+public enum OrderStatus {
     READY,
     PREPARING,
     WAITING,

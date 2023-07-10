@@ -2,7 +2,7 @@ package order;
 
 import employee.Employee;
 import employee.EmployeeService;
-import enums.ProductStatus;
+import enums.OrderStatus;
 import product.Product;
 import product.ProductService;
 import utils.ObjectUtils;
@@ -73,13 +73,13 @@ public class OrderView {
                 var product = productService.findById((int) selectedProduct);
                 var employee = employeeService.findById((int) selectedEmployee);
                 var quantity = Integer.parseInt(JOptionPane.showInputDialog("Insira a quantidade:"));
-                var status = (ProductStatus) JOptionPane.showInputDialog(
+                var status = (OrderStatus) JOptionPane.showInputDialog(
                         null,
                         "Selecione um status:",
                         "Status",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
-                        ProductStatus.values(),
+                        OrderStatus.values(),
                         null
                 );
                 var createdBy = JOptionPane.showInputDialog(
@@ -155,13 +155,13 @@ public class OrderView {
 
                 var quantity = Integer.parseInt(JOptionPane.showInputDialog("Insira a quantidade:", order.getQuantity()));
 
-                var status = (ProductStatus) JOptionPane.showInputDialog(
+                var status = (OrderStatus) JOptionPane.showInputDialog(
                         null,
                         "Qual é o status desse pedido?",
                         "Status",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
-                        ProductStatus.values(),
+                        OrderStatus.values(),
                         order.getStatus()
                 );
 

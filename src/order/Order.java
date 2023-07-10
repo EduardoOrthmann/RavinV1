@@ -1,7 +1,7 @@
 package order;
 
 import employee.Employee;
-import enums.ProductStatus;
+import enums.OrderStatus;
 import enums.Role;
 import product.Product;
 
@@ -16,14 +16,14 @@ public class Order {
     private Employee employee;
     private int quantity;
     private double price;
-    private ProductStatus status;
+    private OrderStatus status;
     private List<String> notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Role createdBy;
     private Role updatedBy;
 
-    public Order(Product product, Employee employee, int quantity, ProductStatus status, Role createdBy) {
+    public Order(Product product, Employee employee, int quantity, OrderStatus status, Role createdBy) {
         this.id = ++lastId;
         this.product = product;
         this.employee = employee;
@@ -35,7 +35,7 @@ public class Order {
         this.createdBy = createdBy;
     }
 
-    public Order(int id, Product product, Employee employee, int quantity, ProductStatus status, Role updatedBy) {
+    public Order(int id, Product product, Employee employee, int quantity, OrderStatus status, Role updatedBy) {
         this.id = id;
         this.product = product;
         this.employee = employee;
@@ -69,11 +69,11 @@ public class Order {
         this.quantity = quantity;
     }
 
-    public ProductStatus getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(ProductStatus status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 
