@@ -10,6 +10,7 @@ import employee.EmployeeView;
 import menu.MenuDAO;
 import menu.MenuService;
 import menu.MenuView;
+import objectBuilder.Builder;
 import order.OrderDAO;
 import order.OrderService;
 import order.OrderView;
@@ -39,6 +40,13 @@ public class Main {
         var tableView = new TableView(tableService, customerService, employeeService);
         var orderView = new OrderView(orderService, productService, employeeService);
         var commandView = new CommandView(commandService, tableService, customerService, orderService, employeeService);
+
+        var builder = new Builder(employeeService, customerService, tableService, productService, menuService);
+        builder.employeeBuilder();
+        builder.customerBuilder();
+        builder.tableBuilder();
+        builder.productBuilder();
+        builder.menuBuilder();
 
         do {
             String[] entityOptions = {"Cliente", "Funcionário", "Produto", "Menu", "Mesa", "Pedido", "Comanda"};
