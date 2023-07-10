@@ -5,6 +5,8 @@ import customer.CustomerService;
 import employee.Employee;
 import employee.EmployeeService;
 import enums.TableStatus;
+import order.Order;
+import order.OrderService;
 import utils.ObjectUtils;
 
 import javax.swing.*;
@@ -12,16 +14,18 @@ import javax.swing.*;
 public class TableView {
     private final TableService tableService;
     private final CustomerService customerService;
+    private final OrderService orderService;
     private final EmployeeService employeeService;
 
-    public TableView(TableService tableService, CustomerService customerService, EmployeeService employeeService) {
+    public TableView(TableService tableService, CustomerService customerService, OrderService orderService, EmployeeService employeeService) {
         this.tableService = tableService;
         this.customerService = customerService;
+        this.orderService = orderService;
         this.employeeService = employeeService;
     }
 
     public void view() {
-        String[] tableOptions = {"findById", "findAll", "save", "update", "delete", "addCustomer", "deleteCustomer"};
+        String[] tableOptions = {"findById", "findAll", "save", "update", "delete", "addCustomer", "deleteCustomer", "addOrder", "deleteOrder"};
 
         String selectedTableOption = (String) JOptionPane.showInputDialog(
                 null,
@@ -212,6 +216,78 @@ public class TableView {
                 var customer = customerService.findById((int) selectedCustomer);
 
                 tableService.deleteCustomer(table, customer);
+            }
+
+            case "addOrder" -> {
+                var tables = tableService.findAll();
+                var tableIds = tables.stream().map(Table::getId).toArray();
+                var orders = orderService.findAll();
+                var orderIds = orders.stream().map(Order::getId).toArray();
+
+                if (tables.isEmpty() || orders.isEmpty()) {
+                    System.out.println("Por favor crie uma mesa e um pedido antes de adicionar um pedido a uma mesa");
+                    break;
+                }
+
+                var selectedTable = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma mesa:",
+                        "Mesas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        tableIds,
+                        null
+                );
+                var selectedOrder = JOptionPane.showInputDialog(
+                        null,
+                        "Escolha um pedido",
+                        "Pedidos",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        orderIds,
+                        null
+                );
+
+                var table = tableService.findById((int) selectedTable);
+                var order = orderService.findById((int) selectedOrder);
+
+                tableService.addOrder(table, order);
+            }
+
+            case "deleteOrder" -> {
+                var tables = tableService.findAll();
+                var tableIds = tables.stream().map(Table::getId).toArray();
+                var orders = orderService.findAll();
+                var orderIds = orders.stream().map(Order::getId).toArray();
+
+                if (tables.isEmpty() || orders.isEmpty()) {
+                    System.out.println("Por favor crie uma mesa e um pedido antes de deletar um pedido de uma mesa");
+                    break;
+                }
+
+                var selectedTable = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione uma mesa:",
+                        "Mesas",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        tableIds,
+                        null
+                );
+                var selectedOrder = JOptionPane.showInputDialog(
+                        null,
+                        "Escolha um pedido",
+                        "Pedidos",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        orderIds,
+                        null
+                );
+
+                var table = tableService.findById((int) selectedTable);
+                var order = orderService.findById((int) selectedOrder);
+
+                tableService.deleteOrder(table, order);
             }
         }
     }

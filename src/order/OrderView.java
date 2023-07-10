@@ -1,5 +1,7 @@
 package order;
 
+import customer.Customer;
+import customer.CustomerService;
 import employee.Employee;
 import employee.EmployeeService;
 import enums.OrderStatus;
@@ -12,11 +14,13 @@ import javax.swing.*;
 public class OrderView {
     private final OrderService orderService;
     private final ProductService productService;
+    private final CustomerService customerService;
     private final EmployeeService employeeService;
 
-    public OrderView(OrderService orderService, ProductService productService, EmployeeService employeeService) {
+    public OrderView(OrderService orderService, ProductService productService, CustomerService customerService, EmployeeService employeeService) {
         this.orderService = orderService;
         this.productService = productService;
+        this.customerService = customerService;
         this.employeeService = employeeService;
     }
 
@@ -46,16 +50,18 @@ public class OrderView {
                 var employeeIds = employees.stream().map(Employee::getId).toArray();
                 var products = productService.findAll();
                 var productIds = products.stream().map(Product::getId).toArray();
+                var customers = customerService.findAll();
+                var customerIds = customers.stream().map(Customer::getId).toArray();
 
-                if (employees.isEmpty() || products.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário e um produto antes de criar um pedido");
+                if (employees.isEmpty() || products.isEmpty() || customers.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário e um produto e um cliente antes de criar um pedido");
                     break;
                 }
 
                 var selectedProduct = JOptionPane.showInputDialog(
                         null,
                         "Selecione um produto:",
-                        "Produto",
+                        "Produtos",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         productIds,
@@ -64,14 +70,24 @@ public class OrderView {
                 var selectedEmployee = JOptionPane.showInputDialog(
                         null,
                         "Selecione um funcionário:",
-                        "Funcionário",
+                        "Funcionários",
                         JOptionPane.QUESTION_MESSAGE,
                         null,
                         employeeIds,
                         null
                 );
+                var selectedCustomer = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um Cliente:",
+                        "Clientes",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        customerIds,
+                        null
+                );
                 var product = productService.findById((int) selectedProduct);
                 var employee = employeeService.findById((int) selectedEmployee);
+                var customer = customerService.findById((int) selectedCustomer);
                 var quantity = Integer.parseInt(JOptionPane.showInputDialog("Insira a quantidade:"));
                 var status = (OrderStatus) JOptionPane.showInputDialog(
                         null,
@@ -97,6 +113,7 @@ public class OrderView {
                         new Order(
                                 product,
                                 employee,
+                                customer,
                                 quantity,
                                 status,
                                 createdByEmployee
@@ -111,6 +128,8 @@ public class OrderView {
                 var productIds = products.stream().map(Product::getId).toArray();
                 var employees = employeeService.findAll();
                 var employeeIds = employees.stream().map(Employee::getId).toArray();
+                var customers = customerService.findAll();
+                var customerIds = customers.stream().map(Customer::getId).toArray();
 
                 if (orders.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Por favor crie um pedido antes de atualizar um pedido");
@@ -153,6 +172,18 @@ public class OrderView {
 
                 var employee = employeeService.findById((int) selectedEmployee);
 
+                var selectedCustomer = JOptionPane.showInputDialog(
+                        null,
+                        "Selecione um Cliente:",
+                        "Clientes",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        customerIds,
+                        order.getCustomer()
+                );
+
+                var customer = customerService.findById((int) selectedCustomer);
+
                 var quantity = Integer.parseInt(JOptionPane.showInputDialog("Insira a quantidade:", order.getQuantity()));
 
                 var status = (OrderStatus) JOptionPane.showInputDialog(
@@ -181,6 +212,7 @@ public class OrderView {
                         id,
                         product,
                         employee,
+                        customer,
                         quantity,
                         status,
                         updatedBy

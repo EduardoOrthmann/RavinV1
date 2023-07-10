@@ -3,9 +3,12 @@ package table;
 import customer.Customer;
 import enums.Role;
 import enums.TableStatus;
+import order.Order;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Table {
@@ -16,6 +19,7 @@ public class Table {
     private short maxCapacity;
     private TableStatus status;
     private Set<Customer> customers;
+    private List<Order> orders;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Role createdBy;
@@ -28,6 +32,7 @@ public class Table {
         this.maxCapacity = maxCapacity;
         this.status = TableStatus.AVAILABLE;
         this.customers = new HashSet<>();
+        this.orders = new ArrayList<>();
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
     }
@@ -131,10 +136,19 @@ public class Table {
                 "\tmaxCapacity = " + maxCapacity + "\n" +
                 "\tstatus = " + status + "\n" +
                 "\tcustomers = " + customers + "\n" +
+                "\torders = " + orders + "\n" +
                 "\tcreatedAt = " + createdAt + "\n" +
                 "\tupdatedAt = " + updatedAt + "\n" +
                 "\tcreatedBy = " + createdBy + "\n" +
                 "\tupdatedBy = " + updatedBy + "\n" +
                 '}';
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 }

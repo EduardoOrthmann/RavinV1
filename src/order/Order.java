@@ -1,5 +1,6 @@
 package order;
 
+import customer.Customer;
 import employee.Employee;
 import enums.OrderStatus;
 import enums.Role;
@@ -14,6 +15,7 @@ public class Order {
     private int id;
     private Product product;
     private Employee employee;
+    private Customer customer;
     private int quantity;
     private double price;
     private OrderStatus status;
@@ -23,10 +25,11 @@ public class Order {
     private Role createdBy;
     private Role updatedBy;
 
-    public Order(Product product, Employee employee, int quantity, OrderStatus status, Role createdBy) {
+    public Order(Product product, Employee employee, Customer customer, int quantity, OrderStatus status, Role createdBy) {
         this.id = ++lastId;
         this.product = product;
         this.employee = employee;
+        this.customer = customer;
         this.quantity = quantity;
         this.status = status;
         this.price = product.getSalePrice() * quantity;
@@ -35,10 +38,11 @@ public class Order {
         this.createdBy = createdBy;
     }
 
-    public Order(int id, Product product, Employee employee, int quantity, OrderStatus status, Role updatedBy) {
+    public Order(int id, Product product, Employee employee, Customer customer, int quantity, OrderStatus status, Role updatedBy) {
         this.id = id;
         this.product = product;
         this.employee = employee;
+        this.customer = customer;
         this.quantity = quantity;
         this.status = status;
         this.updatedAt = LocalDateTime.now();
@@ -133,12 +137,20 @@ public class Order {
         this.price = price;
     }
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
     @Override
     public String toString() {
         return "Order {\n" +
                 "\tid = " + id + "\n" +
                 "\tproduct = " + product + "\n" +
                 "\temployee = " + employee + "\n" +
+                "\tcustomer = " + customer + "\n" +
                 "\tquantity = " + quantity + "\n" +
                 "\tprice = " + price + "\n" +
                 "\tstatus = " + status + "\n" +

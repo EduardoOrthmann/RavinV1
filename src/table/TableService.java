@@ -1,6 +1,8 @@
 package table;
 
 import customer.Customer;
+import enums.OrderStatus;
+import order.Order;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -40,9 +42,17 @@ public class TableService {
         table.getCustomers().remove(customer);
     }
 
-    // TODO
+    public void addOrder(Table table, Order order) {
+        table.getOrders().add(order);
+    }
+
+    public void deleteOrder(Table table, Order order) {
+        table.getOrders().remove(order);
+    }
+
     public boolean hasOpenOrders(Table table) {
-        return false;
+        return table.getOrders().stream()
+                .anyMatch(order -> order.getStatus() != OrderStatus.CANCELLED && order.getStatus() != OrderStatus.DELIVERED);
     }
 
     public boolean isAtMaxCapacity(Table table) {

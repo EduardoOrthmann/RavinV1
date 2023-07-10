@@ -1,6 +1,5 @@
 package order;
 
-import enums.OrderStatus;
 import interfaces.Crud;
 
 import java.util.ArrayList;
@@ -42,11 +41,5 @@ public class OrderDAO implements Crud<Order> {
     public void delete(Order entity) {
         var order = findById(entity.getId()).orElseThrow(() -> new NoSuchElementException("Pedido não encontrado"));
         this.orderList.remove(order);
-    }
-
-    public List<Order> findByStatusNot(OrderStatus status) {
-        return this.orderList.stream()
-                .filter(order -> order.getStatus() != status)
-                .toList();
     }
 }

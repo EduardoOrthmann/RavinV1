@@ -1,28 +1,20 @@
 package command;
 
-import customer.Customer;
-import customer.CustomerService;
 import employee.Employee;
 import employee.EmployeeService;
 import order.Order;
 import order.OrderService;
-import table.Table;
-import table.TableService;
 import utils.ObjectUtils;
 
 import javax.swing.*;
 
 public class CommandView {
     private final CommandService commandService;
-    private final TableService tableService;
-    private final CustomerService customerService;
     private final OrderService orderService;
     private final EmployeeService employeeService;
 
-    public CommandView(CommandService commandService, TableService tableService, CustomerService customerService, OrderService orderService, EmployeeService employeeService) {
+    public CommandView(CommandService commandService, OrderService orderService, EmployeeService employeeService) {
         this.commandService = commandService;
-        this.tableService = tableService;
-        this.customerService = customerService;
         this.orderService = orderService;
         this.employeeService = employeeService;
     }
@@ -51,37 +43,12 @@ public class CommandView {
             case "save" -> {
                 var employees = employeeService.findAll();
                 var employeeIds = employees.stream().map(Employee::getId).toArray();
-                var customers = customerService.findAll();
-                var customerIds = customers.stream().map(Customer::getId).toArray();
-                var tables = tableService.findAll();
-                var tableIds = tables.stream().map(Table::getId).toArray();
+                var orders = orderService.findAll();
 
-                if (employees.isEmpty() || customers.isEmpty() || tables.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor crie um funcionário e um cliente e uma mesa antes de criar um pedido");
+                if (employees.isEmpty() || orders.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Por favor crie um pedido e um funcionário de criar uma comanda");
                     break;
                 }
-
-                var selectedTable = JOptionPane.showInputDialog(
-                        null,
-                        "Selecione uma mesa:",
-                        "Mesa",
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        tableIds,
-                        null
-                );
-                var selectedCustomer = JOptionPane.showInputDialog(
-                        null,
-                        "Selecione um cliente:",
-                        "Cliente",
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        customerIds,
-                        null
-                );
-
-                var table = tableService.findById((int) selectedTable);
-                var customer = customerService.findById((int) selectedCustomer);
 
                 var createdBy = JOptionPane.showInputDialog(
                         null,
@@ -94,13 +61,7 @@ public class CommandView {
                 );
                 var createdByEmployee = employeeService.findById((int) createdBy).getRole();
 
-                commandService.save(
-                        new Command(
-                                table,
-                                customer,
-                                createdByEmployee
-                        )
-                );
+                commandService.save(new Command(createdByEmployee));
             }
 
             case "update" -> {
@@ -108,13 +69,9 @@ public class CommandView {
                 var commandIds = commands.stream().map(Command::getId).toArray();
                 var employees = employeeService.findAll();
                 var employeeIds = employees.stream().map(Employee::getId).toArray();
-                var tables = tableService.findAll();
-                var tableIds = tables.stream().map(Table::getId).toArray();
-                var customers = customerService.findAll();
-                var customerIds = customers.stream().map(Customer::getId).toArray();
 
                 if (commands.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Por favor crie um comando antes de atualizar um comando");
+                    JOptionPane.showMessageDialog(null, "Por favor crie uma comanda antes de atualizar um comando");
                     break;
                 }
 
@@ -130,30 +87,6 @@ public class CommandView {
 
                 var command = commandService.findById(id);
 
-                var selectedTable = JOptionPane.showInputDialog(
-                        null,
-                        "Selecione uma mesa:",
-                        "Mesa",
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        tableIds,
-                        command.getTable()
-                );
-
-                var table = tableService.findById((int) selectedTable);
-
-                var selectedCustomer = JOptionPane.showInputDialog(
-                        null,
-                        "Selecione um cliente:",
-                        "Cliente",
-                        JOptionPane.QUESTION_MESSAGE,
-                        null,
-                        customerIds,
-                        command.getCustomer()
-                );
-
-                var customer = customerService.findById((int) selectedCustomer);
-
                 var selectedUpdatedBy = JOptionPane.showInputDialog(
                         null,
                         "Quem está alterando esse comando?",
@@ -168,8 +101,6 @@ public class CommandView {
 
                 var updatedCommand = new Command(
                         id,
-                        table,
-                        customer,
                         updatedBy
                 );
 

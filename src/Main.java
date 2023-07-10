@@ -37,9 +37,9 @@ public class Main {
         var productView = new ProductView(productService, employeeService);
         var menuView = new MenuView(menuService, productService, employeeService);
         var customerView = new CustomerView(customerService, employeeService);
-        var tableView = new TableView(tableService, customerService, employeeService);
-        var orderView = new OrderView(orderService, productService, employeeService);
-        var commandView = new CommandView(commandService, tableService, customerService, orderService, employeeService);
+        var tableView = new TableView(tableService, customerService, orderService, employeeService);
+        var orderView = new OrderView(orderService, productService, customerService, employeeService);
+        var commandView = new CommandView(commandService, orderService, employeeService);
 
         var builder = new Builder(employeeService, customerService, tableService, productService, menuService);
         builder.employeeBuilder();
