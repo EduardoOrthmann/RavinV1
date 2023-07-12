@@ -43,7 +43,7 @@ public class Main {
 
         server.createContext("/customer", customerController);
 
-        server.setExecutor(null); // Use default executor
+        server.setExecutor(null);
         server.start();
         System.out.println("Server is running");
     }
