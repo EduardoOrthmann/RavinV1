@@ -29,7 +29,8 @@ public class Main {
         var orderService = new OrderService(new OrderDAO());
         var commandService = new CommandService(new CommandDAO());
 
-        var customerController = new CustomerController(customerService);
+        final String CUSTOMER_PATH = "/customer";
+        var customerController = new CustomerController(CUSTOMER_PATH, customerService);
 
         var builder = new Builder(employeeService, customerService, tableService, productService, menuService);
         builder.employeeBuilder();
@@ -41,7 +42,7 @@ public class Main {
         InetSocketAddress address = new InetSocketAddress(8080);
         HttpServer server = HttpServer.create(address, 0);
 
-        server.createContext("/customer", customerController);
+        server.createContext(CUSTOMER_PATH, customerController);
 
         server.setExecutor(null);
         server.start();
