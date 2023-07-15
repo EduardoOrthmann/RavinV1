@@ -6,19 +6,19 @@ import enums.Role;
 import interfaces.Person;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Customer extends Person {
     private Set<Allergy> allergies;
 
-    public Customer(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role createdBy) {
+    public Customer(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role createdBy, Set<Allergy> allergies) {
         super(name, phoneNumber, birthDate, cpf, address, Role.USER, createdBy);
-        this.allergies = new HashSet<>();
+        this.allergies = allergies;
     }
 
-    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role updatedBy) {
+    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role updatedBy, Set<Allergy> allergies) {
         super(id, name, phoneNumber, birthDate, cpf, address, Role.USER, updatedBy);
+        this.allergies = allergies;
     }
 
     public Set<Allergy> getAllergies() {

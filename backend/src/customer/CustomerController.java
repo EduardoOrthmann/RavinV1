@@ -6,10 +6,12 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
+import exceptions.ErrorResponse;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -33,36 +35,55 @@ public class CustomerController implements HttpHandler {
         int statusCode;
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
-        final Optional<String> queryParam = Optional.of(path.substring(path.lastIndexOf("/") + 1));
+        final Optional<String[]> queryParam = Optional.of(path.split("/"));
 
         exchange.getResponseHeaders().set("Content-Type", "application/json");
 
         switch (requestMethod) {
             case "GET" -> {
+                // GET /customer
                 if (path.matches(customerPath)) {
                     response = gson.toJson(customerService.findAll());
                     statusCode = 200;
-                } else if (path.matches(customerPath + "/[0-9]+")) {
-                    int id = Integer.parseInt(queryParam.get());
 
+                    // GET /customer/{id}
+                } else if (path.matches(customerPath + "/[0-9]+")) {
                     try {
-                        var customer = customerService.findById(id);
-                        response = gson.toJson(customer);
+                        int id = Integer.parseInt(queryParam.get()[2]);
+                        response = gson.toJson(customerService.findById(id));
+                        statusCode = 200;
 
                     } catch (NoSuchElementException e) {
-                        response = "Customer not found";
+                        response = gson.toJson(new ErrorResponse("Customer not found"));
                         statusCode = 404;
-                        break;
+                    } catch (NumberFormatException e) {
+                        response = gson.toJson(new ErrorResponse("Invalid id"));
+                        statusCode = 400;
                     }
 
-                    statusCode = 200;
+                    // GET /customer/{id}/birthday
+                } else if (path.matches(customerPath + "/[0-9]+" + "/birthday")) {
+                    try {
+                        int id = Integer.parseInt(queryParam.get()[2]);
+                        var customer = customerService.findById(id);
+                        response = gson.toJson(customerService.isBirthday(customer));
+                        statusCode = 200;
+
+                    } catch (NoSuchElementException e) {
+                        response = gson.toJson(new ErrorResponse("Customer not found"));
+                        statusCode = 404;
+                    } catch (NumberFormatException e) {
+                        response = gson.toJson(new ErrorResponse("Invalid id"));
+                        statusCode = 400;
+                    }
                 } else {
-                    response = "Invalid endpoint";
+                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
                 }
             }
 
             case "POST" -> {
+                // POST /customer
                 if (path.matches(customerPath)) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
@@ -74,23 +95,25 @@ public class CustomerController implements HttpHandler {
                                     customer.getBirthDate(),
                                     customer.getCpf(),
                                     customer.getAddress(),
-                                    customer.getCreatedBy()
+                                    customer.getCreatedBy(),
+                                    customer.getAllergies() == null ? new HashSet<>() : customer.getAllergies()
                             )
                     );
 
                     statusCode = 201;
                 } else {
-                    response = "Invalid endpoint";
+                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
                 }
             }
 
             case "PUT" -> {
+                // PUT /customer/{id}
                 if (path.matches(customerPath + "/[0-9]+")) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
-                    int id = Integer.parseInt(queryParam.get());
 
                     try {
+                        int id = Integer.parseInt(queryParam.get()[2]);
                         var customer = customerService.findById(id);
 
                         var updatedCustomer = gson.fromJson(requestBody, Customer.class);
@@ -101,7 +124,8 @@ public class CustomerController implements HttpHandler {
                                 updatedCustomer.getBirthDate(),
                                 updatedCustomer.getCpf(),
                                 updatedCustomer.getAddress(),
-                                updatedCustomer.getUpdatedBy()
+                                updatedCustomer.getUpdatedBy(),
+                                updatedCustomer.getAllergies()
                         );
 
                         customer.setId(id);
@@ -112,43 +136,51 @@ public class CustomerController implements HttpHandler {
                         customer.setAddress(updatedCustomer.getAddress());
                         customer.setUpdatedAt(updatedCustomer.getUpdatedAt());
                         customer.setUpdatedBy(updatedCustomer.getUpdatedBy());
+                        customer.setAllergies(updatedCustomer.getAllergies());
 
                         customerService.update(customer);
-                    } catch (NoSuchElementException e) {
-                        response = "Customer not found";
-                        statusCode = 404;
-                        break;
-                    }
 
-                    statusCode = 204;
+                        statusCode = 204;
+                    } catch (NoSuchElementException e) {
+                        response = gson.toJson(new ErrorResponse("Customer not found"));
+                        statusCode = 404;
+                    } catch (NumberFormatException e) {
+                        response = gson.toJson(new ErrorResponse("Invalid id"));
+                        statusCode = 400;
+                    }
                 } else {
-                    response = "Invalid endpoint";
+                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
                 }
             }
 
             case "DELETE" -> {
+                // DELETE /customer/{id}
                 if (path.matches(customerPath + "/[0-9]+")) {
-                    int id = Integer.parseInt(queryParam.get());
-                    var customer = customerService.findById(id);
-
                     try {
+                        int id = Integer.parseInt(queryParam.get()[2]);
+                        var customer = customerService.findById(id);
+
                         customerService.delete(customer);
                     } catch (NoSuchElementException e) {
-                        response = "Customer not found";
+                        response = gson.toJson(new ErrorResponse("Customer not found"));
                         statusCode = 404;
+                        break;
+                    } catch (NumberFormatException e) {
+                        response = gson.toJson(new ErrorResponse("Invalid id"));
+                        statusCode = 400;
                         break;
                     }
 
                     statusCode = 204;
                 } else {
-                    response = "Invalid endpoint";
+                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
                 }
             }
 
             default -> {
-                response = "Method Not Allowed";
+                response = gson.toJson(new ErrorResponse("Invalid request method"));
                 statusCode = 405;
             }
         }

@@ -1,7 +1,5 @@
 package customer;
 
-import enums.Allergy;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -36,13 +34,5 @@ public class CustomerService {
     public boolean isBirthday(Customer customer) {
         var today = LocalDate.now();
         return customer.getBirthDate().getMonth() == today.getMonth() && customer.getBirthDate().getDayOfMonth() == today.getDayOfMonth();
-    }
-
-    public void addAllergy(Customer customer, Allergy allergy) {
-        customer.getAllergies().add(allergy);
-    }
-
-    public void deleteAllergy(Customer customer, Allergy allergy) {
-        customer.getAllergies().remove(allergy);
     }
 }

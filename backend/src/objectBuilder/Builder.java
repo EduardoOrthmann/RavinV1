@@ -18,6 +18,7 @@ import table.TableService;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 
 public class Builder {
     private final EmployeeService employeeService;
@@ -125,7 +126,8 @@ public class Builder {
                         LocalDate.of(1990, 5, 15),
                         "123456789",
                         new Address("Brazil", "São Paulo", "São Paulo", "01234-567", "Centro", "Rua Principal"),
-                        Role.SYSTEM
+                        Role.SYSTEM,
+                        new HashSet<>()
                 )
         );
         customerService.save(
@@ -135,7 +137,8 @@ public class Builder {
                         LocalDate.of(1992, 8, 25),
                         "987654321",
                         new Address("Brazil", "Rio de Janeiro", "Rio de Janeiro", "02345-678", "Centro", "Rua Principal"),
-                        Role.SYSTEM
+                        Role.SYSTEM,
+                        new HashSet<>()
                 )
         );
         customerService.save(
@@ -145,7 +148,8 @@ public class Builder {
                         LocalDate.of(1985, 10, 8),
                         "555123456",
                         new Address("Brazil", "Belo Horizonte", "Minas Gerais", "03456-789", "Centro", "Rua Principal"),
-                        Role.SYSTEM
+                        Role.SYSTEM,
+                        new HashSet<>()
                 )
         );
         customerService.save(
@@ -155,7 +159,8 @@ public class Builder {
                         LocalDate.of(1993, 4, 20),
                         "111222333",
                         new Address("Brazil", "Salvador", "Bahia", "04567-890", "Centro", "Rua Principal"),
-                        Role.SYSTEM
+                        Role.SYSTEM,
+                        new HashSet<>()
                 )
         );
         customerService.save(
@@ -165,7 +170,8 @@ public class Builder {
                         LocalDate.of(1991, 12, 1),
                         "456456456",
                         new Address("Brazil", "Recife", "Pernambuco", "05678-901", "Centro", "Rua Principal"),
-                        Role.SYSTEM
+                        Role.SYSTEM,
+                        new HashSet<>()
                 )
         );
     }

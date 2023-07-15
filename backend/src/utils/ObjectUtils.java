@@ -1,38 +1,29 @@
 package utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 public class ObjectUtils {
-    public static void copyNonNullFields(Object source, Object destination) {
-        Class<?> sourceClass = source.getClass();
-        Class<?> destinationClass = destination.getClass();
+    public static <T> void mapToEntity(Object dto, Class<T> entityClass) {
+        try {
+            T entity = entityClass.getDeclaredConstructor().newInstance();
+            Field[] dtoFields = dto.getClass().getDeclaredFields();
+            Field[] entityFields = entityClass.getDeclaredFields();
 
-        while (sourceClass != null) {
-            for (Field sourceField : sourceClass.getDeclaredFields()) {
-                sourceField.setAccessible(true);
+            for (Field dtoField : dtoFields) {
+                dtoField.setAccessible(true);
+                Object dtoValue = dtoField.get(dto);
 
-                try {
-                    Object sourceValue = sourceField.get(source);
-
-                    if (sourceValue != null) {
-                        try {
-                            Field destinationField = destinationClass.getDeclaredField(sourceField.getName());
-                            destinationField.setAccessible(true);
-                            destinationField.set(destination, sourceValue);
-                        } catch (NoSuchFieldException e) {
-                            System.out.println("Campo não encontrado!\n");
-                            e.printStackTrace();
-                        }
+                for (Field entityField : entityFields) {
+                    if (entityField.getName().equals(dtoField.getName())) {
+                        entityField.setAccessible(true);
+                        entityField.set(entity, dtoValue);
+                        break;
                     }
-                } catch (IllegalAccessException e) {
-                    System.out.println("Acesso não permitido ao campo\n");
-                    e.printStackTrace();
                 }
             }
-
-            sourceClass = sourceClass.getSuperclass();
-            destinationClass = destinationClass.getSuperclass();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException | SecurityException e) {
+            e.printStackTrace();
         }
     }
-
 }
