@@ -29,7 +29,7 @@ public class CustomerController implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String response;
+        String response = "";
         int statusCode;
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
@@ -45,7 +45,16 @@ public class CustomerController implements HttpHandler {
                 } else if (path.matches(customerPath + "/[0-9]+")) {
                     int id = Integer.parseInt(queryParam.get());
 
-                    response = gson.toJson(customerService.findById(id));
+                    try {
+                        var customer = customerService.findById(id);
+                        response = gson.toJson(customer);
+
+                    } catch (NoSuchElementException e) {
+                        response = "Customer not found";
+                        statusCode = 404;
+                        break;
+                    }
+
                     statusCode = 200;
                 } else {
                     response = "Invalid endpoint";
@@ -69,7 +78,6 @@ public class CustomerController implements HttpHandler {
                             )
                     );
 
-                    response = "Created";
                     statusCode = 201;
                 } else {
                     response = "Invalid endpoint";
@@ -112,8 +120,7 @@ public class CustomerController implements HttpHandler {
                         break;
                     }
 
-                    response = "Updated";
-                    statusCode = 200;
+                    statusCode = 204;
                 } else {
                     response = "Invalid endpoint";
                     statusCode = 404;
@@ -133,8 +140,7 @@ public class CustomerController implements HttpHandler {
                         break;
                     }
 
-                    response = "Deleted";
-                    statusCode = 200;
+                    statusCode = 204;
                 } else {
                     response = "Invalid endpoint";
                     statusCode = 404;
@@ -147,8 +153,13 @@ public class CustomerController implements HttpHandler {
             }
         }
 
-        exchange.sendResponseHeaders(statusCode, response.getBytes().length);
-        exchange.getResponseBody().write(response.getBytes());
+        if (response.getBytes().length > 0) {
+            exchange.sendResponseHeaders(statusCode, response.getBytes().length);
+            exchange.getResponseBody().write(response.getBytes());
+        } else {
+            exchange.sendResponseHeaders(statusCode, -1);
+        }
+
         exchange.close();
     }
 }
