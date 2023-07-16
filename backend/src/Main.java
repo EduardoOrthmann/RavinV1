@@ -4,6 +4,7 @@ import command.CommandService;
 import customer.CustomerController;
 import customer.CustomerDAO;
 import customer.CustomerService;
+import employee.EmployeeController;
 import employee.EmployeeDAO;
 import employee.EmployeeService;
 import menu.MenuDAO;
@@ -11,6 +12,7 @@ import menu.MenuService;
 import objectBuilder.Builder;
 import order.OrderDAO;
 import order.OrderService;
+import product.ProductController;
 import product.ProductDAO;
 import product.ProductService;
 import table.TableDAO;
@@ -30,7 +32,11 @@ public class Main {
         var commandService = new CommandService(new CommandDAO());
 
         final String CUSTOMER_PATH = "/customer";
+        final String EMPLOYEE_PATH = "/employee";
+        final String PRODUCT_PATH = "/product";
         var customerController = new CustomerController(CUSTOMER_PATH, customerService);
+        var employeeController = new EmployeeController(EMPLOYEE_PATH, employeeService);
+        var productController = new ProductController(PRODUCT_PATH, productService);
 
         var builder = new Builder(employeeService, customerService, tableService, productService, menuService);
         builder.employeeBuilder();
@@ -43,6 +49,8 @@ public class Main {
         HttpServer server = HttpServer.create(address, 0);
 
         server.createContext(CUSTOMER_PATH, customerController);
+        server.createContext(EMPLOYEE_PATH, employeeController);
+        server.createContext(PRODUCT_PATH, productController);
 
         server.setExecutor(null);
         server.start();

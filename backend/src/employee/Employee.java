@@ -10,6 +10,8 @@ import interfaces.Person;
 import java.time.LocalDate;
 
 public class Employee extends Person {
+    private static int lastId = 0;
+    private int id;
     private String rg;
     private MaritalStatus maritalStatus;
     private EducationLevel educationLevel;
@@ -21,6 +23,7 @@ public class Employee extends Person {
 
     public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
         super(name, phoneNumber, birthDate, cpf, address, role, createdBy);
+        this.id = ++lastId;
         this.rg = rg;
         this.maritalStatus = maritalStatus;
         this.educationLevel = educationLevel;
@@ -30,16 +33,24 @@ public class Employee extends Person {
         this.isAvailable = true;
     }
 
-    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, LocalDate resignationDate, boolean isAvailable) {
+    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, boolean isAvailable) {
         super(id, name, phoneNumber, birthDate, cpf, address, role, updatedBy);
+        this.id = id;
         this.rg = rg;
         this.maritalStatus = maritalStatus;
         this.educationLevel = educationLevel;
         this.position = position;
         this.workCardNumber = workCardNumber;
         this.admissionDate = admissionDate;
-        this.resignationDate = resignationDate;
         this.isAvailable = isAvailable;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getRg() {
@@ -109,6 +120,7 @@ public class Employee extends Person {
     @Override
     public String toString() {
         return "Employee {\n" +
+                "\tid = " + id + "\n" +
                 "\trg = '" + rg + '\'' + "\n" +
                 "\tmaritalStatus = " + maritalStatus + "\n" +
                 "\teducationLevel = " + educationLevel + "\n" +

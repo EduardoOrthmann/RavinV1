@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public abstract class Person {
-    private static int lastId = 0;
-    private int id;
     private String name;
     private String phoneNumber;
     private LocalDate birthDate;
@@ -23,7 +21,6 @@ public abstract class Person {
 
     public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role createdBy) {
         this.role = role;
-        this.id = ++lastId;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
@@ -35,7 +32,6 @@ public abstract class Person {
     }
 
     public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role updatedBy) {
-        this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
@@ -44,14 +40,6 @@ public abstract class Person {
         this.role = role;
         this.updatedAt = LocalDateTime.now();
         this.updatedBy = updatedBy;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -137,7 +125,6 @@ public abstract class Person {
     @Override
     public String toString() {
         return "Person {" + "\n" +
-                "\tid = " + id + ",\n" +
                 "\tname = '" + name + '\'' + ",\n" +
                 "\tphoneNumber = '" + phoneNumber + '\'' + ",\n" +
                 "\tbirthDate = " + birthDate + ",\n" +
