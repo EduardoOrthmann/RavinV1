@@ -54,7 +54,7 @@ public class CustomerController implements HttpHandler {
                         statusCode = 200;
 
                     } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse("Customer not found"));
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
@@ -70,7 +70,7 @@ public class CustomerController implements HttpHandler {
                         statusCode = 200;
 
                     } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse("Customer not found"));
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
@@ -142,7 +142,7 @@ public class CustomerController implements HttpHandler {
 
                         statusCode = 204;
                     } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse("Customer not found"));
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
@@ -162,17 +162,15 @@ public class CustomerController implements HttpHandler {
                         var customer = customerService.findById(id);
 
                         customerService.delete(customer);
+
+                        statusCode = 204;
                     } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse("Customer not found"));
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
-                        break;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
-                        break;
                     }
-
-                    statusCode = 204;
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;

@@ -38,7 +38,7 @@ public class TableService {
         table.getCustomers().add(customer);
     }
 
-    public void deleteCustomer(Table table, Customer customer) {
+    public void removeCustomer(Table table, Customer customer) {
         table.getCustomers().remove(customer);
     }
 
@@ -46,7 +46,7 @@ public class TableService {
         table.getOrders().add(order);
     }
 
-    public void deleteOrder(Table table, Order order) {
+    public void removeOrder(Table table, Order order) {
         table.getOrders().remove(order);
     }
 

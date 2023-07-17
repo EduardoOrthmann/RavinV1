@@ -1,35 +1,34 @@
 package menu;
 
-import enums.Role;
 import product.Product;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Menu {
     private static int lastId = 0;
     private int id;
     private String name;
-    private List<Product> products;
+    private Set<Product> products;
     private String menuCode;
     private boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Role createdBy;
-    private Role updatedBy;
+    private Integer createdBy;
+    private Integer updatedBy;
 
-    public Menu(String name, String menuCode, Role createdBy) {
+    public Menu(String name, String menuCode, Integer createdBy) {
         this.id = ++lastId;
         this.name = name;
-        this.products = new ArrayList<>();
+        this.products = new HashSet<>();
         this.menuCode = menuCode;
         this.isActive = true;
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
     }
 
-    public Menu(int id, String name, String menuCode, Role updatedBy) {
+    public Menu(int id, String name, String menuCode, Integer updatedBy) {
         this.id = id;
         this.name = name;
         this.menuCode = menuCode;
@@ -53,11 +52,11 @@ public class Menu {
         this.name = name;
     }
 
-    public List<Product> getProducts() {
+    public Set<Product> getProducts() {
         return products;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(Set<Product> products) {
         this.products = products;
     }
 
@@ -93,19 +92,19 @@ public class Menu {
         this.updatedAt = updatedAt;
     }
 
-    public Role getCreatedBy() {
+    public Integer getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Role createdBy) {
+    public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Role getUpdatedBy() {
+    public Integer getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Role updatedBy) {
+    public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
     }
 

@@ -44,7 +44,7 @@ public class Builder {
                         "123456789",
                         new Address("Brazil", "São Paulo", "São Paulo", "01234-567", "Centro", "Rua Principal"),
                         Role.ADMIN,
-                        Role.SYSTEM,
+                        null,
                         "12345678",
                         MaritalStatus.SINGLE,
                         EducationLevel.HIGHER_EDUCATION,
@@ -60,7 +60,7 @@ public class Builder {
                         "987654321",
                         new Address("Brazil", "Rio de Janeiro", "Rio de Janeiro", "02345-678", "Centro", "Rua Principal"),
                         Role.MANAGER,
-                        Role.SYSTEM,
+                        null,
                         "87654321",
                         MaritalStatus.MARRIED,
                         EducationLevel.MASTERS_EDUCATION,
@@ -76,7 +76,7 @@ public class Builder {
                         "555123456",
                         new Address("Brazil", "Belo Horizonte", "Minas Gerais", "03456-789", "Centro", "Rua Principal"),
                         Role.ADMIN,
-                        Role.SYSTEM,
+                        null,
                         "444123456",
                         MaritalStatus.MARRIED,
                         EducationLevel.HIGHER_EDUCATION,
@@ -92,7 +92,7 @@ public class Builder {
                         "111222333",
                         new Address("Brazil", "Salvador", "Bahia", "04567-890", "Centro", "Rua Principal"),
                         Role.MANAGER,
-                        Role.SYSTEM,
+                        null,
                         "987654321",
                         MaritalStatus.SINGLE,
                         EducationLevel.SECONDARY_EDUCATION,
@@ -108,7 +108,7 @@ public class Builder {
                         "456456456",
                         new Address("Brazil", "Recife", "Pernambuco", "05678-901", "Centro", "Rua Principal"),
                         Role.MANAGER,
-                        Role.SYSTEM,
+                        null,
                         "789789789",
                         MaritalStatus.SINGLE,
                         EducationLevel.HIGHER_EDUCATION,
@@ -126,7 +126,7 @@ public class Builder {
                         LocalDate.of(1990, 5, 15),
                         "123456789",
                         new Address("Brazil", "São Paulo", "São Paulo", "01234-567", "Centro", "Rua Principal"),
-                        Role.SYSTEM,
+                        null,
                         new HashSet<>()
                 )
         );
@@ -137,7 +137,7 @@ public class Builder {
                         LocalDate.of(1992, 8, 25),
                         "987654321",
                         new Address("Brazil", "Rio de Janeiro", "Rio de Janeiro", "02345-678", "Centro", "Rua Principal"),
-                        Role.SYSTEM,
+                        null,
                         new HashSet<>()
                 )
         );
@@ -148,7 +148,7 @@ public class Builder {
                         LocalDate.of(1985, 10, 8),
                         "555123456",
                         new Address("Brazil", "Belo Horizonte", "Minas Gerais", "03456-789", "Centro", "Rua Principal"),
-                        Role.SYSTEM,
+                        null,
                         new HashSet<>()
                 )
         );
@@ -159,7 +159,7 @@ public class Builder {
                         LocalDate.of(1993, 4, 20),
                         "111222333",
                         new Address("Brazil", "Salvador", "Bahia", "04567-890", "Centro", "Rua Principal"),
-                        Role.SYSTEM,
+                        null,
                         new HashSet<>()
                 )
         );
@@ -170,18 +170,18 @@ public class Builder {
                         LocalDate.of(1991, 12, 1),
                         "456456456",
                         new Address("Brazil", "Recife", "Pernambuco", "05678-901", "Centro", "Rua Principal"),
-                        Role.SYSTEM,
+                        null,
                         new HashSet<>()
                 )
         );
     }
 
     public void tableBuilder() {
-        tableService.save(new Table("Table 1", (short) 1, (short) 4, Role.SYSTEM));
-        tableService.save(new Table("Table 2", (short) 2, (short) 6, Role.SYSTEM));
-        tableService.save(new Table("Table 3", (short) 3, (short) 2, Role.SYSTEM));
-        tableService.save(new Table("Table 4", (short) 4, (short) 8, Role.SYSTEM));
-        tableService.save(new Table("Table 5", (short) 5, (short) 3, Role.SYSTEM));
+        tableService.save(new Table("Table 1", (short) 1, (short) 4, null));
+        tableService.save(new Table("Table 2", (short) 2, (short) 6, null));
+        tableService.save(new Table("Table 3", (short) 3, (short) 2, null));
+        tableService.save(new Table("Table 4", (short) 4, (short) 8, null));
+        tableService.save(new Table("Table 5", (short) 5, (short) 3, null));
     }
 
     public void productBuilder() {
@@ -193,7 +193,7 @@ public class Builder {
                         5.99,
                         9.99,
                         LocalTime.of(0, 15),
-                        Role.SYSTEM
+                        null
                 )
         );
         productService.save(
@@ -204,7 +204,7 @@ public class Builder {
                         7.99,
                         12.99,
                         LocalTime.of(0, 30),
-                        Role.SYSTEM
+                        null
                 )
         );
         productService.save(
@@ -215,7 +215,7 @@ public class Builder {
                         3.99,
                         6.99,
                         LocalTime.of(0, 10),
-                        Role.SYSTEM
+                        null
                 )
         );
         productService.save(
@@ -225,7 +225,7 @@ public class Builder {
                         "M004", 6.99,
                         11.99,
                         LocalTime.of(0, 20),
-                        Role.SYSTEM
+                        null
                 )
         );
         productService.save(
@@ -236,7 +236,7 @@ public class Builder {
                         4.99,
                         8.99,
                         LocalTime.of(0, 10),
-                        Role.SYSTEM
+                        null
                 )
         );
         productService.save(
@@ -247,7 +247,7 @@ public class Builder {
                         12.99,
                         19.99,
                         LocalTime.of(0, 25),
-                        Role.SYSTEM
+                        null
                 )
         );
         productService.save(
@@ -258,7 +258,7 @@ public class Builder {
                         3.99,
                         6.99,
                         LocalTime.of(0, 10),
-                        Role.SYSTEM
+                        null
                 )
         );
         productService.save(
@@ -269,7 +269,7 @@ public class Builder {
                         8.99,
                         14.99,
                         LocalTime.of(0, 20),
-                        Role.SYSTEM
+                        null
                 )
         );
         productService.save(
@@ -280,7 +280,7 @@ public class Builder {
                         10.99,
                         16.99,
                         LocalTime.of(0, 15),
-                        Role.SYSTEM
+                        null
                 )
         );
         productService.save(
@@ -291,16 +291,16 @@ public class Builder {
                         3.99,
                         7.99,
                         LocalTime.of(0, 5),
-                        Role.SYSTEM
+                        null
                 )
         );
     }
 
     public void menuBuilder() {
-        menuService.save(new Menu("Bebidas", "B001", Role.SYSTEM));
-        menuService.save(new Menu("Sobremesas", "S002", Role.SYSTEM));
-        menuService.save(new Menu("Pratos Principais", "P003", Role.SYSTEM));
-        menuService.save(new Menu("Entradas", "E004", Role.SYSTEM));
-        menuService.save(new Menu("Naturais", "P005", Role.SYSTEM));
+        menuService.save(new Menu("Bebidas", "B001", null));
+        menuService.save(new Menu("Sobremesas", "S002", null));
+        menuService.save(new Menu("Pratos Principais", "P003", null));
+        menuService.save(new Menu("Entradas", "E004", null));
+        menuService.save(new Menu("Naturais", "P005", null));
     }
 }

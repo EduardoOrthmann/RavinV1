@@ -5,7 +5,7 @@ import enums.EducationLevel;
 import enums.MaritalStatus;
 import enums.Position;
 import enums.Role;
-import interfaces.Person;
+import person.Person;
 
 import java.time.LocalDate;
 
@@ -21,7 +21,7 @@ public class Employee extends Person {
     private LocalDate resignationDate;
     private boolean isAvailable;
 
-    public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
+    public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Integer createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
         super(name, phoneNumber, birthDate, cpf, address, role, createdBy);
         this.id = ++lastId;
         this.rg = rg;
@@ -33,7 +33,7 @@ public class Employee extends Person {
         this.isAvailable = true;
     }
 
-    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, boolean isAvailable) {
+    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Integer updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, boolean isAvailable) {
         super(id, name, phoneNumber, birthDate, cpf, address, role, updatedBy);
         this.id = id;
         this.rg = rg;

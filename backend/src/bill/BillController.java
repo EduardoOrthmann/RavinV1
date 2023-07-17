@@ -1,4 +1,4 @@
-package product;
+package bill;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
 import exceptions.ErrorResponse;
+import order.OrderService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -14,17 +15,19 @@ import java.time.LocalTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-public class ProductController implements HttpHandler {
-    private final String productPath;
-    private final ProductService productService;
+public class BillController implements HttpHandler {
+    private final String billPath;
+    private final BillService billService;
+    private final OrderService orderService;
     private final Gson gson;
 
-    public ProductController(String productPath, ProductService productService) {
-        this.productPath = productPath;
-        this.productService = productService;
+    public BillController(String billPath, BillService billService, OrderService orderService) {
+        this.billPath = billPath;
+        this.billService = billService;
+        this.orderService = orderService;
         this.gson = new GsonBuilder()
-                .registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
+                .registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter())
                 .create();
     }
 
@@ -40,16 +43,16 @@ public class ProductController implements HttpHandler {
 
         switch (requestMethod) {
             case "GET" -> {
-                // GET /product
-                if (path.matches(productPath)) {
-                    response = gson.toJson(productService.findAll());
+                // GET /bill
+                if (path.matches(billPath)) {
+                    response = gson.toJson(billService.findAll());
                     statusCode = 200;
 
-                    // GET /product/{id}
-                } else if (path.matches(productPath + "/[0-9]+")) {
+                    // GET /bill/{id}
+                } else if (path.matches(billPath + "/[0-9]+")) {
                     try {
                         int id = Integer.parseInt(queryParam.get()[2]);
-                        response = gson.toJson(productService.findById(id));
+                        response = gson.toJson(billService.findById(id));
                         statusCode = 200;
 
                     } catch (NoSuchElementException e) {
@@ -66,20 +69,14 @@ public class ProductController implements HttpHandler {
             }
 
             case "POST" -> {
-                // POST /product
-                if (path.matches(productPath)) {
+                // POST /bill
+                if (path.matches(billPath)) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-                    var product = gson.fromJson(requestBody, Product.class);
-                    productService.save(
-                            new Product(
-                                    product.getName(),
-                                    product.getDescription(),
-                                    product.getProductCode(),
-                                    product.getCostPrice(),
-                                    product.getSalePrice(),
-                                    product.getPreparationTime(),
-                                    product.getCreatedBy()
+                    var bill = gson.fromJson(requestBody, Bill.class);
+                    billService.save(
+                            new Bill(
+                                    bill.getCreatedBy()
                             )
                     );
 
@@ -90,40 +87,17 @@ public class ProductController implements HttpHandler {
                 }
             }
 
-            case "PUT" -> {
-                // PUT /product/{id}
-                if (path.matches(productPath + "/[0-9]+")) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
+            case "PATCH" -> {
+                // PATCH /bill/{id}/add-order/{order_id}
+                if (path.matches(billPath + "/[0-9]+/add-order/[0-9]+")) {
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
-                        var product = productService.findById(id);
+                        int billId = Integer.parseInt(queryParam.get()[2]);
+                        int orderId = Integer.parseInt(queryParam.get()[4]);
 
-                        var updatedProduct = gson.fromJson(requestBody, Product.class);
-                        updatedProduct = new Product(
-                                id,
-                                updatedProduct.getName(),
-                                updatedProduct.getDescription(),
-                                updatedProduct.getProductCode(),
-                                updatedProduct.getCostPrice(),
-                                updatedProduct.getSalePrice(),
-                                updatedProduct.getPreparationTime(),
-                                updatedProduct.isAvailable(),
-                                updatedProduct.getUpdatedBy()
-                        );
+                        var bill = billService.findById(billId);
+                        var order = orderService.findById(orderId);
 
-                        product.setName(updatedProduct.getName());
-                        product.setDescription(updatedProduct.getDescription());
-                        product.setProductCode(updatedProduct.getProductCode());
-                        product.setCostPrice(updatedProduct.getCostPrice());
-                        product.setSalePrice(updatedProduct.getSalePrice());
-                        product.setPreparationTime(updatedProduct.getPreparationTime());
-                        product.setAvailable(updatedProduct.isAvailable());
-                        product.setUpdatedAt(updatedProduct.getUpdatedAt());
-                        product.setUpdatedBy(updatedProduct.getUpdatedBy());
-
-                        productService.update(product);
-
+                        billService.addOrder(bill, order);
                         statusCode = 204;
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
@@ -132,21 +106,16 @@ public class ProductController implements HttpHandler {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
                     }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            case "DELETE" -> {
-                // DELETE /product/{id}
-                if (path.matches(productPath + "/[0-9]+")) {
+                    // PATCH /bill/{id}/remove-order/{order_id}
+                } else if (path.matches(billPath + "/[0-9]+/remove-order/[0-9]+")) {
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
-                        var product = productService.findById(id);
+                        int billId = Integer.parseInt(queryParam.get()[2]);
+                        int orderId = Integer.parseInt(queryParam.get()[4]);
 
-                        productService.delete(product);
+                        var bill = billService.findById(billId);
+                        var order = orderService.findById(orderId);
 
+                        billService.removeOrder(bill, order);
                         statusCode = 204;
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));

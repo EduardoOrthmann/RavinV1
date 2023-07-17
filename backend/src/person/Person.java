@@ -1,4 +1,4 @@
-package interfaces;
+package person;
 
 import address.Address;
 import enums.Role;
@@ -16,10 +16,10 @@ public abstract class Person {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Role role;
-    private Role createdBy;
-    private Role updatedBy;
+    private Integer createdBy;
+    private Integer updatedBy;
 
-    public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role createdBy) {
+    public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Integer createdBy) {
         this.role = role;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -31,7 +31,7 @@ public abstract class Person {
         this.createdBy = createdBy;
     }
 
-    public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Role updatedBy) {
+    public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Integer updatedBy) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
@@ -106,20 +106,28 @@ public abstract class Person {
         this.updatedAt = updatedAt;
     }
 
-    public Role getCreatedBy() {
+    public Integer getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Role createdBy) {
+    public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Role getUpdatedBy() {
+    public Integer getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Role updatedBy) {
+    public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     @Override
@@ -136,13 +144,5 @@ public abstract class Person {
                 "\tcreatedBy = " + createdBy + ",\n" +
                 "\tupdatedBy = " + updatedBy + "\n" +
                 '}';
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 }

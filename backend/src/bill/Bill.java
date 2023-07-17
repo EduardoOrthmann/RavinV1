@@ -1,36 +1,30 @@
-package command;
+package bill;
 
-import enums.Role;
 import order.Order;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-public class Command {
+public class Bill {
     private static int lastId = 0;
     private int id;
     private boolean isPaid;
-    private List<Order> orders;
+    private Set<Order> orders;
     private double totalPrice;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Role createdBy;
-    private Role updatedBy;
+    private Integer createdBy;
+    private Integer updatedBy;
 
-    public Command(Role createdBy) {
+    // insert
+    public Bill(Integer createdBy) {
         this.id = ++lastId;
         this.isPaid = false;
-        this.orders = new ArrayList<>();
+        this.orders = new HashSet<>();
         this.totalPrice = 0;
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
-    }
-
-    public Command(int id, Role updatedBy) {
-        this.id = id;
-        this.updatedAt = LocalDateTime.now();
-        this.updatedBy = updatedBy;
     }
 
     public int getId() {
@@ -49,11 +43,11 @@ public class Command {
         isPaid = paid;
     }
 
-    public List<Order> getOrders() {
+    public Set<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(List<Order> orders) {
+    public void setOrders(Set<Order> orders) {
         this.orders = orders;
     }
 
@@ -81,19 +75,19 @@ public class Command {
         this.updatedAt = updatedAt;
     }
 
-    public Role getCreatedBy() {
+    public Integer getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Role createdBy) {
+    public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Role getUpdatedBy() {
+    public Integer getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Role updatedBy) {
+    public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
     }
 

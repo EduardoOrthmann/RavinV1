@@ -1,14 +1,11 @@
 package table;
 
 import customer.Customer;
-import enums.Role;
 import enums.TableStatus;
 import order.Order;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Table {
@@ -19,25 +16,25 @@ public class Table {
     private short maxCapacity;
     private TableStatus status;
     private Set<Customer> customers;
-    private List<Order> orders;
+    private Set<Order> orders;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Role createdBy;
-    private Role updatedBy;
+    private Integer createdBy;
+    private Integer updatedBy;
 
-    public Table(String name, short tableNumber, short maxCapacity, Role createdBy) {
+    public Table(String name, short tableNumber, short maxCapacity, Integer createdBy) {
         this.id = ++lastId;
         this.name = name;
         this.tableNumber = tableNumber;
         this.maxCapacity = maxCapacity;
         this.status = TableStatus.AVAILABLE;
         this.customers = new HashSet<>();
-        this.orders = new ArrayList<>();
+        this.orders = new HashSet<>();
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
     }
 
-    public Table(int id, String name, short tableNumber, short maxCapacity, TableStatus status, Role updatedBy) {
+    public Table(int id, String name, short tableNumber, short maxCapacity, TableStatus status, Integer updatedBy) {
         this.id = id;
         this.name = name;
         this.tableNumber = tableNumber;
@@ -111,20 +108,28 @@ public class Table {
         this.updatedAt = updatedAt;
     }
 
-    public Role getCreatedBy() {
+    public Integer getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Role createdBy) {
+    public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Role getUpdatedBy() {
+    public Integer getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Role updatedBy) {
+    public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public Set<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(Set<Order> orders) {
+        this.orders = orders;
     }
 
     @Override
@@ -142,13 +147,5 @@ public class Table {
                 "\tcreatedBy = " + createdBy + "\n" +
                 "\tupdatedBy = " + updatedBy + "\n" +
                 '}';
-    }
-
-    public List<Order> getOrders() {
-        return orders;
-    }
-
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
     }
 }

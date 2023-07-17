@@ -1,52 +1,47 @@
 package order;
 
-import customer.Customer;
-import employee.Employee;
 import enums.OrderStatus;
-import enums.Role;
 import product.Product;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Order {
     private static int lastId = 0;
     private int id;
     private Product product;
-    private Employee employee;
-    private Customer customer;
     private int quantity;
     private double price;
+    private Integer employeeId;
+    private Integer customerId;
     private OrderStatus status;
     private List<String> notes;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Role createdBy;
-    private Role updatedBy;
+    private Integer createdBy;
+    private Integer updatedBy;
 
-    public Order(Product product, Employee employee, Customer customer, int quantity, OrderStatus status, Role createdBy) {
+    // insert
+    public Order(Product product, int quantity, Integer customerId, List<String> notes) {
         this.id = ++lastId;
         this.product = product;
-        this.employee = employee;
-        this.customer = customer;
         this.quantity = quantity;
-        this.status = status;
-        this.price = product.getSalePrice() * quantity;
-        this.notes = new ArrayList<>();
+        this.customerId = customerId;
+        this.notes = notes;
+        this.status = OrderStatus.WAITING;
         this.createdAt = LocalDateTime.now();
-        this.createdBy = createdBy;
+        this.createdBy = customerId;
     }
 
-    public Order(int id, Product product, Employee employee, Customer customer, int quantity, OrderStatus status, Role updatedBy) {
+    // update
+    public Order(int id, Product product, int quantity, Integer customerId, List<String> notes) {
         this.id = id;
         this.product = product;
-        this.employee = employee;
-        this.customer = customer;
         this.quantity = quantity;
-        this.status = status;
+        this.customerId = customerId;
+        this.notes = notes;
         this.updatedAt = LocalDateTime.now();
-        this.updatedBy = updatedBy;
+        this.updatedBy = customerId;
     }
 
     public int getId() {
@@ -105,28 +100,20 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
-    public Role getCreatedBy() {
+    public Integer getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Role createdBy) {
+    public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
 
-    public Role getUpdatedBy() {
+    public Integer getUpdatedBy() {
         return updatedBy;
     }
 
-    public void setUpdatedBy(Role updatedBy) {
+    public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
     }
 
     public double getPrice() {
@@ -137,20 +124,29 @@ public class Order {
         this.price = price;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Integer getEmployeeId() {
+        return employeeId;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
+    public void setEmployeeId(Integer employeeId) {
+        this.employeeId = employeeId;
     }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
+    }
+
     @Override
     public String toString() {
         return "Order {\n" +
                 "\tid = " + id + "\n" +
                 "\tproduct = " + product + "\n" +
-                "\temployee = " + employee + "\n" +
-                "\tcustomer = " + customer + "\n" +
+                "\temployee = " + employeeId + "\n" +
+                "\tcustomer = " + customerId + "\n" +
                 "\tquantity = " + quantity + "\n" +
                 "\tprice = " + price + "\n" +
                 "\tstatus = " + status + "\n" +
