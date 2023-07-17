@@ -1,6 +1,5 @@
 package customer;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -29,10 +28,5 @@ public class CustomerService {
 
     public void delete(Customer entity) {
         customerDAO.delete(entity);
-    }
-
-    public boolean isBirthday(Customer customer) {
-        var today = LocalDate.now();
-        return customer.getBirthDate().getMonth() == today.getMonth() && customer.getBirthDate().getDayOfMonth() == today.getDayOfMonth();
     }
 }

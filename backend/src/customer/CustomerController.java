@@ -7,11 +7,13 @@ import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
 import exceptions.ErrorResponse;
+import utils.DateUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -66,9 +68,9 @@ public class CustomerController implements HttpHandler {
                     try {
                         int id = Integer.parseInt(queryParam.get()[2]);
                         var customer = customerService.findById(id);
-                        response = gson.toJson(customerService.isBirthday(customer));
-                        statusCode = 200;
 
+                        response = gson.toJson(Map.of("isBirthday", DateUtils.isBirthday(customer.getBirthDate())));
+                        statusCode = 200;
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
