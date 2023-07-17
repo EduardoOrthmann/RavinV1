@@ -1,7 +1,7 @@
 package person;
 
 import address.Address;
-import enums.Role;
+import user.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,31 +13,31 @@ public abstract class Person {
     private String cpf;
     private Address address;
     private boolean isActive;
+    private User user;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Role role;
     private Integer createdBy;
     private Integer updatedBy;
 
-    public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Integer createdBy) {
-        this.role = role;
+    public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer createdBy) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
         this.cpf = cpf;
         this.address = address;
+        this.user = user;
         this.isActive = true;
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
     }
 
-    public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Integer updatedBy) {
+    public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer updatedBy) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
         this.cpf = cpf;
         this.address = address;
-        this.role = role;
+        this.user = user;
         this.updatedAt = LocalDateTime.now();
         this.updatedBy = updatedBy;
     }
@@ -122,12 +122,12 @@ public abstract class Person {
         this.updatedBy = updatedBy;
     }
 
-    public Role getRole() {
-        return role;
+    public User getUser() {
+        return user;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -138,6 +138,7 @@ public abstract class Person {
                 "\tbirthDate = " + birthDate + ",\n" +
                 "\tcpf = '" + cpf + '\'' + ",\n" +
                 "\taddress =" + address + ",\n" +
+                "\tuser = " + user + ",\n" +
                 "\tisActive = " + isActive + ",\n" +
                 "\tcreatedAt = " + createdAt + ",\n" +
                 "\tupdatedAt = " + updatedAt + ",\n" +

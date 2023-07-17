@@ -4,8 +4,8 @@ import address.Address;
 import enums.EducationLevel;
 import enums.MaritalStatus;
 import enums.Position;
-import enums.Role;
 import person.Person;
+import user.User;
 
 import java.time.LocalDate;
 
@@ -21,8 +21,8 @@ public class Employee extends Person {
     private LocalDate resignationDate;
     private boolean isAvailable;
 
-    public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Integer createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
-        super(name, phoneNumber, birthDate, cpf, address, role, createdBy);
+    public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
+        super(name, phoneNumber, birthDate, cpf, address, user, createdBy);
         this.id = ++lastId;
         this.rg = rg;
         this.maritalStatus = maritalStatus;
@@ -33,8 +33,8 @@ public class Employee extends Person {
         this.isAvailable = true;
     }
 
-    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Role role, Integer updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, boolean isAvailable) {
-        super(id, name, phoneNumber, birthDate, cpf, address, role, updatedBy);
+    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, boolean isAvailable) {
+        super(id, name, phoneNumber, birthDate, cpf, address, user, updatedBy);
         this.id = id;
         this.rg = rg;
         this.maritalStatus = maritalStatus;

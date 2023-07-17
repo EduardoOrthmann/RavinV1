@@ -15,6 +15,7 @@ import product.Product;
 import product.ProductService;
 import table.Table;
 import table.TableService;
+import user.User;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -43,7 +44,7 @@ public class Builder {
                         LocalDate.of(1990, 5, 15),
                         "123456789",
                         new Address("Brazil", "São Paulo", "São Paulo", "01234-567", "Centro", "Rua Principal"),
-                        Role.ADMIN,
+                        new User("joao.silva", "123456", Role.ADMIN),
                         null,
                         "12345678",
                         MaritalStatus.SINGLE,
@@ -59,7 +60,7 @@ public class Builder {
                         LocalDate.of(1992, 8, 25),
                         "987654321",
                         new Address("Brazil", "Rio de Janeiro", "Rio de Janeiro", "02345-678", "Centro", "Rua Principal"),
-                        Role.MANAGER,
+                        new User("maria.santos", "654321", Role.MANAGER),
                         null,
                         "87654321",
                         MaritalStatus.MARRIED,
@@ -75,7 +76,7 @@ public class Builder {
                         LocalDate.of(1985, 10, 8),
                         "555123456",
                         new Address("Brazil", "Belo Horizonte", "Minas Gerais", "03456-789", "Centro", "Rua Principal"),
-                        Role.ADMIN,
+                        new User("pedro.oliveira", "123456", Role.ADMIN),
                         null,
                         "444123456",
                         MaritalStatus.MARRIED,
@@ -91,7 +92,7 @@ public class Builder {
                         LocalDate.of(1993, 4, 20),
                         "111222333",
                         new Address("Brazil", "Salvador", "Bahia", "04567-890", "Centro", "Rua Principal"),
-                        Role.MANAGER,
+                        new User("ana.costa", "123456", Role.ADMIN),
                         null,
                         "987654321",
                         MaritalStatus.SINGLE,
@@ -107,7 +108,7 @@ public class Builder {
                         LocalDate.of(1991, 12, 1),
                         "456456456",
                         new Address("Brazil", "Recife", "Pernambuco", "05678-901", "Centro", "Rua Principal"),
-                        Role.MANAGER,
+                        new User("lucas.pereira", "123456", Role.ADMIN),
                         null,
                         "789789789",
                         MaritalStatus.SINGLE,
@@ -126,6 +127,8 @@ public class Builder {
                         LocalDate.of(1990, 5, 15),
                         "123456789",
                         new Address("Brazil", "São Paulo", "São Paulo", "01234-567", "Centro", "Rua Principal"),
+                        "johnsmith",
+                        "1234",
                         null,
                         new HashSet<>()
                 )
@@ -137,6 +140,8 @@ public class Builder {
                         LocalDate.of(1992, 8, 25),
                         "987654321",
                         new Address("Brazil", "Rio de Janeiro", "Rio de Janeiro", "02345-678", "Centro", "Rua Principal"),
+                        "maryjohnson",
+                        "1234",
                         null,
                         new HashSet<>()
                 )
@@ -148,6 +153,8 @@ public class Builder {
                         LocalDate.of(1985, 10, 8),
                         "555123456",
                         new Address("Brazil", "Belo Horizonte", "Minas Gerais", "03456-789", "Centro", "Rua Principal"),
+                        "peteroliveira",
+                        "1234",
                         null,
                         new HashSet<>()
                 )
@@ -159,6 +166,8 @@ public class Builder {
                         LocalDate.of(1993, 4, 20),
                         "111222333",
                         new Address("Brazil", "Salvador", "Bahia", "04567-890", "Centro", "Rua Principal"),
+                        "annacosta",
+                        "1234",
                         null,
                         new HashSet<>()
                 )
@@ -170,6 +179,8 @@ public class Builder {
                         LocalDate.of(1991, 12, 1),
                         "456456456",
                         new Address("Brazil", "Recife", "Pernambuco", "05678-901", "Centro", "Rua Principal"),
+                        "lucaspereira",
+                        "1234",
                         null,
                         new HashSet<>()
                 )

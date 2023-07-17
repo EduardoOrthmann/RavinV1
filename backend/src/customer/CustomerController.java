@@ -97,6 +97,8 @@ public class CustomerController implements HttpHandler {
                                     customer.getBirthDate(),
                                     customer.getCpf(),
                                     customer.getAddress(),
+                                    customer.getUser().getUsername(),
+                                    customer.getUser().getPassword(),
                                     customer.getCreatedBy(),
                                     customer.getAllergies() == null ? new HashSet<>() : customer.getAllergies()
                             )
@@ -126,6 +128,8 @@ public class CustomerController implements HttpHandler {
                                 updatedCustomer.getBirthDate(),
                                 updatedCustomer.getCpf(),
                                 updatedCustomer.getAddress(),
+                                updatedCustomer.getUser().getUsername(),
+                                updatedCustomer.getUser().getPassword(),
                                 updatedCustomer.getUpdatedBy(),
                                 updatedCustomer.getAllergies()
                         );
@@ -136,6 +140,8 @@ public class CustomerController implements HttpHandler {
                         customer.setBirthDate(updatedCustomer.getBirthDate());
                         customer.setCpf(updatedCustomer.getCpf());
                         customer.setAddress(updatedCustomer.getAddress());
+                        customer.getUser().setUsername(updatedCustomer.getUser().getUsername());
+                        customer.getUser().setPassword(updatedCustomer.getUser().getPassword());
                         customer.setUpdatedAt(updatedCustomer.getUpdatedAt());
                         customer.setUpdatedBy(updatedCustomer.getUpdatedBy());
                         customer.setAllergies(updatedCustomer.getAllergies());
