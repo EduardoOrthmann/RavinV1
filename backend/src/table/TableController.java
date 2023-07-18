@@ -51,22 +51,28 @@ public class TableController implements HttpHandler {
             case "GET" -> {
                 // GET /table
                 if (path.matches(tablePath)) {
-                    response = gson.toJson(tableService.findAll());
-                    statusCode = 200;
-
+                    try {
+                        response = gson.toJson(tableService.findAll());
+                        statusCode = 200;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                     // GET /table/{id}
                 } else if (path.matches(tablePath + "/[0-9]+")) {
                     try {
                         int id = Integer.parseInt(queryParam.get()[2]);
                         response = gson.toJson(tableService.findById(id));
                         statusCode = 200;
-
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -79,17 +85,22 @@ public class TableController implements HttpHandler {
                 if (path.matches(tablePath)) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-                    var table = gson.fromJson(requestBody, Table.class);
-                    tableService.save(
-                            new Table(
-                                    table.getName(),
-                                    table.getTableNumber(),
-                                    table.getMaxCapacity(),
-                                    table.getCreatedBy()
-                            )
-                    );
+                    try {
+                        var table = gson.fromJson(requestBody, Table.class);
+                        tableService.save(
+                                new Table(
+                                        table.getName(),
+                                        table.getTableNumber(),
+                                        table.getMaxCapacity(),
+                                        table.getCreatedBy()
+                                )
+                        );
 
-                    statusCode = 201;
+                        statusCode = 201;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
@@ -131,6 +142,9 @@ public class TableController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -154,6 +168,9 @@ public class TableController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -180,6 +197,9 @@ public class TableController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                     // PATCH /table/{id}/remove-customer/{customerId}
                 } else if (path.matches(tablePath + "/[0-9]+/remove-customer/[0-9]+")) {
@@ -199,6 +219,9 @@ public class TableController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                     // PATCH /table/{id}/add-order/{orderId}
                 } else if (path.matches(tablePath + "/[0-9]+/add-order/[0-9]+")) {
@@ -218,6 +241,9 @@ public class TableController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                     // PATCH /table/{id}/remove-order/{orderId}
                 } else if (path.matches(tablePath + "/[0-9]+/remove-order/[0-9]+")) {
@@ -237,6 +263,9 @@ public class TableController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));

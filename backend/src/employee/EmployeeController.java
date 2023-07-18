@@ -42,9 +42,13 @@ public class EmployeeController implements HttpHandler {
             case "GET" -> {
                 // GET /employee
                 if (path.matches(employeePath)) {
-                    response = gson.toJson(employeeService.findAll());
-                    statusCode = 200;
-
+                    try {
+                        response = gson.toJson(employeeService.findAll());
+                        statusCode = 200;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                     // GET /employee/{id}
                 } else if (path.matches(employeePath + "/[0-9]+")) {
                     try {
@@ -58,8 +62,10 @@ public class EmployeeController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
-
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
@@ -93,7 +99,7 @@ public class EmployeeController implements HttpHandler {
                         statusCode = 201;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 400;
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -155,6 +161,9 @@ public class EmployeeController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -178,6 +187,9 @@ public class EmployeeController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));

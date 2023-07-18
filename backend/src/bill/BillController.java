@@ -45,22 +45,28 @@ public class BillController implements HttpHandler {
             case "GET" -> {
                 // GET /bill
                 if (path.matches(billPath)) {
-                    response = gson.toJson(billService.findAll());
-                    statusCode = 200;
-
+                    try {
+                        response = gson.toJson(billService.findAll());
+                        statusCode = 200;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                     // GET /bill/{id}
                 } else if (path.matches(billPath + "/[0-9]+")) {
                     try {
                         int id = Integer.parseInt(queryParam.get()[2]);
                         response = gson.toJson(billService.findById(id));
                         statusCode = 200;
-
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -71,16 +77,21 @@ public class BillController implements HttpHandler {
             case "POST" -> {
                 // POST /bill
                 if (path.matches(billPath)) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    try {
+                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-                    var bill = gson.fromJson(requestBody, Bill.class);
-                    billService.save(
-                            new Bill(
-                                    bill.getCreatedBy()
-                            )
-                    );
+                        var bill = gson.fromJson(requestBody, Bill.class);
+                        billService.save(
+                                new Bill(
+                                        bill.getCreatedBy()
+                                )
+                        );
 
-                    statusCode = 201;
+                        statusCode = 201;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
@@ -105,6 +116,9 @@ public class BillController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                     // PATCH /bill/{id}/remove-order/{order_id}
                 } else if (path.matches(billPath + "/[0-9]+/remove-order/[0-9]+")) {
@@ -123,6 +137,9 @@ public class BillController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));

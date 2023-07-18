@@ -47,24 +47,29 @@ public class CustomerController implements HttpHandler {
             case "GET" -> {
                 // GET /customer
                 if (path.matches(customerPath)) {
-                    response = gson.toJson(customerService.findAll());
-                    statusCode = 200;
-
+                    try {
+                        response = gson.toJson(customerService.findAll());
+                        statusCode = 200;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                     // GET /customer/{id}
                 } else if (path.matches(customerPath + "/[0-9]+")) {
                     try {
                         int id = Integer.parseInt(queryParam.get()[2]);
                         response = gson.toJson(customerService.findById(id));
                         statusCode = 200;
-
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
-
                     // GET /customer/{id}/birthday
                 } else if (path.matches(customerPath + "/[0-9]+" + "/birthday")) {
                     try {
@@ -79,6 +84,9 @@ public class CustomerController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -109,7 +117,7 @@ public class CustomerController implements HttpHandler {
                         statusCode = 201;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 400;
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -158,6 +166,9 @@ public class CustomerController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -181,6 +192,9 @@ public class CustomerController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));

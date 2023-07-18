@@ -50,9 +50,13 @@ public class OrderController implements HttpHandler {
             case "GET" -> {
                 // GET /order
                 if (path.matches(orderPath)) {
-                    response = gson.toJson(orderService.findAll());
-                    statusCode = 200;
-
+                    try {
+                        response = gson.toJson(orderService.findAll());
+                        statusCode = 200;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                     // GET /order/{id}
                 } else if (path.matches(orderPath + "/[0-9]+")) {
                     try {
@@ -66,6 +70,9 @@ public class OrderController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -78,20 +85,24 @@ public class OrderController implements HttpHandler {
                 if (path.matches(orderPath)) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-                    var order = gson.fromJson(requestBody, Order.class);
+                    try {
+                        var order = gson.fromJson(requestBody, Order.class);
+                        var product = productService.findById(order.getProduct().getId());
 
-                    var product = productService.findById(order.getProduct().getId());
+                        orderService.save(
+                                new Order(
+                                        product,
+                                        order.getQuantity(),
+                                        order.getCustomerId(),
+                                        order.getNotes() == null ? new ArrayList<>() : order.getNotes()
+                                )
+                        );
 
-                    orderService.save(
-                            new Order(
-                                    product,
-                                    order.getQuantity(),
-                                    order.getCustomerId(),
-                                    order.getNotes() == null ? new ArrayList<>() : order.getNotes()
-                            )
-                    );
-
-                    statusCode = 201;
+                        statusCode = 201;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
@@ -134,6 +145,9 @@ public class OrderController implements HttpHandler {
                     } catch (IllegalArgumentException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -156,6 +170,9 @@ public class OrderController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -186,6 +203,9 @@ public class OrderController implements HttpHandler {
                     } catch (IllegalArgumentException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));

@@ -52,7 +52,6 @@ public class MenuController implements HttpHandler {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 500;
                     }
-
                     // GET /menu/{id}
                 } else if (path.matches(menuPath + "/[0-9]+")) {
                     try {
@@ -66,6 +65,9 @@ public class MenuController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -78,16 +80,21 @@ public class MenuController implements HttpHandler {
                 if (path.matches(menuPath)) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-                    var menu = gson.fromJson(requestBody, Menu.class);
-                    menuService.save(
-                            new Menu(
-                                    menu.getName(),
-                                    menu.getMenuCode(),
-                                    menu.getCreatedBy()
-                            )
-                    );
+                    try {
+                        var menu = gson.fromJson(requestBody, Menu.class);
+                        menuService.save(
+                                new Menu(
+                                        menu.getName(),
+                                        menu.getMenuCode(),
+                                        menu.getCreatedBy()
+                                )
+                        );
 
-                    statusCode = 201;
+                        statusCode = 201;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
@@ -125,6 +132,9 @@ public class MenuController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -148,6 +158,9 @@ public class MenuController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -174,6 +187,9 @@ public class MenuController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Id inválido"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                     // PATCH /menu/{id}/remove-product/{productId}
                 } else if (path.matches(menuPath + "/[0-9]+/remove-product/[0-9]+")) {
@@ -193,6 +209,9 @@ public class MenuController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));

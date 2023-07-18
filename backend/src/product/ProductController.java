@@ -42,22 +42,28 @@ public class ProductController implements HttpHandler {
             case "GET" -> {
                 // GET /product
                 if (path.matches(productPath)) {
-                    response = gson.toJson(productService.findAll());
-                    statusCode = 200;
-
+                    try {
+                        response = gson.toJson(productService.findAll());
+                        statusCode = 200;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                     // GET /product/{id}
                 } else if (path.matches(productPath + "/[0-9]+")) {
                     try {
                         int id = Integer.parseInt(queryParam.get()[2]);
                         response = gson.toJson(productService.findById(id));
                         statusCode = 200;
-
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -70,20 +76,25 @@ public class ProductController implements HttpHandler {
                 if (path.matches(productPath)) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-                    var product = gson.fromJson(requestBody, Product.class);
-                    productService.save(
-                            new Product(
-                                    product.getName(),
-                                    product.getDescription(),
-                                    product.getProductCode(),
-                                    product.getCostPrice(),
-                                    product.getSalePrice(),
-                                    product.getPreparationTime(),
-                                    product.getCreatedBy()
-                            )
-                    );
+                    try {
+                        var product = gson.fromJson(requestBody, Product.class);
+                        productService.save(
+                                new Product(
+                                        product.getName(),
+                                        product.getDescription(),
+                                        product.getProductCode(),
+                                        product.getCostPrice(),
+                                        product.getSalePrice(),
+                                        product.getPreparationTime(),
+                                        product.getCreatedBy()
+                                )
+                        );
 
-                    statusCode = 201;
+                        statusCode = 201;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
+                    }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;
@@ -131,6 +142,9 @@ public class ProductController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
@@ -154,6 +168,9 @@ public class ProductController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 500;
                     }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
