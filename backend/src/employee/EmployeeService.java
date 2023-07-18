@@ -1,13 +1,17 @@
 package employee;
 
+import user.UserService;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class EmployeeService {
     private final EmployeeDAO employeeDAO;
+    private final UserService userService;
 
-    public EmployeeService(EmployeeDAO employeeDAO) {
+    public EmployeeService(EmployeeDAO employeeDAO, UserService userService) {
         this.employeeDAO = employeeDAO;
+        this.userService = userService;
     }
 
     public Employee findById(int id) {
@@ -19,14 +23,17 @@ public class EmployeeService {
     }
 
     public void save(Employee entity) {
+        userService.save(entity.getUser());
         employeeDAO.save(entity);
     }
 
     public void update(Employee entity) {
+        userService.update(entity.getUser());
         employeeDAO.update(entity);
     }
 
     public void delete(Employee entity) {
         employeeDAO.delete(entity);
+        userService.delete(entity.getUser());
     }
 }

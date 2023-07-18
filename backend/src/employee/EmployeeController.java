@@ -70,25 +70,30 @@ public class EmployeeController implements HttpHandler {
                 if (path.matches(employeePath)) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-                    var employee = gson.fromJson(requestBody, Employee.class);
-                    employeeService.save(
-                            new Employee(
-                                    employee.getName(),
-                                    employee.getPhoneNumber(),
-                                    employee.getBirthDate(),
-                                    employee.getCpf(),
-                                    employee.getAddress(),
-                                    employee.getUser(),
-                                    employee.getCreatedBy(),
-                                    employee.getRg(),
-                                    employee.getMaritalStatus(),
-                                    employee.getEducationLevel(),
-                                    employee.getPosition(),
-                                    employee.getWorkCardNumber()
-                            )
-                    );
+                    try {
+                        var employee = gson.fromJson(requestBody, Employee.class);
+                        employeeService.save(
+                                new Employee(
+                                        employee.getName(),
+                                        employee.getPhoneNumber(),
+                                        employee.getBirthDate(),
+                                        employee.getCpf(),
+                                        employee.getAddress(),
+                                        employee.getUser(),
+                                        employee.getCreatedBy(),
+                                        employee.getRg(),
+                                        employee.getMaritalStatus(),
+                                        employee.getEducationLevel(),
+                                        employee.getPosition(),
+                                        employee.getWorkCardNumber()
+                                )
+                        );
 
-                    statusCode = 201;
+                        statusCode = 201;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 400;
+                    }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;

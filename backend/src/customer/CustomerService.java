@@ -1,13 +1,17 @@
 package customer;
 
+import user.UserService;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class CustomerService {
     private final CustomerDAO customerDAO;
+    private final UserService userService;
 
-    public CustomerService(CustomerDAO customerDAO) {
+    public CustomerService(CustomerDAO customerDAO, UserService userService) {
         this.customerDAO = customerDAO;
+        this.userService = userService;
     }
 
     public Customer findById(int id) {
@@ -19,14 +23,17 @@ public class CustomerService {
     }
 
     public void save(Customer entity) {
+        userService.save(entity.getUser());
         customerDAO.save(entity);
     }
 
     public void update(Customer entity) {
+        userService.update(entity.getUser());
         customerDAO.update(entity);
     }
 
     public void delete(Customer entity) {
         customerDAO.delete(entity);
+        userService.delete(entity.getUser());
     }
 }

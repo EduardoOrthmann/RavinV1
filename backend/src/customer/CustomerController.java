@@ -89,22 +89,27 @@ public class CustomerController implements HttpHandler {
                 if (path.matches(customerPath)) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
-                    var customer = gson.fromJson(requestBody, Customer.class);
-                    customerService.save(
-                            new Customer(
-                                    customer.getName(),
-                                    customer.getPhoneNumber(),
-                                    customer.getBirthDate(),
-                                    customer.getCpf(),
-                                    customer.getAddress(),
-                                    customer.getUser().getUsername(),
-                                    customer.getUser().getPassword(),
-                                    customer.getCreatedBy(),
-                                    customer.getAllergies() == null ? new HashSet<>() : customer.getAllergies()
-                            )
-                    );
+                    try {
+                        var customer = gson.fromJson(requestBody, Customer.class);
+                        customerService.save(
+                                new Customer(
+                                        customer.getName(),
+                                        customer.getPhoneNumber(),
+                                        customer.getBirthDate(),
+                                        customer.getCpf(),
+                                        customer.getAddress(),
+                                        customer.getUser().getUsername(),
+                                        customer.getUser().getPassword(),
+                                        customer.getCreatedBy(),
+                                        customer.getAllergies() == null ? new HashSet<>() : customer.getAllergies()
+                                )
+                        );
 
-                    statusCode = 201;
+                        statusCode = 201;
+                    } catch (Exception e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 400;
+                    }
                 } else {
                     response = gson.toJson(new ErrorResponse("Invalid endpoint"));
                     statusCode = 404;

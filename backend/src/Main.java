@@ -21,16 +21,19 @@ import product.ProductService;
 import table.TableController;
 import table.TableDAO;
 import table.TableService;
+import user.UserRepository;
+import user.UserService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        var employeeService = new EmployeeService(new EmployeeDAO());
+        var userService = new UserService(new UserRepository());
+        var employeeService = new EmployeeService(new EmployeeDAO(), userService);
         var productService = new ProductService(new ProductDAO());
         var menuService = new MenuService(new MenuDAO());
-        var customerService = new  CustomerService(new CustomerDAO());
+        var customerService = new  CustomerService(new CustomerDAO(), userService);
         var tableService = new TableService(new TableDAO());
         var orderService = new OrderService(new OrderDAO());
         var commandService = new BillService(new BillDAO());
