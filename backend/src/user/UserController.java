@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.ErrorResponse;
+import utils.APIUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -23,11 +24,12 @@ public class UserController implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String response = "";
         int statusCode;
-        String path = exchange.getRequestURI().getPath();
-        String requestMethod = exchange.getRequestMethod();
-        final Optional<String[]> queryParam = Optional.of(path.split("/"));
+        String response = "";
+        var path = exchange.getRequestURI().getPath();
+        var requestMethod = exchange.getRequestMethod();
+        var queryParams = exchange.getRequestURI().getQuery();
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
         exchange.getResponseHeaders().set("Content-Type", "application/json");
 
@@ -54,9 +56,15 @@ public class UserController implements HttpHandler {
                         statusCode = 500;
                     }
                     // POST /user/logout
-                } else if (path.matches(userPath + "/[0-9]+" + "/logout")) {
+                } else if (path.matches(userPath + "/logout")) {
                     try {
-                        var token = queryParam.get()[2];
+                        var token = APIUtils.getQueryParamValue(queryParams, "token");
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+
+                        if (!headerToken.equals(token)) {
+                            throw new IllegalArgumentException("Token diferente do informado no header");
+                        }
+
                         userService.logout(token);
 
                         statusCode = 204;
