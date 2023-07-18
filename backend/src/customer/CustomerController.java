@@ -6,7 +6,9 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
+import enums.Role;
 import exceptions.ErrorResponse;
+import user.User;
 import utils.DateUtils;
 
 import java.io.IOException;
@@ -98,8 +100,7 @@ public class CustomerController implements HttpHandler {
                                         customer.getBirthDate(),
                                         customer.getCpf(),
                                         customer.getAddress(),
-                                        customer.getUser().getUsername(),
-                                        customer.getUser().getPassword(),
+                                        new User(customer.getUser().getUsername(), customer.getUser().getPassword(), Role.CUSTOMER),
                                         customer.getCreatedBy(),
                                         customer.getAllergies() == null ? new HashSet<>() : customer.getAllergies()
                                 )
@@ -133,20 +134,17 @@ public class CustomerController implements HttpHandler {
                                 updatedCustomer.getBirthDate(),
                                 updatedCustomer.getCpf(),
                                 updatedCustomer.getAddress(),
-                                updatedCustomer.getUser().getUsername(),
-                                updatedCustomer.getUser().getPassword(),
+                                updatedCustomer.getUser(),
                                 updatedCustomer.getUpdatedBy(),
                                 updatedCustomer.getAllergies()
                         );
 
-                        customer.setId(id);
                         customer.setName(updatedCustomer.getName());
                         customer.setPhoneNumber(updatedCustomer.getPhoneNumber());
                         customer.setBirthDate(updatedCustomer.getBirthDate());
                         customer.setCpf(updatedCustomer.getCpf());
                         customer.setAddress(updatedCustomer.getAddress());
-                        customer.getUser().setUsername(updatedCustomer.getUser().getUsername());
-                        customer.getUser().setPassword(updatedCustomer.getUser().getPassword());
+                        customer.setUser(updatedCustomer.getUser());
                         customer.setUpdatedAt(updatedCustomer.getUpdatedAt());
                         customer.setUpdatedBy(updatedCustomer.getUpdatedBy());
                         customer.setAllergies(updatedCustomer.getAllergies());

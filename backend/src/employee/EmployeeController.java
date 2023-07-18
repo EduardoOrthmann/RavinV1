@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
 import exceptions.ErrorResponse;
+import user.User;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -79,7 +80,7 @@ public class EmployeeController implements HttpHandler {
                                         employee.getBirthDate(),
                                         employee.getCpf(),
                                         employee.getAddress(),
-                                        employee.getUser(),
+                                        new User(employee.getUser().getUsername(), employee.getUser().getPassword(), employee.getUser().getRole()),
                                         employee.getCreatedBy(),
                                         employee.getRg(),
                                         employee.getMaritalStatus(),

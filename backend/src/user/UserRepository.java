@@ -48,4 +48,10 @@ public class UserRepository implements Crud<User> {
                 .filter(user -> user.getUsername().equals(username))
                 .findFirst();
     }
+
+    public Optional<User> findByToken(String token) {
+        return this.userList.stream()
+                .filter(user -> user.getToken().equals(token))
+                .findFirst();
+    }
 }

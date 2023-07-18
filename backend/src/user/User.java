@@ -55,6 +55,7 @@ public class User {
                 "\tusername = '" + username + '\'' + "\n" +
                 "\tpassword = '" + password + '\'' + "\n" +
                 "\trole = " + role + "\n" +
+                "\ttoken = '" + token + '\'' + "\n" +
                 '}';
     }
 

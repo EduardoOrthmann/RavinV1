@@ -2,7 +2,6 @@ package customer;
 
 import address.Address;
 import enums.Allergy;
-import enums.Role;
 import person.Person;
 import user.User;
 
@@ -14,14 +13,14 @@ public class Customer extends Person {
     private int id;
     private Set<Allergy> allergies;
 
-    public Customer(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, String username, String password, Integer createdBy, Set<Allergy> allergies) {
-        super(name, phoneNumber, birthDate, cpf, address, new User(username, password, Role.CUSTOMER), createdBy);
+    public Customer(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer createdBy, Set<Allergy> allergies) {
+        super(name, phoneNumber, birthDate, cpf, address, user, createdBy);
         this.id = ++lastId;
         this.allergies = allergies;
     }
 
-    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, String username, String password, Integer updatedBy, Set<Allergy> allergies) {
-        super(id, name, phoneNumber, birthDate, cpf, address, new User(username, password, Role.CUSTOMER), updatedBy);
+    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer updatedBy, Set<Allergy> allergies) {
+        super(id, name, phoneNumber, birthDate, cpf, address, user, updatedBy);
         this.id = id;
         this.allergies = allergies;
     }

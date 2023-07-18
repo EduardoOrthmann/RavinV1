@@ -21,6 +21,7 @@ import product.ProductService;
 import table.TableController;
 import table.TableDAO;
 import table.TableService;
+import user.UserController;
 import user.UserRepository;
 import user.UserService;
 
@@ -52,6 +53,7 @@ public class Main {
         final String TABLE_PATH = "/table";
         final String ORDER_PATH = "/order";
         final String BILL_PATH = "/bill";
+        final String USER_PATH = "/user";
         var customerController = new CustomerController(CUSTOMER_PATH, customerService);
         var employeeController = new EmployeeController(EMPLOYEE_PATH, employeeService);
         var productController = new ProductController(PRODUCT_PATH, productService);
@@ -59,6 +61,7 @@ public class Main {
         var tableController = new TableController(TABLE_PATH, tableService, customerService, orderService);
         var orderController = new OrderController(ORDER_PATH, orderService, productService, employeeService);
         var billController = new BillController(BILL_PATH, commandService, orderService);
+        var userController = new UserController(USER_PATH, userService);
 
         InetSocketAddress address = new InetSocketAddress(8080);
         HttpServer server = HttpServer.create(address, 0);
@@ -70,6 +73,7 @@ public class Main {
         server.createContext(TABLE_PATH, tableController);
         server.createContext(ORDER_PATH, orderController);
         server.createContext(BILL_PATH, billController);
+        server.createContext(USER_PATH, userController);
 
         server.setExecutor(null);
         server.start();

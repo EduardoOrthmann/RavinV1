@@ -19,7 +19,6 @@ public class UserService {
             throw new IllegalArgumentException("Usuário já cadastrado");
         }
 
-        entity.setToken(generateToken());
         userRepository.save(entity);
     }
 
@@ -38,5 +37,26 @@ public class UserService {
         random.ints(10, 0, 10).forEach(token::append);
 
         return token.toString();
+    }
+
+    public String authenticate(String username, String password) {
+        User user = findByUsername(username);
+
+        if (!user.getPassword().equals(password)) {
+            throw new IllegalArgumentException("Senha incorreta");
+        }
+
+        var token = generateToken();
+        user.setToken(token);
+        return token;
+    }
+
+    public User findByToken(String token) {
+        return userRepository.findByToken(token).orElseThrow(() -> new NoSuchElementException("Usuário não encontrado"));
+    }
+
+    public void logout(String token) {
+        User user = findByToken(token);
+        user.setToken(null);
     }
 }
