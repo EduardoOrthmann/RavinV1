@@ -39,7 +39,7 @@ public class UserService {
         return token.toString();
     }
 
-    public String authenticate(String username, String password) {
+    public String login(String username, String password) {
         User user = findByUsername(username);
 
         if (!user.getPassword().equals(password)) {

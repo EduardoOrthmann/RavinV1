@@ -41,7 +41,7 @@ public class UserController implements HttpHandler {
 
                     try {
                         var userCredentials = gson.fromJson(requestBody, User.class);
-                        var token = userService.authenticate(userCredentials.getUsername(), userCredentials.getPassword());
+                        var token = userService.login(userCredentials.getUsername(), userCredentials.getPassword());
 
                         response = gson.toJson(Map.of("token", token));
                         statusCode = 200;

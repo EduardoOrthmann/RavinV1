@@ -54,7 +54,7 @@ public class Main {
         final String ORDER_PATH = "/order";
         final String BILL_PATH = "/bill";
         final String USER_PATH = "/user";
-        var customerController = new CustomerController(CUSTOMER_PATH, customerService);
+        var customerController = new CustomerController(CUSTOMER_PATH, customerService, userService);
         var employeeController = new EmployeeController(EMPLOYEE_PATH, employeeService);
         var productController = new ProductController(PRODUCT_PATH, productService);
         var menuController = new MenuController(MENU_PATH, menuService, productService);

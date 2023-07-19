@@ -8,25 +8,27 @@ import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
 import enums.Role;
 import exceptions.ErrorResponse;
+import exceptions.UnauthorizedRequestException;
 import user.User;
+import user.UserService;
+import utils.APIUtils;
 import utils.DateUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 public class CustomerController implements HttpHandler {
     private final String customerPath;
     private final CustomerService customerService;
+    private final UserService userService;
     private final Gson gson;
 
-    public CustomerController(String customerPath, CustomerService customerService) {
+    public CustomerController(String customerPath, CustomerService customerService, UserService userService) {
         this.customerPath = customerPath;
         this.customerService = customerService;
+        this.userService = userService;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
@@ -40,6 +42,7 @@ public class CustomerController implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
         final Optional<String[]> queryParam = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
         exchange.getResponseHeaders().set("Content-Type", "application/json");
 
@@ -48,8 +51,25 @@ public class CustomerController implements HttpHandler {
                 // GET /customer
                 if (path.matches(customerPath)) {
                     try {
-                        response = gson.toJson(customerService.findAll());
-                        statusCode = 200;
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+
+                        if (headerToken == null) {
+                            throw new UnauthorizedRequestException("Não autorizado");
+                        }
+
+                        var user = userService.findByToken(headerToken);
+                        var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                        if (acceptedRoles.contains(user.getRole())) {
+                            response = gson.toJson(customerService.findAll());
+                            statusCode = 200;
+                        } else {
+                            response = gson.toJson(new ErrorResponse("Unauthorized"));
+                            statusCode = 401;
+                        }
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 500;
