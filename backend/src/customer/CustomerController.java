@@ -65,6 +65,9 @@ public class CustomerController implements HttpHandler {
                     } catch (IllegalArgumentException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 400;
+                    } catch (NoSuchElementException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 404;
                     } catch (UnauthorizedRequestException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 401;
@@ -141,8 +144,14 @@ public class CustomerController implements HttpHandler {
                 // POST /customer
                 if (path.matches(customerPath)) {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                    Integer createdBy = null;
 
                     try {
+                        if (tokenFromHeaders.isPresent()) {
+                            var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.get());
+                            createdBy = userService.findByToken(headerToken).getId();
+                        }
+
                         var customer = gson.fromJson(requestBody, Customer.class);
                         customerService.save(
                                 new Customer(
@@ -152,7 +161,7 @@ public class CustomerController implements HttpHandler {
                                         customer.getCpf(),
                                         customer.getAddress(),
                                         new User(customer.getUser().getUsername(), customer.getUser().getPassword(), Role.CUSTOMER),
-                                        customer.getCreatedBy(),
+                                        createdBy,
                                         customer.getAllergies() == null ? new HashSet<>() : customer.getAllergies()
                                 )
                         );
@@ -161,6 +170,9 @@ public class CustomerController implements HttpHandler {
                     } catch (IllegalArgumentException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 400;
+                    } catch (NoSuchElementException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 404;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 500;
@@ -188,6 +200,7 @@ public class CustomerController implements HttpHandler {
                         }
 
                         var updatedCustomer = gson.fromJson(requestBody, Customer.class);
+                        var updatedBy = customerService.findIdByUserId(user.getId());
                         updatedCustomer = new Customer(
                                 id,
                                 updatedCustomer.getName(),
@@ -196,7 +209,7 @@ public class CustomerController implements HttpHandler {
                                 updatedCustomer.getCpf(),
                                 updatedCustomer.getAddress(),
                                 updatedCustomer.getUser(),
-                                updatedCustomer.getUpdatedBy(),
+                                updatedBy,
                                 updatedCustomer.getAllergies()
                         );
 

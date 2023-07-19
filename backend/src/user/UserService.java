@@ -52,7 +52,7 @@ public class UserService {
     }
 
     public User findByToken(String token) {
-        return userRepository.findByToken(token).orElseThrow(() -> new NoSuchElementException("Usuário não encontrado"));
+        return userRepository.findByToken(token).orElseThrow(() -> new NoSuchElementException("Token não encontrado"));
     }
 
     public void logout(String token) {
