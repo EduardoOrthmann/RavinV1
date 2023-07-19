@@ -2,7 +2,7 @@ package exceptions;
 
 public class UnauthorizedRequestException extends Exception {
     public UnauthorizedRequestException() {
-        super("Unauthorized Request!");
+        super("Usuário não autorizado!");
     }
 
     public UnauthorizedRequestException(String message) {

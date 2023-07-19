@@ -41,7 +41,7 @@ public class CustomerController implements HttpHandler {
         int statusCode;
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
-        final Optional<String[]> queryParam = Optional.of(path.split("/"));
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
         exchange.getResponseHeaders().set("Content-Type", "application/json");
@@ -53,20 +53,18 @@ public class CustomerController implements HttpHandler {
                     try {
                         var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
 
-                        if (headerToken == null) {
-                            throw new UnauthorizedRequestException("Não autorizado");
-                        }
-
                         var user = userService.findByToken(headerToken);
                         var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
 
-                        if (acceptedRoles.contains(user.getRole())) {
-                            response = gson.toJson(customerService.findAll());
-                            statusCode = 200;
-                        } else {
-                            response = gson.toJson(new ErrorResponse("Unauthorized"));
-                            statusCode = 401;
+                        if (!acceptedRoles.contains(user.getRole())) {
+                            throw new UnauthorizedRequestException();
                         }
+
+                        response = gson.toJson(customerService.findAll());
+                        statusCode = 200;
+                    } catch (IllegalArgumentException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 400;
                     } catch (UnauthorizedRequestException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 401;
@@ -77,8 +75,17 @@ public class CustomerController implements HttpHandler {
                     // GET /customer/{id}
                 } else if (path.matches(customerPath + "/[0-9]+")) {
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
-                        response = gson.toJson(customerService.findById(id));
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                        int id = Integer.parseInt(splittedPath.get()[2]);
+
+                        var user = userService.findByToken(headerToken);
+                        var customer = customerService.findById(id);
+
+                        if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                            throw new UnauthorizedRequestException();
+                        }
+
+                        response = gson.toJson(customer);
                         statusCode = 200;
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
@@ -86,6 +93,9 @@ public class CustomerController implements HttpHandler {
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 500;
@@ -93,16 +103,29 @@ public class CustomerController implements HttpHandler {
                     // GET /customer/{id}/birthday
                 } else if (path.matches(customerPath + "/[0-9]+" + "/birthday")) {
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                        int id = Integer.parseInt(splittedPath.get()[2]);
+
+                        var user = userService.findByToken(headerToken);
                         var customer = customerService.findById(id);
+
+                        if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                            throw new UnauthorizedRequestException();
+                        }
 
                         response = gson.toJson(Map.of("isBirthday", DateUtils.isBirthday(customer.getBirthDate())));
                         statusCode = 200;
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
+                        statusCode = 400;
+                    } catch (IllegalArgumentException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 400;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
@@ -135,6 +158,9 @@ public class CustomerController implements HttpHandler {
                         );
 
                         statusCode = 201;
+                    } catch (IllegalArgumentException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 400;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 500;
@@ -151,8 +177,15 @@ public class CustomerController implements HttpHandler {
                     String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                        int id = Integer.parseInt(splittedPath.get()[2]);
+
+                        var user = userService.findByToken(headerToken);
                         var customer = customerService.findById(id);
+
+                        if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                            throw new UnauthorizedRequestException();
+                        }
 
                         var updatedCustomer = gson.fromJson(requestBody, Customer.class);
                         updatedCustomer = new Customer(
@@ -183,6 +216,9 @@ public class CustomerController implements HttpHandler {
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
@@ -200,8 +236,15 @@ public class CustomerController implements HttpHandler {
                 // DELETE /customer/{id}
                 if (path.matches(customerPath + "/[0-9]+")) {
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                        int id = Integer.parseInt(splittedPath.get()[2]);
+
+                        var user = userService.findByToken(headerToken);
                         var customer = customerService.findById(id);
+
+                        if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                            throw new UnauthorizedRequestException();
+                        }
 
                         customerService.delete(customer);
 
@@ -209,6 +252,9 @@ public class CustomerController implements HttpHandler {
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
