@@ -208,7 +208,6 @@ public class CustomerController implements HttpHandler {
                                 updatedCustomer.getBirthDate(),
                                 updatedCustomer.getCpf(),
                                 updatedCustomer.getAddress(),
-                                updatedCustomer.getUser(),
                                 updatedBy,
                                 updatedCustomer.getAllergies()
                         );
@@ -218,7 +217,6 @@ public class CustomerController implements HttpHandler {
                         customer.setBirthDate(updatedCustomer.getBirthDate());
                         customer.setCpf(updatedCustomer.getCpf());
                         customer.setAddress(updatedCustomer.getAddress());
-                        customer.setUser(updatedCustomer.getUser());
                         customer.setUpdatedAt(updatedCustomer.getUpdatedAt());
                         customer.setUpdatedBy(updatedCustomer.getUpdatedBy());
                         customer.setAllergies(updatedCustomer.getAllergies());

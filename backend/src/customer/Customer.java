@@ -19,8 +19,8 @@ public class Customer extends Person {
         this.allergies = allergies;
     }
 
-    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer updatedBy, Set<Allergy> allergies) {
-        super(id, name, phoneNumber, birthDate, cpf, address, user, updatedBy);
+    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Integer updatedBy, Set<Allergy> allergies) {
+        super(id, name, phoneNumber, birthDate, cpf, address, updatedBy);
         this.id = id;
         this.allergies = allergies;
     }

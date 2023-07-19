@@ -124,7 +124,6 @@ public class EmployeeController implements HttpHandler {
                                 updatedEmployee.getBirthDate(),
                                 updatedEmployee.getCpf(),
                                 updatedEmployee.getAddress(),
-                                updatedEmployee.getUser(),
                                 updatedEmployee.getUpdatedBy(),
                                 updatedEmployee.getRg(),
                                 updatedEmployee.getMaritalStatus(),
@@ -141,7 +140,6 @@ public class EmployeeController implements HttpHandler {
                         employee.setBirthDate(updatedEmployee.getBirthDate());
                         employee.setCpf(updatedEmployee.getCpf());
                         employee.setAddress(updatedEmployee.getAddress());
-                        employee.setUser(updatedEmployee.getUser());
                         employee.setUpdatedBy(updatedEmployee.getUpdatedBy());
                         employee.setUpdatedAt(updatedEmployee.getUpdatedAt());
                         employee.setRg(updatedEmployee.getRg());

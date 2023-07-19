@@ -31,13 +31,12 @@ public abstract class Person {
         this.createdBy = createdBy;
     }
 
-    public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer updatedBy) {
+    public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Integer updatedBy) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
         this.cpf = cpf;
         this.address = address;
-        this.user = user;
         this.updatedAt = LocalDateTime.now();
         this.updatedBy = updatedBy;
     }

@@ -28,7 +28,6 @@ public class CustomerService {
     }
 
     public void update(Customer entity) {
-        userService.update(entity.getUser());
         customerDAO.update(entity);
     }
 
