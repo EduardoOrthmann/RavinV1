@@ -28,12 +28,15 @@ public class EmployeeService {
     }
 
     public void update(Employee entity) {
-        userService.update(entity.getUser());
         employeeDAO.update(entity);
     }
 
     public void delete(Employee entity) {
         employeeDAO.delete(entity);
         userService.delete(entity.getUser());
+    }
+
+    public int findIdByUserId(int userId) {
+        return employeeDAO.findIdByUserId(userId).orElseThrow(() -> new NoSuchElementException("Cliente não encontrado"));
     }
 }

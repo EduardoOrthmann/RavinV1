@@ -6,23 +6,30 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
+import enums.Role;
 import exceptions.ErrorResponse;
+import exceptions.UnauthorizedRequestException;
 import user.User;
+import user.UserService;
+import utils.APIUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 public class EmployeeController implements HttpHandler {
     private final String employeePath;
     private final EmployeeService employeeService;
+    private final UserService userService;
     private final Gson gson;
 
-    public EmployeeController(String employeePath, EmployeeService employeeService) {
+    public EmployeeController(String employeePath, EmployeeService employeeService, UserService userService) {
         this.employeePath = employeePath;
         this.employeeService = employeeService;
+        this.userService = userService;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
@@ -34,7 +41,8 @@ public class EmployeeController implements HttpHandler {
         int statusCode;
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
-        final Optional<String[]> queryParam = Optional.of(path.split("/"));
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
         exchange.getResponseHeaders().set("Content-Type", "application/json");
 
@@ -43,8 +51,26 @@ public class EmployeeController implements HttpHandler {
                 // GET /employee
                 if (path.matches(employeePath)) {
                     try {
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+
+                        var user = userService.findByToken(headerToken);
+                        var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                        if (!acceptedRoles.contains(user.getRole())) {
+                            throw new UnauthorizedRequestException();
+                        }
+
                         response = gson.toJson(employeeService.findAll());
                         statusCode = 200;
+                    } catch (IllegalArgumentException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 400;
+                    } catch (NoSuchElementException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 404;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 500;
@@ -52,16 +78,27 @@ public class EmployeeController implements HttpHandler {
                     // GET /employee/{id}
                 } else if (path.matches(employeePath + "/[0-9]+")) {
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
-                        response = gson.toJson(employeeService.findById(id));
-                        statusCode = 200;
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                        int id = Integer.parseInt(splittedPath.get()[2]);
 
+                        var user = userService.findByToken(headerToken);
+                        var employee = employeeService.findById(id);
+
+                        if ((user.getRole() == Role.EMPLOYEE && user.getId() != employee.getUser().getId()) || user.getRole() == Role.CUSTOMER) {
+                            throw new UnauthorizedRequestException();
+                        }
+
+                        response = gson.toJson(employee);
+                        statusCode = 200;
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 500;
@@ -75,10 +112,20 @@ public class EmployeeController implements HttpHandler {
             case "POST" -> {
                 // POST /employee
                 if (path.matches(employeePath)) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
                     try {
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+
+                        var user = userService.findByToken(headerToken);
+                        var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                        if (!acceptedRoles.contains(user.getRole())) {
+                            throw new UnauthorizedRequestException();
+                        }
+
+                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
                         var employee = gson.fromJson(requestBody, Employee.class);
+                        var createdBy = employeeService.findIdByUserId(user.getId());
+
                         employeeService.save(
                                 new Employee(
                                         employee.getName(),
@@ -87,7 +134,7 @@ public class EmployeeController implements HttpHandler {
                                         employee.getCpf(),
                                         employee.getAddress(),
                                         new User(employee.getUser().getUsername(), employee.getUser().getPassword(), employee.getUser().getRole()),
-                                        employee.getCreatedBy(),
+                                        createdBy,
                                         employee.getRg(),
                                         employee.getMaritalStatus(),
                                         employee.getEducationLevel(),
@@ -97,6 +144,15 @@ public class EmployeeController implements HttpHandler {
                         );
 
                         statusCode = 201;
+                    } catch (IllegalArgumentException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 400;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
+                    } catch (NoSuchElementException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 404;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 500;
@@ -110,13 +166,21 @@ public class EmployeeController implements HttpHandler {
             case "PUT" -> {
                 // PUT /employee/{id}
                 if (path.matches(employeePath + "/[0-9]+")) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
+                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                        int id = Integer.parseInt(splittedPath.get()[2]);
+
+                        var user = userService.findByToken(headerToken);
                         var employee = employeeService.findById(id);
 
+                        if ((user.getRole() == Role.EMPLOYEE && user.getId() != employee.getUser().getId()) || user.getRole() == Role.CUSTOMER) {
+                            throw new UnauthorizedRequestException();
+                        }
+
                         var updatedEmployee = gson.fromJson(requestBody, Employee.class);
+                        var updatedBy = employeeService.findIdByUserId(user.getId());
+
                         updatedEmployee = new Employee(
                                 id,
                                 updatedEmployee.getName(),
@@ -124,14 +188,13 @@ public class EmployeeController implements HttpHandler {
                                 updatedEmployee.getBirthDate(),
                                 updatedEmployee.getCpf(),
                                 updatedEmployee.getAddress(),
-                                updatedEmployee.getUpdatedBy(),
+                                updatedBy,
                                 updatedEmployee.getRg(),
                                 updatedEmployee.getMaritalStatus(),
                                 updatedEmployee.getEducationLevel(),
                                 updatedEmployee.getPosition(),
                                 updatedEmployee.getWorkCardNumber(),
-                                updatedEmployee.getAdmissionDate(),
-                                updatedEmployee.isAvailable()
+                                updatedEmployee.getAdmissionDate()
                         );
 
                         employee.setId(id);
@@ -148,7 +211,6 @@ public class EmployeeController implements HttpHandler {
                         employee.setPosition(updatedEmployee.getPosition());
                         employee.setWorkCardNumber(updatedEmployee.getWorkCardNumber());
                         employee.setAdmissionDate(updatedEmployee.getAdmissionDate());
-                        employee.setAvailable(updatedEmployee.isAvailable());
 
                         employeeService.update(employee);
 
@@ -156,6 +218,9 @@ public class EmployeeController implements HttpHandler {
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
@@ -173,8 +238,15 @@ public class EmployeeController implements HttpHandler {
                 // DELETE /employee/{id}
                 if (path.matches(employeePath + "/[0-9]+")) {
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                        int id = Integer.parseInt(splittedPath.get()[2]);
+
+                        var user = userService.findByToken(headerToken);
                         var employee = employeeService.findById(id);
+
+                        if ((user.getRole() == Role.EMPLOYEE && user.getId() != employee.getUser().getId()) || user.getRole() == Role.CUSTOMER) {
+                            throw new UnauthorizedRequestException();
+                        }
 
                         employeeService.delete(employee);
 
@@ -182,6 +254,9 @@ public class EmployeeController implements HttpHandler {
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;

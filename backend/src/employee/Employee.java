@@ -33,7 +33,7 @@ public class Employee extends Person {
         this.isAvailable = true;
     }
 
-    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Integer updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, boolean isAvailable) {
+    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Integer updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate) {
         super(id, name, phoneNumber, birthDate, cpf, address, updatedBy);
         this.id = id;
         this.rg = rg;
@@ -42,7 +42,6 @@ public class Employee extends Person {
         this.position = position;
         this.workCardNumber = workCardNumber;
         this.admissionDate = admissionDate;
-        this.isAvailable = isAvailable;
     }
 
     public int getId() {

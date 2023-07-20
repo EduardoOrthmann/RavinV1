@@ -1,5 +1,6 @@
 package employee;
 
+import customer.Customer;
 import interfaces.Crud;
 
 import java.util.ArrayList;
@@ -41,5 +42,12 @@ public class EmployeeDAO implements Crud<Employee> {
     public void delete(Employee entity) {
         var employee = findById(entity.getId()).orElseThrow(() -> new NoSuchElementException("Funcionário não encontrado"));
         this.employeeList.remove(employee);
+    }
+
+    public Optional<Integer> findIdByUserId(int userId) {
+        return employeeList.stream()
+                .filter(employee -> employee.getUser().getId() == userId)
+                .map(Employee::getId)
+                .findFirst();
     }
 }

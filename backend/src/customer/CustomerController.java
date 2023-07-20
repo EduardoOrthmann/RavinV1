@@ -143,16 +143,18 @@ public class CustomerController implements HttpHandler {
             case "POST" -> {
                 // POST /customer
                 if (path.matches(customerPath)) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
                     Integer createdBy = null;
 
                     try {
+                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
+
                         if (tokenFromHeaders.isPresent()) {
                             var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.get());
                             createdBy = userService.findByToken(headerToken).getId();
                         }
 
                         var customer = gson.fromJson(requestBody, Customer.class);
+
                         customerService.save(
                                 new Customer(
                                         customer.getName(),
@@ -186,9 +188,8 @@ public class CustomerController implements HttpHandler {
             case "PUT" -> {
                 // PUT /customer/{id}
                 if (path.matches(customerPath + "/[0-9]+")) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
                     try {
+                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
                         var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
                         int id = Integer.parseInt(splittedPath.get()[2]);
 
@@ -201,6 +202,7 @@ public class CustomerController implements HttpHandler {
 
                         var updatedCustomer = gson.fromJson(requestBody, Customer.class);
                         var updatedBy = customerService.findIdByUserId(user.getId());
+
                         updatedCustomer = new Customer(
                                 id,
                                 updatedCustomer.getName(),

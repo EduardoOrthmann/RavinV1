@@ -76,7 +76,7 @@ public class Builder {
                         LocalDate.of(1985, 10, 8),
                         "555123456",
                         new Address("Brazil", "Belo Horizonte", "Minas Gerais", "03456-789", "Centro", "Rua Principal"),
-                        new User("pedro.oliveira", "123456", Role.ADMIN),
+                        new User("pedro.oliveira", "123456", Role.EMPLOYEE),
                         null,
                         "444123456",
                         MaritalStatus.MARRIED,
