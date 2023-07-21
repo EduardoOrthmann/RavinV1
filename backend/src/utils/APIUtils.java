@@ -1,5 +1,8 @@
 package utils;
 
+import com.sun.net.httpserver.HttpExchange;
+
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -26,5 +29,16 @@ public class APIUtils {
         }
 
         return authHeaderValue.split(" ")[1];
+    }
+
+    public static void sendResponse(HttpExchange exchange, int statusCode, String responseBody) throws IOException {
+        if (responseBody.getBytes().length > 0) {
+            exchange.sendResponseHeaders(statusCode, responseBody.getBytes().length);
+            exchange.getResponseBody().write(responseBody.getBytes());
+        } else {
+            exchange.sendResponseHeaders(statusCode, -1);
+        }
+
+        exchange.close();
     }
 }

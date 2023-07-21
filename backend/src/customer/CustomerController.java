@@ -15,6 +15,7 @@ import utils.APIUtils;
 import utils.DateUtils;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -35,265 +36,283 @@ public class CustomerController implements HttpHandler {
                 .create();
     }
 
-    @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String response = "";
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+
+        switch (exchange.getRequestMethod()) {
+            case "GET" -> getHandler(exchange);
+            case "POST" -> postHandler(exchange);
+            case "PUT" -> putHandler(exchange);
+            case "DELETE" -> deleteHandler(exchange);
+            default -> APIUtils.sendResponse(exchange, HttpURLConnection.HTTP_BAD_METHOD, gson.toJson(new ErrorResponse("Invalid request method")));
+        }
+    }
+
+    private void getHandler(HttpExchange exchange) throws IOException {
+        String response;
         int statusCode;
+
         String path = exchange.getRequestURI().getPath();
-        String requestMethod = exchange.getRequestMethod();
         final Optional<String[]> splittedPath = Optional.of(path.split("/"));
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        // GET /customer
+        if (path.matches(customerPath)) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
 
-        switch (requestMethod) {
-            case "GET" -> {
-                // GET /customer
-                if (path.matches(customerPath)) {
-                    try {
-                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                var user = userService.findByToken(headerToken);
+                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
 
-                        var user = userService.findByToken(headerToken);
-                        var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                        if (!acceptedRoles.contains(user.getRole())) {
-                            throw new UnauthorizedRequestException();
-                        }
-
-                        response = gson.toJson(customerService.findAll());
-                        statusCode = 200;
-                    } catch (IllegalArgumentException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 400;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (UnauthorizedRequestException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 401;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                    // GET /customer/{id}
-                } else if (path.matches(customerPath + "/[0-9]+")) {
-                    try {
-                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                        int id = Integer.parseInt(splittedPath.get()[2]);
-
-                        var user = userService.findByToken(headerToken);
-                        var customer = customerService.findById(id);
-
-                        if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
-                            throw new UnauthorizedRequestException();
-                        }
-
-                        response = gson.toJson(customer);
-                        statusCode = 200;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (UnauthorizedRequestException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 401;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                    // GET /customer/{id}/birthday
-                } else if (path.matches(customerPath + "/[0-9]+" + "/birthday")) {
-                    try {
-                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                        int id = Integer.parseInt(splittedPath.get()[2]);
-
-                        var user = userService.findByToken(headerToken);
-                        var customer = customerService.findById(id);
-
-                        if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
-                            throw new UnauthorizedRequestException();
-                        }
-
-                        response = gson.toJson(Map.of("isBirthday", DateUtils.isBirthday(customer.getBirthDate())));
-                        statusCode = 200;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (UnauthorizedRequestException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 401;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (IllegalArgumentException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
+                if (!acceptedRoles.contains(user.getRole())) {
+                    throw new UnauthorizedRequestException();
                 }
-            }
 
-            case "POST" -> {
-                // POST /customer
-                if (path.matches(customerPath)) {
-                    Integer createdBy = null;
-
-                    try {
-                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
-                        if (tokenFromHeaders.isPresent()) {
-                            var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.get());
-                            createdBy = userService.findByToken(headerToken).getId();
-                        }
-
-                        var customer = gson.fromJson(requestBody, Customer.class);
-
-                        customerService.save(
-                                new Customer(
-                                        customer.getName(),
-                                        customer.getPhoneNumber(),
-                                        customer.getBirthDate(),
-                                        customer.getCpf(),
-                                        customer.getAddress(),
-                                        new User(customer.getUser().getUsername(), customer.getUser().getPassword(), Role.CUSTOMER),
-                                        createdBy,
-                                        customer.getAllergies() == null ? new HashSet<>() : customer.getAllergies()
-                                )
-                        );
-
-                        statusCode = 201;
-                    } catch (IllegalArgumentException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 400;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            case "PUT" -> {
-                // PUT /customer/{id}
-                if (path.matches(customerPath + "/[0-9]+")) {
-                    try {
-                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
-                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                        int id = Integer.parseInt(splittedPath.get()[2]);
-
-                        var user = userService.findByToken(headerToken);
-                        var customer = customerService.findById(id);
-
-                        if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
-                            throw new UnauthorizedRequestException();
-                        }
-
-                        var updatedCustomer = gson.fromJson(requestBody, Customer.class);
-                        var updatedBy = user.getId();
-
-                        updatedCustomer = new Customer(
-                                id,
-                                updatedCustomer.getName(),
-                                updatedCustomer.getPhoneNumber(),
-                                updatedCustomer.getBirthDate(),
-                                updatedCustomer.getCpf(),
-                                updatedCustomer.getAddress(),
-                                updatedBy,
-                                updatedCustomer.getAllergies()
-                        );
-
-                        customer.setName(updatedCustomer.getName());
-                        customer.setPhoneNumber(updatedCustomer.getPhoneNumber());
-                        customer.setBirthDate(updatedCustomer.getBirthDate());
-                        customer.setCpf(updatedCustomer.getCpf());
-                        customer.setAddress(updatedCustomer.getAddress());
-                        customer.setUpdatedAt(updatedCustomer.getUpdatedAt());
-                        customer.setUpdatedBy(updatedCustomer.getUpdatedBy());
-                        customer.setAllergies(updatedCustomer.getAllergies());
-
-                        customerService.update(customer);
-
-                        statusCode = 204;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (UnauthorizedRequestException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 401;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            case "DELETE" -> {
-                // DELETE /customer/{id}
-                if (path.matches(customerPath + "/[0-9]+")) {
-                    try {
-                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                        int id = Integer.parseInt(splittedPath.get()[2]);
-
-                        var user = userService.findByToken(headerToken);
-                        var customer = customerService.findById(id);
-
-                        if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
-                            throw new UnauthorizedRequestException();
-                        }
-
-                        customerService.delete(customer);
-
-                        statusCode = 204;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (UnauthorizedRequestException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 401;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            default -> {
-                response = gson.toJson(new ErrorResponse("Invalid request method"));
-                statusCode = 405;
+                response = gson.toJson(customerService.findAll());
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         }
+        // GET /customer/{id}
+        else if (path.matches(customerPath + "/[0-9]+")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int id = Integer.parseInt(splittedPath.get()[2]);
 
-        if (response.getBytes().length > 0) {
-            exchange.sendResponseHeaders(statusCode, response.getBytes().length);
-            exchange.getResponseBody().write(response.getBytes());
+                var user = userService.findByToken(headerToken);
+                var customer = customerService.findById(id);
+
+                if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                response = gson.toJson(customer);
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        }
+        // GET /customer/{id}/birthday
+        else if (path.matches(customerPath + "/[0-9]+" + "/birthday")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int id = Integer.parseInt(splittedPath.get()[2]);
+
+                var user = userService.findByToken(headerToken);
+                var customer = customerService.findById(id);
+
+                if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                response = gson.toJson(Map.of("isBirthday", DateUtils.isBirthday(customer.getBirthDate())));
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
         } else {
-            exchange.sendResponseHeaders(statusCode, -1);
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
-        exchange.close();
+        APIUtils.sendResponse(exchange, statusCode, response);
+    }
+
+    private void postHandler(HttpExchange exchange) throws IOException {
+        String response = "";
+        int statusCode;
+
+        String path = exchange.getRequestURI().getPath();
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+
+        // POST /customer
+        if (path.matches(customerPath)) {
+            Integer createdBy = null;
+
+            try {
+                String requestBody = new String(exchange.getRequestBody().readAllBytes());
+
+                if (tokenFromHeaders.isPresent()) {
+                    var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.get());
+                    createdBy = userService.findByToken(headerToken).getId();
+                }
+
+                var customer = gson.fromJson(requestBody, Customer.class);
+
+                customerService.save(
+                        new Customer(
+                                customer.getName(),
+                                customer.getPhoneNumber(),
+                                customer.getBirthDate(),
+                                customer.getCpf(),
+                                customer.getAddress(),
+                                new User(customer.getUser().getUsername(), customer.getUser().getPassword(), Role.CUSTOMER),
+                                createdBy,
+                                customer.getAllergies() == null ? new HashSet<>() : customer.getAllergies()
+                        )
+                );
+
+                statusCode = HttpURLConnection.HTTP_CREATED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        } else {
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+        }
+
+        APIUtils.sendResponse(exchange, statusCode, response);
+    }
+
+    private void putHandler(HttpExchange exchange) throws IOException {
+        String response = "";
+        int statusCode;
+
+        String path = exchange.getRequestURI().getPath();
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+
+        // PUT /customer/{id}
+        if (path.matches(customerPath + "/[0-9]+")) {
+            try {
+                String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int id = Integer.parseInt(splittedPath.get()[2]);
+
+                var user = userService.findByToken(headerToken);
+                var customer = customerService.findById(id);
+
+                if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                var updatedCustomer = gson.fromJson(requestBody, Customer.class);
+                var updatedBy = user.getId();
+
+                updatedCustomer = new Customer(
+                        id,
+                        updatedCustomer.getName(),
+                        updatedCustomer.getPhoneNumber(),
+                        updatedCustomer.getBirthDate(),
+                        updatedCustomer.getCpf(),
+                        updatedCustomer.getAddress(),
+                        updatedBy,
+                        updatedCustomer.getAllergies()
+                );
+
+                customer.setName(updatedCustomer.getName());
+                customer.setPhoneNumber(updatedCustomer.getPhoneNumber());
+                customer.setBirthDate(updatedCustomer.getBirthDate());
+                customer.setCpf(updatedCustomer.getCpf());
+                customer.setAddress(updatedCustomer.getAddress());
+                customer.setUpdatedAt(updatedCustomer.getUpdatedAt());
+                customer.setUpdatedBy(updatedCustomer.getUpdatedBy());
+                customer.setAllergies(updatedCustomer.getAllergies());
+
+                customerService.update(customer);
+
+                statusCode = HttpURLConnection.HTTP_NO_CONTENT;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        } else {
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+        }
+
+        APIUtils.sendResponse(exchange, statusCode, response);
+    }
+
+    private void deleteHandler(HttpExchange exchange) throws IOException {
+        String response = "";
+        int statusCode;
+
+        String path = exchange.getRequestURI().getPath();
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+
+        // DELETE /customer/{id}
+        if (path.matches(customerPath + "/[0-9]+")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int id = Integer.parseInt(splittedPath.get()[2]);
+
+                var user = userService.findByToken(headerToken);
+                var customer = customerService.findById(id);
+
+                if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                customerService.delete(customer);
+
+                statusCode = HttpURLConnection.HTTP_NO_CONTENT;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        } else {
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+        }
+
+        APIUtils.sendResponse(exchange, statusCode, response);
     }
 }

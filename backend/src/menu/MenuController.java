@@ -6,25 +6,33 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
+import enums.Role;
 import exceptions.ErrorResponse;
+import exceptions.UnauthorizedRequestException;
 import product.ProductService;
+import user.UserService;
+import utils.APIUtils;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 public class MenuController implements HttpHandler {
     private final String menuPath;
     private final MenuService menuService;
     private final ProductService productService;
+    private final UserService userService;
     private final Gson gson;
 
-    public MenuController(String menuPath, MenuService menuService, ProductService productService) {
+    public MenuController(String menuPath, MenuService menuService, ProductService productService, UserService userService) {
         this.menuPath = menuPath;
         this.menuService = menuService;
         this.productService = productService;
+        this.userService = userService;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
                 .registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter())
@@ -33,205 +41,299 @@ public class MenuController implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String response = "";
-        int statusCode;
-        String path = exchange.getRequestURI().getPath();
-        String requestMethod = exchange.getRequestMethod();
-        final Optional<String[]> queryParam = Optional.of(path.split("/"));
-
         exchange.getResponseHeaders().set("Content-Type", "application/json");
 
-        switch (requestMethod) {
-            case "GET" -> {
-                // GET /menu
-                if (path.matches(menuPath)) {
-                    try {
-                        response = gson.toJson(menuService.findAll());
-                        statusCode = 200;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                    // GET /menu/{id}
-                } else if (path.matches(menuPath + "/[0-9]+")) {
-                    try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
-                        response = gson.toJson(menuService.findById(id));
-                        statusCode = 200;
+        switch (exchange.getRequestMethod()) {
+            case "GET" -> getHandler(exchange);
+            case "POST" -> postHandler(exchange);
+            case "PUT" -> putHandler(exchange);
+            case "DELETE" -> deleteHandler(exchange);
+            case "PATCH" -> patchHandler(exchange);
+            default -> APIUtils.sendResponse(exchange, HttpURLConnection.HTTP_BAD_METHOD, gson.toJson(new ErrorResponse("Invalid request method")));
+        }
+    }
 
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
 
-            case "POST" -> {
-                // POST /menu
-                if (path.matches(menuPath)) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
+    private void getHandler(HttpExchange exchange) throws IOException {
+        String response;
+        int statusCode;
 
-                    try {
-                        var menu = gson.fromJson(requestBody, Menu.class);
-                        menuService.save(
-                                new Menu(
-                                        menu.getName(),
-                                        menu.getMenuCode(),
-                                        menu.getCreatedBy()
-                                )
-                        );
+        String path = exchange.getRequestURI().getPath();
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
 
-                        statusCode = 201;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            case "PUT" -> {
-                // PUT /menu/{id}
-                if (path.matches(menuPath + "/[0-9]+")) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
-                    try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
-                        var menu = menuService.findById(id);
-
-                        var updatedMenu = gson.fromJson(requestBody, Menu.class);
-                        updatedMenu = new Menu(
-                                id,
-                                updatedMenu.getName(),
-                                updatedMenu.getMenuCode(),
-                                updatedMenu.getUpdatedBy()
-                        );
-
-                        menu.setName(updatedMenu.getName());
-                        menu.setMenuCode(updatedMenu.getMenuCode());
-                        menu.setUpdatedAt(updatedMenu.getUpdatedAt());
-                        menu.setUpdatedBy(updatedMenu.getUpdatedBy());
-
-                        menuService.update(menu);
-
-                        statusCode = 204;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            case "DELETE" -> {
-                // DELETE /menu/{id}
-                if (path.matches(menuPath + "/[0-9]+")) {
-                    try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
-                        var menu = menuService.findById(id);
-
-                        menuService.delete(menu);
-
-                        statusCode = 204;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            case "PATCH" -> {
-                // PATCH /menu/{id}/add-product/{productId}
-                if (path.matches(menuPath + "/[0-9]+/add-product/[0-9]+")) {
-                    try {
-                        int menuId = Integer.parseInt(queryParam.get()[2]);
-                        int productId = Integer.parseInt(queryParam.get()[4]);
-
-                        var menu = menuService.findById(menuId);
-                        var product = productService.findById(productId);
-
-                        menuService.addProduct(menu, product);
-
-                        statusCode = 204;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Id inválido"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                    // PATCH /menu/{id}/remove-product/{productId}
-                } else if (path.matches(menuPath + "/[0-9]+/remove-product/[0-9]+")) {
-                    try {
-                        int menuId = Integer.parseInt(queryParam.get()[2]);
-                        int productId = Integer.parseInt(queryParam.get()[4]);
-
-                        var menu = menuService.findById(menuId);
-                        var product = productService.findById(productId);
-
-                        menuService.removeProduct(menu, product);
-
-                        statusCode = 204;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            default -> {
-                response = gson.toJson(new ErrorResponse("Invalid request method"));
-                statusCode = 405;
+        // GET /menu
+        if (path.matches(menuPath)) {
+            try {
+                response = gson.toJson(menuService.findAll());
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         }
-
-        if (response.getBytes().length > 0) {
-            exchange.sendResponseHeaders(statusCode, response.getBytes().length);
-            exchange.getResponseBody().write(response.getBytes());
+        // GET /menu/{id}
+        else if (path.matches(menuPath + "/[0-9]+")) {
+            try {
+                int id = Integer.parseInt(splittedPath.get()[2]);
+                response = gson.toJson(menuService.findById(id));
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
         } else {
-            exchange.sendResponseHeaders(statusCode, -1);
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
-        exchange.close();
+        APIUtils.sendResponse(exchange, statusCode, response);
+    }
+
+    private void postHandler(HttpExchange exchange) throws IOException {
+        String response = "";
+        int statusCode;
+
+        String path = exchange.getRequestURI().getPath();
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+
+        // POST /menu
+        if (path.matches(menuPath)) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+
+                var user = userService.findByToken(headerToken);
+                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                if (!acceptedRoles.contains(user.getRole())) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                var menu = gson.fromJson(requestBody, Menu.class);
+                var createdBy = user.getId();
+
+                menuService.save(
+                        new Menu(
+                                menu.getName(),
+                                menu.getMenuCode(),
+                                createdBy
+                        )
+                );
+
+                statusCode = HttpURLConnection.HTTP_CREATED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        } else {
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+        }
+
+        APIUtils.sendResponse(exchange, statusCode, response);
+    }
+
+    private void putHandler(HttpExchange exchange) throws IOException {
+        String response = "";
+        int statusCode;
+
+        String path = exchange.getRequestURI().getPath();
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+
+        // PUT /menu/{id}
+        if (path.matches(menuPath + "/[0-9]+")) {
+            try {
+                String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int id = Integer.parseInt(splittedPath.get()[2]);
+
+                var user = userService.findByToken(headerToken);
+                var menu = menuService.findById(id);
+                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                if (!acceptedRoles.contains(user.getRole())) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                var updatedMenu = gson.fromJson(requestBody, Menu.class);
+                var updatedBy = user.getId();
+
+                updatedMenu = new Menu(
+                        id,
+                        updatedMenu.getName(),
+                        updatedMenu.getMenuCode(),
+                        updatedBy
+                );
+
+                menu.setName(updatedMenu.getName());
+                menu.setMenuCode(updatedMenu.getMenuCode());
+                menu.setUpdatedAt(updatedMenu.getUpdatedAt());
+                menu.setUpdatedBy(updatedMenu.getUpdatedBy());
+
+                menuService.update(menu);
+
+                statusCode = HttpURLConnection.HTTP_NO_CONTENT;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        } else {
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+        }
+
+        APIUtils.sendResponse(exchange, statusCode, response);
+    }
+
+    private void deleteHandler(HttpExchange exchange) throws IOException {
+        String response = "";
+        int statusCode;
+
+        String path = exchange.getRequestURI().getPath();
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+
+        // DELETE /menu/{id}
+        if (path.matches(menuPath + "/[0-9]+")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int id = Integer.parseInt(splittedPath.get()[2]);
+
+                var user = userService.findByToken(headerToken);
+                var menu = menuService.findById(id);
+                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                if (!acceptedRoles.contains(user.getRole())) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                menuService.delete(menu);
+
+                statusCode = HttpURLConnection.HTTP_NO_CONTENT;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        } else {
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+        }
+
+        APIUtils.sendResponse(exchange, statusCode, response);
+    }
+
+    private void patchHandler(HttpExchange exchange) throws IOException {
+        String response = "";
+        int statusCode;
+
+        String path = exchange.getRequestURI().getPath();
+        final Optional<String[]> queryParam = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+
+        // PATCH /menu/{id}/add-product/{productId}
+        if (path.matches(menuPath + "/[0-9]+/add-product/[0-9]+")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int menuId = Integer.parseInt(queryParam.get()[2]);
+                int productId = Integer.parseInt(queryParam.get()[4]);
+
+                var user = userService.findByToken(headerToken);
+                var menu = menuService.findById(menuId);
+                var product = productService.findById(productId);
+                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                if (!acceptedRoles.contains(user.getRole())) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                menuService.addProduct(menu, product);
+
+                statusCode = HttpURLConnection.HTTP_NO_CONTENT;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        }
+        // PATCH /menu/{id}/remove-product/{productId}
+        else if (path.matches(menuPath + "/[0-9]+/remove-product/[0-9]+")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int menuId = Integer.parseInt(queryParam.get()[2]);
+                int productId = Integer.parseInt(queryParam.get()[4]);
+
+                var user = userService.findByToken(headerToken);
+                var menu = menuService.findById(menuId);
+                var product = productService.findById(productId);
+                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                if (!acceptedRoles.contains(user.getRole())) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                menuService.removeProduct(menu, product);
+
+                statusCode = HttpURLConnection.HTTP_NO_CONTENT;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        } else {
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+        }
+
+        APIUtils.sendResponse(exchange, statusCode, response);
     }
 }
