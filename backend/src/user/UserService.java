@@ -1,7 +1,12 @@
 package user;
 
+import enums.Role;
+import exceptions.UnauthorizedRequestException;
+import utils.APIUtils;
+
 import java.util.NoSuchElementException;
 import java.util.Random;
+import java.util.Set;
 
 public class UserService {
     private final UserRepository userRepository;
@@ -58,5 +63,19 @@ public class UserService {
     public void logout(String token) {
         User user = findByToken(token);
         user.setToken(null);
+    }
+
+    public User checkUserRoleAndAuthorize(String tokenFromHeaders) throws UnauthorizedRequestException {
+        String headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders);
+
+        User user = findByToken(headerToken);
+
+        Set<Role> acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+        if (!acceptedRoles.contains(user.getRole())) {
+            throw new UnauthorizedRequestException();
+        }
+
+        return user;
     }
 }

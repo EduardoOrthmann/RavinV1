@@ -37,7 +37,7 @@ public class Main {
         var customerService = new  CustomerService(new CustomerDAO(), userService);
         var tableService = new TableService(new TableDAO());
         var orderService = new OrderService(new OrderDAO());
-        var commandService = new BillService(new BillDAO());
+        var billService = new BillService(new BillDAO());
 
         var builder = new Builder(employeeService, customerService, tableService, productService, menuService);
         builder.employeeBuilder();
@@ -60,7 +60,7 @@ public class Main {
         var menuController = new MenuController(MENU_PATH, menuService, productService, userService);
         var tableController = new TableController(TABLE_PATH, tableService, userService);
         var orderController = new OrderController(ORDER_PATH, orderService, productService, employeeService);
-        var billController = new BillController(BILL_PATH, commandService, orderService);
+        var billController = new BillController(BILL_PATH, billService, orderService);
         var userController = new UserController(USER_PATH, userService);
 
         InetSocketAddress address = new InetSocketAddress(8080);

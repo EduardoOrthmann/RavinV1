@@ -6,7 +6,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
-import enums.Role;
 import exceptions.ErrorResponse;
 import exceptions.UnauthorizedRequestException;
 import product.ProductService;
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 
 public class MenuController implements HttpHandler {
     private final String menuPath;
@@ -103,14 +101,7 @@ public class MenuController implements HttpHandler {
         // POST /menu
         if (path.matches(menuPath)) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-
-                var user = userService.findByToken(headerToken);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
 
                 String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 var menu = gson.fromJson(requestBody, Menu.class);
@@ -157,14 +148,7 @@ public class MenuController implements HttpHandler {
         // PUT /menu/{id}
         if (path.matches(menuPath + "/[0-9]+")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-
-                var user = userService.findByToken(headerToken);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
 
                 String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 int id = Integer.parseInt(splittedPath.get()[2]);
@@ -219,14 +203,7 @@ public class MenuController implements HttpHandler {
         // DELETE /menu/{id}
         if (path.matches(menuPath + "/[0-9]+")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-
-                var user = userService.findByToken(headerToken);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
 
                 int id = Integer.parseInt(splittedPath.get()[2]);
                 var menu = menuService.findById(id);
@@ -266,14 +243,7 @@ public class MenuController implements HttpHandler {
         // PATCH /menu/{id}/add-product/{productId}
         if (path.matches(menuPath + "/[0-9]+/add-product/[0-9]+")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-
-                var user = userService.findByToken(headerToken);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
 
                 int menuId = Integer.parseInt(splittedPath.get()[2]);
                 int productId = Integer.parseInt(splittedPath.get()[4]);
@@ -301,18 +271,12 @@ public class MenuController implements HttpHandler {
         // PATCH /menu/{id}/remove-product/{productId}
         else if (path.matches(menuPath + "/[0-9]+/remove-product/[0-9]+")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
+
                 int menuId = Integer.parseInt(splittedPath.get()[2]);
                 int productId = Integer.parseInt(splittedPath.get()[4]);
-
-                var user = userService.findByToken(headerToken);
                 var menu = menuService.findById(menuId);
                 var product = productService.findById(productId);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
 
                 menuService.removeProduct(menu, product);
 

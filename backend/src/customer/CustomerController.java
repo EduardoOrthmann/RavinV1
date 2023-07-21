@@ -57,14 +57,7 @@ public class CustomerController implements HttpHandler {
         // GET /customer
         if (path.matches(customerPath)) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-
-                var user = userService.findByToken(headerToken);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
 
                 response = gson.toJson(customerService.findAll());
                 statusCode = HttpURLConnection.HTTP_OK;

@@ -6,7 +6,6 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
-import enums.Role;
 import exceptions.ErrorResponse;
 import exceptions.UnauthorizedRequestException;
 import user.UserService;
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 
 public class ProductController implements HttpHandler {
     private final String productPath;
@@ -98,14 +96,7 @@ public class ProductController implements HttpHandler {
         // POST /product
         if (path.matches(productPath)) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-
-                var user = userService.findByToken(headerToken);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
 
                 String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 var product = gson.fromJson(requestBody, Product.class);
@@ -156,18 +147,11 @@ public class ProductController implements HttpHandler {
         // PUT /product/{id}
         if (path.matches(productPath + "/[0-9]+")) {
             try {
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
+
                 String requestBody = new String(exchange.getRequestBody().readAllBytes());
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
                 int id = Integer.parseInt(splittedPath.get()[2]);
-
-                var user = userService.findByToken(headerToken);
                 var product = productService.findById(id);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
-
                 var updatedProduct = gson.fromJson(requestBody, Product.class);
                 var updatedBy = user.getId();
 
@@ -228,17 +212,10 @@ public class ProductController implements HttpHandler {
         // DELETE /product/{id}
         if (path.matches(productPath + "/[0-9]+")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
+
                 int id = Integer.parseInt(splittedPath.get()[2]);
-
-                var user = userService.findByToken(headerToken);
                 var product = productService.findById(id);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
-
                 productService.delete(product);
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;

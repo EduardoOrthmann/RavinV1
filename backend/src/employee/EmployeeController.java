@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 
 public class EmployeeController implements HttpHandler {
     private final String employeePath;
@@ -58,14 +57,7 @@ public class EmployeeController implements HttpHandler {
         // GET /employee
         if (path.matches(employeePath)) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-
-                var user = userService.findByToken(headerToken);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
 
                 response = gson.toJson(employeeService.findAll());
                 statusCode = HttpURLConnection.HTTP_OK;
@@ -129,14 +121,7 @@ public class EmployeeController implements HttpHandler {
         // POST /employee
         if (path.matches(employeePath)) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-
-                var user = userService.findByToken(headerToken);
-                var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
-
-                if (!acceptedRoles.contains(user.getRole())) {
-                    throw new UnauthorizedRequestException();
-                }
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
 
                 String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 var employee = gson.fromJson(requestBody, Employee.class);
