@@ -201,7 +201,7 @@ public class CustomerController implements HttpHandler {
                         }
 
                         var updatedCustomer = gson.fromJson(requestBody, Customer.class);
-                        var updatedBy = customerService.findIdByUserId(user.getId());
+                        var updatedBy = user.getId();
 
                         updatedCustomer = new Customer(
                                 id,

@@ -42,11 +42,4 @@ public class CustomerDAO implements Crud<Customer> {
         var customer = findById(entity.getId()).orElseThrow(() -> new NoSuchElementException("Cliente não encontrado"));
         this.customerList.remove(customer);
     }
-
-    public Optional<Integer> findIdByUserId(int userId) {
-        return customerList.stream()
-                .filter(customer -> customer.getUser().getId() == userId)
-                .map(Customer::getId)
-                .findFirst();
-    }
 }

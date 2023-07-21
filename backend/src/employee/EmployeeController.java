@@ -124,7 +124,7 @@ public class EmployeeController implements HttpHandler {
 
                         String requestBody = new String(exchange.getRequestBody().readAllBytes());
                         var employee = gson.fromJson(requestBody, Employee.class);
-                        var createdBy = employeeService.findIdByUserId(user.getId());
+                        var createdBy = user.getId();
 
                         employeeService.save(
                                 new Employee(
@@ -179,7 +179,7 @@ public class EmployeeController implements HttpHandler {
                         }
 
                         var updatedEmployee = gson.fromJson(requestBody, Employee.class);
-                        var updatedBy = employeeService.findIdByUserId(user.getId());
+                        var updatedBy = user.getId();
 
                         updatedEmployee = new Employee(
                                 id,

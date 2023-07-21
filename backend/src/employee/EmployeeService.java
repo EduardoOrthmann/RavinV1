@@ -35,8 +35,4 @@ public class EmployeeService {
         employeeDAO.delete(entity);
         userService.delete(entity.getUser());
     }
-
-    public int findIdByUserId(int userId) {
-        return employeeDAO.findIdByUserId(userId).orElseThrow(() -> new NoSuchElementException("Cliente não encontrado"));
-    }
 }

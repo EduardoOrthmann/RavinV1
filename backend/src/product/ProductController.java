@@ -6,22 +6,29 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
+import enums.Role;
 import exceptions.ErrorResponse;
+import exceptions.UnauthorizedRequestException;
+import user.UserService;
+import utils.APIUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 public class ProductController implements HttpHandler {
     private final String productPath;
     private final ProductService productService;
+    private final UserService userService;
     private final Gson gson;
 
-    public ProductController(String productPath, ProductService productService) {
+    public ProductController(String productPath, ProductService productService, UserService userService) {
         this.productPath = productPath;
         this.productService = productService;
+        this.userService = userService;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter())
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
@@ -34,7 +41,8 @@ public class ProductController implements HttpHandler {
         int statusCode;
         String path = exchange.getRequestURI().getPath();
         String requestMethod = exchange.getRequestMethod();
-        final Optional<String[]> queryParam = Optional.of(path.split("/"));
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
         exchange.getResponseHeaders().set("Content-Type", "application/json");
 
@@ -52,7 +60,7 @@ public class ProductController implements HttpHandler {
                     // GET /product/{id}
                 } else if (path.matches(productPath + "/[0-9]+")) {
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
+                        int id = Integer.parseInt(splittedPath.get()[2]);
                         response = gson.toJson(productService.findById(id));
                         statusCode = 200;
                     } catch (NoSuchElementException e) {
@@ -74,10 +82,20 @@ public class ProductController implements HttpHandler {
             case "POST" -> {
                 // POST /product
                 if (path.matches(productPath)) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
                     try {
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+
+                        var user = userService.findByToken(headerToken);
+                        var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                        if (!acceptedRoles.contains(user.getRole())) {
+                            throw new UnauthorizedRequestException();
+                        }
+
+                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
                         var product = gson.fromJson(requestBody, Product.class);
+                        var createdBy = user.getId();
+
                         productService.save(
                                 new Product(
                                         product.getName(),
@@ -86,11 +104,20 @@ public class ProductController implements HttpHandler {
                                         product.getCostPrice(),
                                         product.getSalePrice(),
                                         product.getPreparationTime(),
-                                        product.getCreatedBy()
+                                        createdBy
                                 )
                         );
 
                         statusCode = 201;
+                    } catch (IllegalArgumentException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 400;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
+                    } catch (NoSuchElementException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 404;
                     } catch (Exception e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 500;
@@ -104,13 +131,22 @@ public class ProductController implements HttpHandler {
             case "PUT" -> {
                 // PUT /product/{id}
                 if (path.matches(productPath + "/[0-9]+")) {
-                    String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
+                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                        int id = Integer.parseInt(splittedPath.get()[2]);
+
+                        var user = userService.findByToken(headerToken);
                         var product = productService.findById(id);
+                        var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                        if (!acceptedRoles.contains(user.getRole())) {
+                            throw new UnauthorizedRequestException();
+                        }
 
                         var updatedProduct = gson.fromJson(requestBody, Product.class);
+                        var updatedBy = user.getId();
+
                         updatedProduct = new Product(
                                 id,
                                 updatedProduct.getName(),
@@ -120,7 +156,7 @@ public class ProductController implements HttpHandler {
                                 updatedProduct.getSalePrice(),
                                 updatedProduct.getPreparationTime(),
                                 updatedProduct.isAvailable(),
-                                updatedProduct.getUpdatedBy()
+                                updatedBy
                         );
 
                         product.setName(updatedProduct.getName());
@@ -139,6 +175,9 @@ public class ProductController implements HttpHandler {
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
@@ -156,8 +195,16 @@ public class ProductController implements HttpHandler {
                 // DELETE /product/{id}
                 if (path.matches(productPath + "/[0-9]+")) {
                     try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
+                        var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                        int id = Integer.parseInt(splittedPath.get()[2]);
+
+                        var user = userService.findByToken(headerToken);
                         var product = productService.findById(id);
+                        var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+                        if (!acceptedRoles.contains(user.getRole())) {
+                            throw new UnauthorizedRequestException();
+                        }
 
                         productService.delete(product);
 
@@ -165,6 +212,9 @@ public class ProductController implements HttpHandler {
                     } catch (NoSuchElementException e) {
                         response = gson.toJson(new ErrorResponse(e.getMessage()));
                         statusCode = 404;
+                    } catch (UnauthorizedRequestException e) {
+                        response = gson.toJson(new ErrorResponse(e.getMessage()));
+                        statusCode = 401;
                     } catch (NumberFormatException e) {
                         response = gson.toJson(new ErrorResponse("Invalid id"));
                         statusCode = 400;
