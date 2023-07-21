@@ -41,8 +41,6 @@ public class MenuController implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-
         switch (exchange.getRequestMethod()) {
             case "GET" -> getHandler(exchange);
             case "POST" -> postHandler(exchange);
@@ -159,18 +157,18 @@ public class MenuController implements HttpHandler {
         // PUT /menu/{id}
         if (path.matches(menuPath + "/[0-9]+")) {
             try {
-                String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                int id = Integer.parseInt(splittedPath.get()[2]);
 
                 var user = userService.findByToken(headerToken);
-                var menu = menuService.findById(id);
                 var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
 
                 if (!acceptedRoles.contains(user.getRole())) {
                     throw new UnauthorizedRequestException();
                 }
 
+                String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                int id = Integer.parseInt(splittedPath.get()[2]);
+                var menu = menuService.findById(id);
                 var updatedMenu = gson.fromJson(requestBody, Menu.class);
                 var updatedBy = user.getId();
 
@@ -222,15 +220,16 @@ public class MenuController implements HttpHandler {
         if (path.matches(menuPath + "/[0-9]+")) {
             try {
                 var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                int id = Integer.parseInt(splittedPath.get()[2]);
 
                 var user = userService.findByToken(headerToken);
-                var menu = menuService.findById(id);
                 var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
 
                 if (!acceptedRoles.contains(user.getRole())) {
                     throw new UnauthorizedRequestException();
                 }
+
+                int id = Integer.parseInt(splittedPath.get()[2]);
+                var menu = menuService.findById(id);
 
                 menuService.delete(menu);
 
@@ -261,24 +260,26 @@ public class MenuController implements HttpHandler {
         int statusCode;
 
         String path = exchange.getRequestURI().getPath();
-        final Optional<String[]> queryParam = Optional.of(path.split("/"));
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
         // PATCH /menu/{id}/add-product/{productId}
         if (path.matches(menuPath + "/[0-9]+/add-product/[0-9]+")) {
             try {
                 var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                int menuId = Integer.parseInt(queryParam.get()[2]);
-                int productId = Integer.parseInt(queryParam.get()[4]);
 
                 var user = userService.findByToken(headerToken);
-                var menu = menuService.findById(menuId);
-                var product = productService.findById(productId);
                 var acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
 
                 if (!acceptedRoles.contains(user.getRole())) {
                     throw new UnauthorizedRequestException();
                 }
+
+                int menuId = Integer.parseInt(splittedPath.get()[2]);
+                int productId = Integer.parseInt(splittedPath.get()[4]);
+
+                var menu = menuService.findById(menuId);
+                var product = productService.findById(productId);
 
                 menuService.addProduct(menu, product);
 
@@ -301,8 +302,8 @@ public class MenuController implements HttpHandler {
         else if (path.matches(menuPath + "/[0-9]+/remove-product/[0-9]+")) {
             try {
                 var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                int menuId = Integer.parseInt(queryParam.get()[2]);
-                int productId = Integer.parseInt(queryParam.get()[4]);
+                int menuId = Integer.parseInt(splittedPath.get()[2]);
+                int productId = Integer.parseInt(splittedPath.get()[4]);
 
                 var user = userService.findByToken(headerToken);
                 var menu = menuService.findById(menuId);

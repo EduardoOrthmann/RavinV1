@@ -1,6 +1,7 @@
 package utils;
 
 import com.sun.net.httpserver.HttpExchange;
+import exceptions.UnauthorizedRequestException;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,15 +24,17 @@ public class APIUtils {
         return queryParamMap.get(key);
     }
 
-    public static String extractTokenFromAuthorizationHeader(String authHeaderValue) {
+    public static String extractTokenFromAuthorizationHeader(String authHeaderValue) throws UnauthorizedRequestException {
         if (authHeaderValue == null) {
-            throw new IllegalArgumentException("Invalid authorization header");
+            throw new UnauthorizedRequestException("Falta do token de autenticação");
         }
 
         return authHeaderValue.split(" ")[1];
     }
 
     public static void sendResponse(HttpExchange exchange, int statusCode, String responseBody) throws IOException {
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+
         if (responseBody.getBytes().length > 0) {
             exchange.sendResponseHeaders(statusCode, responseBody.getBytes().length);
             exchange.getResponseBody().write(responseBody.getBytes());

@@ -58,7 +58,7 @@ public class Main {
         var employeeController = new EmployeeController(EMPLOYEE_PATH, employeeService, userService);
         var productController = new ProductController(PRODUCT_PATH, productService, userService);
         var menuController = new MenuController(MENU_PATH, menuService, productService, userService);
-        var tableController = new TableController(TABLE_PATH, tableService, customerService, orderService);
+        var tableController = new TableController(TABLE_PATH, tableService, userService);
         var orderController = new OrderController(ORDER_PATH, orderService, productService, employeeService);
         var billController = new BillController(BILL_PATH, commandService, orderService);
         var userController = new UserController(USER_PATH, userService);

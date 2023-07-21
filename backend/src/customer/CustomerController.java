@@ -37,8 +37,6 @@ public class CustomerController implements HttpHandler {
     }
 
     public void handle(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-
         switch (exchange.getRequestMethod()) {
             case "GET" -> getHandler(exchange);
             case "POST" -> postHandler(exchange);

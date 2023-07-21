@@ -38,8 +38,6 @@ public class ProductController implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
-
         switch (exchange.getRequestMethod()) {
             case "GET" -> getHandler(exchange);
             case "POST" -> postHandler(exchange);
