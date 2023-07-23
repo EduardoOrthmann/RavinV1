@@ -49,4 +49,10 @@ public class BillDAO implements Crud<Bill> {
                 .filter(bill -> bill.isPaid() == isPaid)
                 .toList();
     }
+
+    public Optional<Bill> findByOrderId(int orderId) {
+        return this.billList.stream()
+                .filter(bill -> bill.getOrders().stream().anyMatch(order -> order.getId() == orderId))
+                .findFirst();
+    }
 }

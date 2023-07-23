@@ -1,5 +1,6 @@
 package bill;
 
+import enums.OrderStatus;
 import order.Order;
 
 import java.util.List;
@@ -38,13 +39,17 @@ public class BillService {
         updateTotalPrice(bill);
     }
 
-    public void removeOrder(Bill bill, Order order) {
-        bill.getOrders().remove(order);
-        updateTotalPrice(bill);
+    public void updateTotalPrice(Bill bill) {
+        bill.setTotalPrice(
+                bill.getOrders().stream()
+                        .filter(order -> order.getStatus() != OrderStatus.CANCELED)
+                        .mapToDouble(Order::getPrice)
+                        .sum()
+        );
     }
 
-    public void updateTotalPrice(Bill bill) {
-        bill.setTotalPrice(bill.getOrders().stream().mapToDouble(Order::getPrice).sum());
+    public Bill findByOrderId(int orderId) {
+        return billDAO.findByOrderId(orderId).orElseThrow(() -> new NoSuchElementException("Comanda não encontrada"));
     }
 
     // TODO

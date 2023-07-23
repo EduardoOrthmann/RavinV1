@@ -52,7 +52,7 @@ public class TableService {
 
     public boolean hasOpenOrders(Table table) {
         return table.getOrders().stream()
-                .anyMatch(order -> order.getStatus() != OrderStatus.CANCELLED && order.getStatus() != OrderStatus.DELIVERED);
+                .anyMatch(order -> order.getStatus() != OrderStatus.CANCELED && order.getStatus() != OrderStatus.DELIVERED);
     }
 
     public boolean isAtMaxCapacity(Table table) {

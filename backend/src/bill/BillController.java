@@ -8,7 +8,6 @@ import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
 import customer.CustomerService;
-import employee.EmployeeService;
 import enums.Role;
 import exceptions.ErrorResponse;
 import exceptions.UnauthorizedRequestException;
@@ -35,17 +34,15 @@ public class BillController implements HttpHandler {
     private final OrderService orderService;
     private final ProductService productService;
     private final CustomerService customerService;
-    private final EmployeeService employeeService;
     private final UserService userService;
     private final Gson gson;
 
-    public BillController(String billPath, BillService billService, OrderService orderService, ProductService productService, CustomerService customerService, EmployeeService employeeService, UserService userService) {
+    public BillController(String billPath, BillService billService, OrderService orderService, ProductService productService, CustomerService customerService, UserService userService) {
         this.billPath = billPath;
         this.billService = billService;
         this.orderService = orderService;
         this.productService = productService;
         this.customerService = customerService;
-        this.employeeService = employeeService;
         this.userService = userService;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
@@ -101,8 +98,9 @@ public class BillController implements HttpHandler {
 
                 var user = userService.findByToken(headerToken);
                 var bill = billService.findById(id);
+                var assignedCustomer = customerService.findById(bill.getCustomerId());
 
-                if (user.getRole() == Role.CUSTOMER && user.getId() != bill.getCustomer().getUser().getId()) {
+                if (user.getRole() == Role.CUSTOMER && user.getId() != assignedCustomer.getUser().getId()) {
                     throw new UnauthorizedRequestException();
                 }
 
@@ -144,15 +142,12 @@ public class BillController implements HttpHandler {
 
                 var bill = gson.fromJson(requestBody, Bill.class);
                 var createdBy = user.getId();
-                var customer = customerService.findById(bill.getCustomer().getId());
                 var orders = bill.getOrders().stream()
                         .map(order -> {
                             var product = productService.findById(order.getProduct().getId());
-                            var employee = employeeService.findById(order.getEmployee().getId());
                             return orderService.save(
                                     new Order(
                                             product,
-                                            employee,
                                             order.getQuantity(),
                                             order.getNotes() == null ? new ArrayList<>() : order.getNotes(),
                                             createdBy
@@ -163,7 +158,7 @@ public class BillController implements HttpHandler {
 
                 var createdBill = billService.save(
                         new Bill(
-                                customer,
+                                bill.getCustomerId(),
                                 orders,
                                 createdBy
                         )
@@ -200,53 +195,34 @@ public class BillController implements HttpHandler {
         final Optional<String[]> splittedPath = Optional.of(path.split("/"));
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
-        // PATCH /bill/{id}/add-order/{order_id}
-        if (path.matches(billPath + "/[0-9]+/add-order/[0-9]+")) {
+        // PATCH /bill/{id}/add-order
+        if (path.matches(billPath + "/[0-9]+/add-order")) {
             try {
                 var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                int billId = Integer.parseInt(splittedPath.get()[2]);
-                int orderId = Integer.parseInt(splittedPath.get()[4]);
+                String requestBody = new String(exchange.getRequestBody().readAllBytes());
+                int id = Integer.parseInt(splittedPath.get()[2]);
 
                 var user = userService.findByToken(headerToken);
-                var bill = billService.findById(billId);
-                var order = orderService.findById(orderId);
+                var bill = billService.findById(id);
+                var assignedCustomer = customerService.findById(bill.getCustomerId());
 
-                if (user.getRole() == Role.CUSTOMER && user.getId() != bill.getCustomer().getUser().getId()) {
+                if (user.getRole() == Role.CUSTOMER && user.getId() != assignedCustomer.getUser().getId()) {
                     throw new UnauthorizedRequestException();
                 }
 
-                billService.addOrder(bill, order);
-                statusCode = HttpURLConnection.HTTP_NO_CONTENT;
-            } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
-                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
-            } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
-                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
-            } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse("Invalid id"));
-                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
-            } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
-                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
-            }
-        }
-        // PATCH /bill/{id}/remove-order/{order_id}
-        else if (path.matches(billPath + "/[0-9]+/remove-order/[0-9]+")) {
-            try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
-                int billId = Integer.parseInt(splittedPath.get()[2]);
-                int orderId = Integer.parseInt(splittedPath.get()[4]);
+                var order = gson.fromJson(requestBody, Order.class);
+                var product = productService.findById(order.getProduct().getId());
+                var createdBy = user.getId();
+                var createdOrder = orderService.save(
+                        new Order(
+                                product,
+                                order.getQuantity(),
+                                order.getNotes() == null ? new ArrayList<>() : order.getNotes(),
+                                createdBy
+                        )
+                );
 
-                var user = userService.findByToken(headerToken);
-                var bill = billService.findById(billId);
-                var order = orderService.findById(orderId);
-
-                if (user.getRole() == Role.CUSTOMER && user.getId() != bill.getCustomer().getUser().getId()) {
-                    throw new UnauthorizedRequestException();
-                }
-
-                billService.removeOrder(bill, order);
+                billService.addOrder(bill, createdOrder);
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {
                 response = gson.toJson(new ErrorResponse(e.getMessage()));

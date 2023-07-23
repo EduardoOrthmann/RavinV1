@@ -1,6 +1,5 @@
 package order;
 
-import employee.Employee;
 import enums.OrderStatus;
 import product.Product;
 
@@ -11,7 +10,7 @@ public class Order {
     private static int lastId = 0;
     private int id;
     private Product product;
-    private Employee employee;
+    private Integer employeeId;
     private int quantity;
     private double price;
     private OrderStatus status;
@@ -22,10 +21,9 @@ public class Order {
     private Integer updatedBy;
 
     // insert
-    public Order(Product product, Employee employee, int quantity, List<String> notes, Integer createdBy) {
+    public Order(Product product, int quantity, List<String> notes, Integer createdBy) {
         this.id = ++lastId;
         this.product = product;
-        this.employee = employee;
         this.quantity = quantity;
         this.notes = notes;
         this.status = OrderStatus.WAITING;
@@ -113,27 +111,11 @@ public class Order {
         this.price = price;
     }
 
-    public Employee getEmployee() {
-        return employee;
+    public Integer getEmployeeId() {
+        return employeeId;
     }
 
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
-
-    @Override
-    public String toString() {
-        return "Order {\n" +
-                "\tid = " + id + "\n" +
-                "\tproduct = " + product + "\n" +
-                "\tquantity = " + quantity + "\n" +
-                "\tprice = " + price + "\n" +
-                "\tstatus = " + status + "\n" +
-                "\tnotes = " + notes + "\n" +
-                "\tcreatedAt = " + createdAt + "\n" +
-                "\tupdatedAt = " + updatedAt + "\n" +
-                "\tcreatedBy = " + createdBy + "\n" +
-                "\tupdatedBy = " + updatedBy + "\n" +
-                '}';
+    public void setEmployeeId(Integer employeeId) {
+        this.employeeId = employeeId;
     }
 }

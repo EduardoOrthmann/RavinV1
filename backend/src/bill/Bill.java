@@ -1,6 +1,5 @@
 package bill;
 
-import customer.Customer;
 import order.Order;
 
 import java.time.LocalDateTime;
@@ -10,8 +9,8 @@ public class Bill {
     private static int lastId = 0;
     private int id;
     private boolean isPaid;
+    private Integer customerId;
     private Set<Order> orders;
-    private Customer customer;
     private double totalPrice;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -19,11 +18,11 @@ public class Bill {
     private Integer updatedBy;
 
     // insert
-    public Bill(Customer customer, Set<Order> orders, Integer createdBy) {
+    public Bill(Integer customerId, Set<Order> orders, Integer createdBy) {
         this.id = ++lastId;
         this.isPaid = false;
+        this.customerId = customerId;
         this.orders = orders;
-        this.customer = customer;
         this.totalPrice = 0;
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
@@ -51,6 +50,14 @@ public class Bill {
 
     public void setOrders(Set<Order> orders) {
         this.orders = orders;
+    }
+
+    public Integer getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 
     public double getTotalPrice() {
@@ -91,28 +98,5 @@ public class Bill {
 
     public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    public Customer getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
-
-    @Override
-    public String toString() {
-        return "Command {\n" +
-                "\tid = " + id + "\n" +
-                "\tisPaid = " + isPaid + "\n" +
-                "\tcustomer = " + customer + "\n" +
-                "\torders = " + orders + "\n" +
-                "\ttotalPrice = " + totalPrice + "\n" +
-                "\tcreatedAt = " + createdAt + "\n" +
-                "\tupdatedAt = " + updatedAt + "\n" +
-                "\tcreatedBy = " + createdBy + "\n" +
-                "\tupdatedBy = " + updatedBy + "\n" +
-                '}';
     }
 }

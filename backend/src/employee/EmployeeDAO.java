@@ -43,4 +43,10 @@ public class EmployeeDAO implements Crud<Employee> {
         var employee = findById(entity.getId()).orElseThrow(() -> new NoSuchElementException("Funcionário não encontrado"));
         this.employeeList.remove(employee);
     }
+
+    public Optional<Employee> findByUserId(int userId) {
+        return employeeList.stream()
+                .filter(employee -> employee.getUser().getId() == userId)
+                .findFirst();
+    }
 }
