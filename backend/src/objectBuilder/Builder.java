@@ -19,7 +19,6 @@ import user.User;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Builder {
@@ -129,8 +128,7 @@ public class Builder {
                         "123456789",
                         new Address("Brazil", "São Paulo", "São Paulo", "01234-567", "Centro", "Rua Principal"),
                         new User("johnsmith", "1234", Role.CUSTOMER),
-                        null,
-                        new HashSet<>()
+                        null
                 )
         );
         customerService.save(
@@ -141,8 +139,7 @@ public class Builder {
                         "987654321",
                         new Address("Brazil", "Rio de Janeiro", "Rio de Janeiro", "02345-678", "Centro", "Rua Principal"),
                         new User("maryjohnson", "1234", Role.CUSTOMER),
-                        null,
-                        new HashSet<>()
+                        null
                 )
         );
         customerService.save(
@@ -153,8 +150,7 @@ public class Builder {
                         "555123456",
                         new Address("Brazil", "Belo Horizonte", "Minas Gerais", "03456-789", "Centro", "Rua Principal"),
                         new User("peteroliveira", "1234", Role.CUSTOMER),
-                        null,
-                        new HashSet<>()
+                        null
                 )
         );
         customerService.save(
@@ -165,8 +161,7 @@ public class Builder {
                         "111222333",
                         new Address("Brazil", "Salvador", "Bahia", "04567-890", "Centro", "Rua Principal"),
                         new User("annacosta", "1234", Role.CUSTOMER),
-                        null,
-                        new HashSet<>()
+                        null
                 )
         );
         customerService.save(
@@ -177,8 +172,7 @@ public class Builder {
                         "456456456",
                         new Address("Brazil", "Recife", "Pernambuco", "05678-901", "Centro", "Rua Principal"),
                         new User("lucaspereira", "1234", Role.CUSTOMER),
-                        null,
-                        new HashSet<>()
+                        null
                 )
         );
     }
