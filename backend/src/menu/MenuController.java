@@ -17,7 +17,9 @@ import java.net.HttpURLConnection;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MenuController implements HttpHandler {
     private final String menuPath;
@@ -48,7 +50,6 @@ public class MenuController implements HttpHandler {
             default -> APIUtils.sendResponse(exchange, HttpURLConnection.HTTP_BAD_METHOD, gson.toJson(new ErrorResponse("Invalid request method")));
         }
     }
-
 
     private void getHandler(HttpExchange exchange) throws IOException {
         String response;
@@ -97,20 +98,25 @@ public class MenuController implements HttpHandler {
 
         String path = exchange.getRequestURI().getPath();
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+        String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
         // POST /menu
         if (path.matches(menuPath)) {
             try {
                 var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null));
 
-                String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 var menu = gson.fromJson(requestBody, Menu.class);
+                var products = menu.getProducts().stream()
+                        .map(product -> productService.findById(product.getId()))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
                 var createdBy = user.getId();
 
                 menuService.save(
                         new Menu(
                                 menu.getName(),
                                 menu.getMenuCode(),
+                                products,
                                 createdBy
                         )
                 );

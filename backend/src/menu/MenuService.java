@@ -20,8 +20,8 @@ public class MenuService {
         return menuDAO.findAll();
     }
 
-    public void save(Menu entity) {
-        menuDAO.save(entity);
+    public Menu save(Menu entity) {
+        return menuDAO.save(entity);
     }
 
     public void update(Menu entity) {

@@ -20,6 +20,7 @@ import user.User;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
+import java.util.Set;
 
 public class Builder {
     private final EmployeeService employeeService;
@@ -191,6 +192,7 @@ public class Builder {
     }
 
     public void productBuilder() {
+        // main dishes
         productService.save(
                 new Product(
                         "Hambúrguer",
@@ -215,22 +217,34 @@ public class Builder {
         );
         productService.save(
                 new Product(
-                        "Salada",
-                        "Salada fresca e saudável",
-                        "S003",
+                        "Massa",
+                        "Prato de massa saboroso",
+                        "M004", 6.99,
+                        11.99,
+                        LocalTime.of(0, 20),
+                        null
+                )
+        );
+        productService.save(
+                new Product(
+                        "Sopa",
+                        "Sopa quente e reconfortante",
+                        "S007",
                         3.99,
                         6.99,
                         LocalTime.of(0, 10),
                         null
                 )
         );
+        // natural
         productService.save(
                 new Product(
-                        "Massa",
-                        "Prato de massa saboroso",
-                        "M004", 6.99,
-                        11.99,
-                        LocalTime.of(0, 20),
+                        "Salada",
+                        "Salada fresca e saudável",
+                        "S003",
+                        3.99,
+                        6.99,
+                        LocalTime.of(0, 10),
                         null
                 )
         );
@@ -245,6 +259,7 @@ public class Builder {
                         null
                 )
         );
+        // starters
         productService.save(
                 new Product(
                         "Bife",
@@ -253,17 +268,6 @@ public class Builder {
                         12.99,
                         19.99,
                         LocalTime.of(0, 25),
-                        null
-                )
-        );
-        productService.save(
-                new Product(
-                        "Sopa",
-                        "Sopa quente e reconfortante",
-                        "S007",
-                        3.99,
-                        6.99,
-                        LocalTime.of(0, 10),
                         null
                 )
         );
@@ -289,6 +293,7 @@ public class Builder {
                         null
                 )
         );
+        // desserts
         productService.save(
                 new Product(
                         "Sorvete",
@@ -300,13 +305,100 @@ public class Builder {
                         null
                 )
         );
+        productService.save(
+                new Product(
+                        "Bolo de Chocolate",
+                        "Bolo de chocolate delicioso",
+                        "BC011",
+                        4.99,
+                        9.99,
+                        LocalTime.of(0, 5),
+                        null
+                )
+        );
+        // drinks
+        productService.save(
+                new Product(
+                        "Limonada Refrescante",
+                        "Limonada deliciosa e refrescante",
+                        "LR001",
+                        2.99,
+                        4.99,
+                        LocalTime.of(0, 3),
+                        null
+                )
+        );
+        productService.save(
+                new Product(
+                        "Suco de Laranja",
+                        "Suco de laranja fresco e saudável",
+                        "SL002",
+                        2.99,
+                        4.99,
+                        LocalTime.of(0, 3),
+                        null
+                )
+        );
     }
 
     public void menuBuilder() {
-        menuService.save(new Menu("Bebidas", "B001", null));
-        menuService.save(new Menu("Sobremesas", "S002", null));
-        menuService.save(new Menu("Pratos Principais", "P003", null));
-        menuService.save(new Menu("Entradas", "E004", null));
-        menuService.save(new Menu("Naturais", "P005", null));
+        menuService.save(
+                new Menu(
+                        "Bebidas",
+                        "B001",
+                        Set.of(
+                                productService.findById(12),
+                                productService.findById(13)
+                        ),
+                        null
+                )
+        );
+        menuService.save(
+                new Menu(
+                        "Sobremesas",
+                        "S002",
+                        Set.of(
+                                productService.findById(10),
+                                productService.findById(11)
+                        ),
+                        null
+                )
+        );
+        menuService.save(
+                new Menu(
+                        "Pratos Principais",
+                        "P003",
+                        Set.of(
+                                productService.findById(1),
+                                productService.findById(2),
+                                productService.findById(3),
+                                productService.findById(4)
+                        ),
+                        null
+                )
+        );
+        menuService.save(
+                new Menu(
+                        "Entradas",
+                        "E004",
+                        Set.of(
+                                productService.findById(7),
+                                productService.findById(8),
+                                productService.findById(9)
+                        ),
+                        null
+                )
+        );
+        menuService.save(
+                new Menu(
+                        "Naturais",
+                        "P005",
+                        Set.of(
+                                productService.findById(5),
+                                productService.findById(6)
+                        ),
+                        null
+                )
+        );
     }
 }

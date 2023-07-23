@@ -27,8 +27,9 @@ public class OrderDAO implements Crud<Order> {
     }
 
     @Override
-    public void save(Order entity) {
+    public Order save(Order entity) {
         this.orderList.add(entity);
+        return entity;
     }
 
     @Override

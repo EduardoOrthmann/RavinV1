@@ -27,8 +27,9 @@ public class UserRepository implements Crud<User> {
     }
 
     @Override
-    public void save(User entity) {
+    public User save(User entity) {
         this.userList.add(entity);
+        return entity;
     }
 
     @Override

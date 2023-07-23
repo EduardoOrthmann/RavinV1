@@ -3,7 +3,6 @@ package menu;
 import product.Product;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Menu {
@@ -18,10 +17,10 @@ public class Menu {
     private Integer createdBy;
     private Integer updatedBy;
 
-    public Menu(String name, String menuCode, Integer createdBy) {
+    public Menu(String name, String menuCode, Set<Product> products, Integer createdBy) {
         this.id = ++lastId;
         this.name = name;
-        this.products = new HashSet<>();
+        this.products = products;
         this.menuCode = menuCode;
         this.isActive = true;
         this.createdAt = LocalDateTime.now();

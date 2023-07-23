@@ -27,8 +27,9 @@ public class EmployeeDAO implements Crud<Employee> {
     }
 
     @Override
-    public void save(Employee entity) {
+    public Employee save(Employee entity) {
         this.employeeList.add(entity);
+        return entity;
     }
 
     @Override

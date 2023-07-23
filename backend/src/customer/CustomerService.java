@@ -22,9 +22,9 @@ public class CustomerService {
         return customerDAO.findAll();
     }
 
-    public void save(Customer entity) {
+    public Customer save(Customer entity) {
         userService.save(entity.getUser());
-        customerDAO.save(entity);
+        return customerDAO.save(entity);
     }
 
     public void update(Customer entity) {

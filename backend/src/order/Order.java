@@ -1,5 +1,6 @@
 package order;
 
+import employee.Employee;
 import enums.OrderStatus;
 import product.Product;
 
@@ -10,10 +11,9 @@ public class Order {
     private static int lastId = 0;
     private int id;
     private Product product;
+    private Employee employee;
     private int quantity;
     private double price;
-    private Integer employeeId;
-    private Integer customerId;
     private OrderStatus status;
     private List<String> notes;
     private LocalDateTime createdAt;
@@ -22,26 +22,15 @@ public class Order {
     private Integer updatedBy;
 
     // insert
-    public Order(Product product, int quantity, Integer customerId, List<String> notes) {
+    public Order(Product product, Employee employee, int quantity, List<String> notes, Integer createdBy) {
         this.id = ++lastId;
         this.product = product;
+        this.employee = employee;
         this.quantity = quantity;
-        this.customerId = customerId;
         this.notes = notes;
         this.status = OrderStatus.WAITING;
         this.createdAt = LocalDateTime.now();
-        this.createdBy = customerId;
-    }
-
-    // update
-    public Order(int id, Product product, int quantity, Integer customerId, List<String> notes) {
-        this.id = id;
-        this.product = product;
-        this.quantity = quantity;
-        this.customerId = customerId;
-        this.notes = notes;
-        this.updatedAt = LocalDateTime.now();
-        this.updatedBy = customerId;
+        this.createdBy = createdBy;
     }
 
     public int getId() {
@@ -124,20 +113,12 @@ public class Order {
         this.price = price;
     }
 
-    public Integer getEmployeeId() {
-        return employeeId;
+    public Employee getEmployee() {
+        return employee;
     }
 
-    public void setEmployeeId(Integer employeeId) {
-        this.employeeId = employeeId;
-    }
-
-    public Integer getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Integer customerId) {
-        this.customerId = customerId;
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     @Override
@@ -145,8 +126,6 @@ public class Order {
         return "Order {\n" +
                 "\tid = " + id + "\n" +
                 "\tproduct = " + product + "\n" +
-                "\temployee = " + employeeId + "\n" +
-                "\tcustomer = " + customerId + "\n" +
                 "\tquantity = " + quantity + "\n" +
                 "\tprice = " + price + "\n" +
                 "\tstatus = " + status + "\n" +

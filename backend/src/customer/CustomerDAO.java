@@ -27,8 +27,9 @@ public class CustomerDAO implements Crud<Customer> {
     }
 
     @Override
-    public void save(Customer entity) {
+    public Customer save(Customer entity) {
         this.customerList.add(entity);
+        return entity;
     }
 
     @Override

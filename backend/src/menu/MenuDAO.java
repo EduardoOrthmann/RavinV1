@@ -27,8 +27,9 @@ public class MenuDAO implements Crud<Menu> {
     }
 
     @Override
-    public void save(Menu entity) {
+    public Menu save(Menu entity) {
         this.menuList.add(entity);
+        return entity;
     }
 
     @Override

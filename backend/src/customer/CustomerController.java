@@ -146,14 +146,13 @@ public class CustomerController implements HttpHandler {
 
         String path = exchange.getRequestURI().getPath();
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+        String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
         // POST /customer
         if (path.matches(customerPath)) {
             Integer createdBy = null;
 
             try {
-                String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
                 if (tokenFromHeaders.isPresent()) {
                     var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.get());
                     createdBy = userService.findByToken(headerToken).getId();

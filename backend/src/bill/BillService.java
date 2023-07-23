@@ -20,8 +20,9 @@ public class BillService {
         return billDAO.findAll();
     }
 
-    public void save(Bill entity) {
-        billDAO.save(entity);
+    public Bill save(Bill entity) {
+        updateTotalPrice(entity);
+        return billDAO.save(entity);
     }
 
     public void update(Bill entity) {

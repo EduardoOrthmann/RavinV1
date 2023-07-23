@@ -22,8 +22,8 @@ public class TableService {
         return tableDAO.findAll();
     }
 
-    public void save(Table entity) {
-        tableDAO.save(entity);
+    public Table save(Table entity) {
+        return tableDAO.save(entity);
     }
 
     public void update(Table entity) {

@@ -1,9 +1,9 @@
 package bill;
 
+import customer.Customer;
 import order.Order;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Bill {
@@ -11,6 +11,7 @@ public class Bill {
     private int id;
     private boolean isPaid;
     private Set<Order> orders;
+    private Customer customer;
     private double totalPrice;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -18,10 +19,11 @@ public class Bill {
     private Integer updatedBy;
 
     // insert
-    public Bill(Integer createdBy) {
+    public Bill(Customer customer, Set<Order> orders, Integer createdBy) {
         this.id = ++lastId;
         this.isPaid = false;
-        this.orders = new HashSet<>();
+        this.orders = orders;
+        this.customer = customer;
         this.totalPrice = 0;
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
@@ -91,11 +93,20 @@ public class Bill {
         this.updatedBy = updatedBy;
     }
 
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
     @Override
     public String toString() {
         return "Command {\n" +
                 "\tid = " + id + "\n" +
                 "\tisPaid = " + isPaid + "\n" +
+                "\tcustomer = " + customer + "\n" +
                 "\torders = " + orders + "\n" +
                 "\ttotalPrice = " + totalPrice + "\n" +
                 "\tcreatedAt = " + createdAt + "\n" +

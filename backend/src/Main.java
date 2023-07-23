@@ -46,6 +46,7 @@ public class Main {
         builder.productBuilder();
         builder.menuBuilder();
 
+        final String USER_PATH = "/user";
         final String CUSTOMER_PATH = "/customer";
         final String EMPLOYEE_PATH = "/employee";
         final String PRODUCT_PATH = "/product";
@@ -53,15 +54,14 @@ public class Main {
         final String TABLE_PATH = "/table";
         final String ORDER_PATH = "/order";
         final String BILL_PATH = "/bill";
-        final String USER_PATH = "/user";
+        var userController = new UserController(USER_PATH, userService);
         var customerController = new CustomerController(CUSTOMER_PATH, customerService, userService);
         var employeeController = new EmployeeController(EMPLOYEE_PATH, employeeService, userService);
         var productController = new ProductController(PRODUCT_PATH, productService, userService);
         var menuController = new MenuController(MENU_PATH, menuService, productService, userService);
         var tableController = new TableController(TABLE_PATH, tableService, userService);
-        var orderController = new OrderController(ORDER_PATH, orderService, productService, employeeService);
-        var billController = new BillController(BILL_PATH, billService, orderService);
-        var userController = new UserController(USER_PATH, userService);
+        var orderController = new OrderController(ORDER_PATH, orderService, userService);
+        var billController = new BillController(BILL_PATH, billService, orderService, productService, customerService, employeeService, userService);
 
         InetSocketAddress address = new InetSocketAddress(8080);
         HttpServer server = HttpServer.create(address, 0);

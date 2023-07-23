@@ -27,8 +27,9 @@ public class ProductDAO implements Crud<Product> {
     }
 
     @Override
-    public void save(Product entity) {
+    public Product save(Product entity) {
         this.productList.add(entity);
+        return entity;
     }
 
     @Override

@@ -20,9 +20,9 @@ public class OrderService {
         return orderDAO.findAll();
     }
 
-    public void save(Order entity) {
+    public Order save(Order entity) {
         updateTotalPrice(entity);
-        orderDAO.save(entity);
+        return orderDAO.save(entity);
     }
 
     public void update(Order entity) {
@@ -39,7 +39,10 @@ public class OrderService {
     }
 
     public void updateStatus(Order order, OrderStatus status, Integer updatedBy) {
-        order.setEmployeeId(updatedBy);
+        if (order.getStatus() == OrderStatus.CANCELLED || order.getStatus() == OrderStatus.DELIVERED) {
+            throw new IllegalArgumentException("Não é possível alterar o pedido");
+        }
+
         order.setUpdatedBy(updatedBy);
         order.setStatus(status);
     }

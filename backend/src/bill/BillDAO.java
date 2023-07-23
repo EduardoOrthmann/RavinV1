@@ -27,8 +27,9 @@ public class BillDAO implements Crud<Bill> {
     }
 
     @Override
-    public void save(Bill entity) {
+    public Bill save(Bill entity) {
         this.billList.add(entity);
+        return entity;
     }
 
     @Override

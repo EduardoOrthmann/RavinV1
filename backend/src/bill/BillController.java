@@ -5,161 +5,267 @@ import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
+import configuration.LocalDateTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
+import customer.CustomerService;
+import employee.EmployeeService;
+import enums.Role;
 import exceptions.ErrorResponse;
+import exceptions.UnauthorizedRequestException;
+import order.Order;
 import order.OrderService;
+import product.ProductService;
+import user.UserService;
+import utils.APIUtils;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BillController implements HttpHandler {
     private final String billPath;
     private final BillService billService;
     private final OrderService orderService;
+    private final ProductService productService;
+    private final CustomerService customerService;
+    private final EmployeeService employeeService;
+    private final UserService userService;
     private final Gson gson;
 
-    public BillController(String billPath, BillService billService, OrderService orderService) {
+    public BillController(String billPath, BillService billService, OrderService orderService, ProductService productService, CustomerService customerService, EmployeeService employeeService, UserService userService) {
         this.billPath = billPath;
         this.billService = billService;
         this.orderService = orderService;
+        this.productService = productService;
+        this.customerService = customerService;
+        this.employeeService = employeeService;
+        this.userService = userService;
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeTypeAdapter())
                 .registerTypeAdapter(LocalTime.class, new LocalTimeTypeAdapter())
+                .registerTypeAdapter(LocalDate.class, new LocalDateTypeAdapter())
                 .create();
     }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        switch (exchange.getRequestMethod()) {
+            case "GET" -> getHandler(exchange);
+            case "POST" -> postHandler(exchange);
+            case "PATCH" -> patchHandler(exchange);
+            default -> APIUtils.sendResponse(exchange, HttpURLConnection.HTTP_BAD_METHOD, gson.toJson(new ErrorResponse("Invalid request method")));
+        }
+    }
+
+    private void getHandler(HttpExchange exchange) throws IOException {
+        String response;
+        int statusCode;
+
+        String path = exchange.getRequestURI().getPath();
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+
+        // GET /bill
+        if (path.matches(billPath)) {
+            try {
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE));
+
+                response = gson.toJson(billService.findAll());
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        }
+        // GET /bill/{id}
+        else if (path.matches(billPath + "/[0-9]+")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int id = Integer.parseInt(splittedPath.get()[2]);
+
+                var user = userService.findByToken(headerToken);
+                var bill = billService.findById(id);
+
+                if (user.getRole() == Role.CUSTOMER && user.getId() != bill.getCustomer().getUser().getId()) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                response = gson.toJson(bill);
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        } else {
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+        }
+
+        APIUtils.sendResponse(exchange, statusCode, response);
+    }
+
+    private void postHandler(HttpExchange exchange) throws IOException {
+        String response;
+        int statusCode;
+
+        String path = exchange.getRequestURI().getPath();
+        String requestBody = new String(exchange.getRequestBody().readAllBytes());
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+
+        // POST /bill
+        if (path.matches(billPath)) {
+            try {
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.values()));
+
+                var bill = gson.fromJson(requestBody, Bill.class);
+                var createdBy = user.getId();
+                var customer = customerService.findById(bill.getCustomer().getId());
+                var orders = bill.getOrders().stream()
+                        .map(order -> {
+                            var product = productService.findById(order.getProduct().getId());
+                            var employee = employeeService.findById(order.getEmployee().getId());
+                            return orderService.save(
+                                    new Order(
+                                            product,
+                                            employee,
+                                            order.getQuantity(),
+                                            order.getNotes() == null ? new ArrayList<>() : order.getNotes(),
+                                            createdBy
+                                    )
+                            );
+                        })
+                        .collect(Collectors.toSet());
+
+                var createdBill = billService.save(
+                        new Bill(
+                                customer,
+                                orders,
+                                createdBy
+                        )
+                );
+
+                response = gson.toJson(createdBill);
+                statusCode = HttpURLConnection.HTTP_CREATED;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        } else {
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+        }
+
+        APIUtils.sendResponse(exchange, statusCode, response);
+    }
+
+    private void patchHandler(HttpExchange exchange) throws IOException {
         String response = "";
         int statusCode;
+
         String path = exchange.getRequestURI().getPath();
-        String requestMethod = exchange.getRequestMethod();
-        final Optional<String[]> queryParam = Optional.of(path.split("/"));
+        final Optional<String[]> splittedPath = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        // PATCH /bill/{id}/add-order/{order_id}
+        if (path.matches(billPath + "/[0-9]+/add-order/[0-9]+")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int billId = Integer.parseInt(splittedPath.get()[2]);
+                int orderId = Integer.parseInt(splittedPath.get()[4]);
 
-        switch (requestMethod) {
-            case "GET" -> {
-                // GET /bill
-                if (path.matches(billPath)) {
-                    try {
-                        response = gson.toJson(billService.findAll());
-                        statusCode = 200;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                    // GET /bill/{id}
-                } else if (path.matches(billPath + "/[0-9]+")) {
-                    try {
-                        int id = Integer.parseInt(queryParam.get()[2]);
-                        response = gson.toJson(billService.findById(id));
-                        statusCode = 200;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
+                var user = userService.findByToken(headerToken);
+                var bill = billService.findById(billId);
+                var order = orderService.findById(orderId);
+
+                if (user.getRole() == Role.CUSTOMER && user.getId() != bill.getCustomer().getUser().getId()) {
+                    throw new UnauthorizedRequestException();
                 }
-            }
 
-            case "POST" -> {
-                // POST /bill
-                if (path.matches(billPath)) {
-                    try {
-                        String requestBody = new String(exchange.getRequestBody().readAllBytes());
-
-                        var bill = gson.fromJson(requestBody, Bill.class);
-                        billService.save(
-                                new Bill(
-                                        bill.getCreatedBy()
-                                )
-                        );
-
-                        statusCode = 201;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            case "PATCH" -> {
-                // PATCH /bill/{id}/add-order/{order_id}
-                if (path.matches(billPath + "/[0-9]+/add-order/[0-9]+")) {
-                    try {
-                        int billId = Integer.parseInt(queryParam.get()[2]);
-                        int orderId = Integer.parseInt(queryParam.get()[4]);
-
-                        var bill = billService.findById(billId);
-                        var order = orderService.findById(orderId);
-
-                        billService.addOrder(bill, order);
-                        statusCode = 204;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                    // PATCH /bill/{id}/remove-order/{order_id}
-                } else if (path.matches(billPath + "/[0-9]+/remove-order/[0-9]+")) {
-                    try {
-                        int billId = Integer.parseInt(queryParam.get()[2]);
-                        int orderId = Integer.parseInt(queryParam.get()[4]);
-
-                        var bill = billService.findById(billId);
-                        var order = orderService.findById(orderId);
-
-                        billService.removeOrder(bill, order);
-                        statusCode = 204;
-                    } catch (NoSuchElementException e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 404;
-                    } catch (NumberFormatException e) {
-                        response = gson.toJson(new ErrorResponse("Invalid id"));
-                        statusCode = 400;
-                    } catch (Exception e) {
-                        response = gson.toJson(new ErrorResponse(e.getMessage()));
-                        statusCode = 500;
-                    }
-                } else {
-                    response = gson.toJson(new ErrorResponse("Invalid endpoint"));
-                    statusCode = 404;
-                }
-            }
-
-            default -> {
-                response = gson.toJson(new ErrorResponse("Invalid request method"));
-                statusCode = 405;
+                billService.addOrder(bill, order);
+                statusCode = HttpURLConnection.HTTP_NO_CONTENT;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         }
+        // PATCH /bill/{id}/remove-order/{order_id}
+        else if (path.matches(billPath + "/[0-9]+/remove-order/[0-9]+")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int billId = Integer.parseInt(splittedPath.get()[2]);
+                int orderId = Integer.parseInt(splittedPath.get()[4]);
 
-        if (response.getBytes().length > 0) {
-            exchange.sendResponseHeaders(statusCode, response.getBytes().length);
-            exchange.getResponseBody().write(response.getBytes());
+                var user = userService.findByToken(headerToken);
+                var bill = billService.findById(billId);
+                var order = orderService.findById(orderId);
+
+                if (user.getRole() == Role.CUSTOMER && user.getId() != bill.getCustomer().getUser().getId()) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                billService.removeOrder(bill, order);
+                statusCode = HttpURLConnection.HTTP_NO_CONTENT;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new ErrorResponse("Invalid id"));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
         } else {
-            exchange.sendResponseHeaders(statusCode, -1);
+            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
-        exchange.close();
+        APIUtils.sendResponse(exchange, statusCode, response);
     }
 }

@@ -27,8 +27,9 @@ public class TableDAO implements Crud<Table> {
     }
 
     @Override
-    public void save(Table entity) {
+    public Table save(Table entity) {
         this.tableList.add(entity);
+        return entity;
     }
 
     @Override

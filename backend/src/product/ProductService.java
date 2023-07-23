@@ -18,8 +18,8 @@ public class ProductService {
         return productDAO.findAll();
     }
 
-    public void save(Product entity) {
-        productDAO.save(entity);
+    public Product save(Product entity) {
+        return productDAO.save(entity);
     }
 
     public void update(Product entity) {

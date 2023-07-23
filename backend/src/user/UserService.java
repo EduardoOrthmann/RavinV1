@@ -19,12 +19,12 @@ public class UserService {
         return userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("Usuário não encontrado"));
     }
 
-    public void save(User entity) {
+    public User save(User entity) {
         if (userRepository.findByUsername(entity.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Usuário já cadastrado");
         }
 
-        userRepository.save(entity);
+        return userRepository.save(entity);
     }
 
     public void update(User entity) {
@@ -71,6 +71,18 @@ public class UserService {
         User user = findByToken(headerToken);
 
         Set<Role> acceptedRoles = Set.of(Role.ADMIN, Role.MANAGER);
+
+        if (!acceptedRoles.contains(user.getRole())) {
+            throw new UnauthorizedRequestException();
+        }
+
+        return user;
+    }
+
+    public User checkUserRoleAndAuthorize(String tokenFromHeaders, Set<Role> acceptedRoles) throws UnauthorizedRequestException {
+        String headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders);
+
+        User user = findByToken(headerToken);
 
         if (!acceptedRoles.contains(user.getRole())) {
             throw new UnauthorizedRequestException();
