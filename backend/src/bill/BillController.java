@@ -9,6 +9,11 @@ import configuration.LocalDateTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
 import customer.CustomerService;
 import enums.Role;
+import interfaces.Payment;
+import payment.CashPayment;
+import payment.CreditCardPayment;
+import payment.DebitCardPayment;
+import payment.PaymentDTO;
 import utils.CustomResponse;
 import exceptions.UnauthorizedRequestException;
 import order.Order;
@@ -22,10 +27,7 @@ import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class BillController implements HttpHandler {
@@ -132,8 +134,8 @@ public class BillController implements HttpHandler {
         int statusCode;
 
         String path = exchange.getRequestURI().getPath();
-        String requestBody = new String(exchange.getRequestBody().readAllBytes());
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+        String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
         // POST /bill
         if (path.matches(billPath)) {
@@ -173,7 +175,49 @@ public class BillController implements HttpHandler {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new CustomResponse("Invalid id"));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        }
+        // POST /bill/{id}/close-bill
+        else if (path.matches(billPath + "/[0-9]+/close-bill")) {
+            try {
+                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                int id = Integer.parseInt(path.split("/")[2]);
+
+                var user = userService.findByToken(headerToken);
+                var bill = billService.findById(id);
+                var assignedCustomer = customerService.findById(bill.getCustomerId());
+
+                if (user.getRole() == Role.CUSTOMER && user.getId() != assignedCustomer.getUser().getId()) {
+                    throw new UnauthorizedRequestException();
+                }
+
+                var payment = gson.fromJson(requestBody, PaymentDTO.class);
+                Payment paymentMethod;
+
+                switch (payment.paymentMethod()) {
+                    case CASH -> paymentMethod = new CashPayment();
+                    case CREDIT_CARD -> paymentMethod = new CreditCardPayment();
+                    case DEBIT_CARD -> paymentMethod = new DebitCardPayment();
+                    default -> throw new IllegalArgumentException("Método de pagamento inválido");
+                }
+
+                billService.closeBill(bill, payment.amount(), paymentMethod);
+
+                response = gson.toJson(new CustomResponse("Comanda paga com sucesso"));
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (Exception e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));

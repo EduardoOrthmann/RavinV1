@@ -1,16 +1,24 @@
 package bill;
 
+import customer.CustomerService;
 import enums.OrderStatus;
+import interfaces.Payment;
 import order.Order;
+import payment.PaymentService;
+import utils.DateUtils;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class BillService {
     private final BillDAO billDAO;
+    private final CustomerService customerService;
+    private final PaymentService paymentService;
 
-    public BillService(BillDAO billDAO) {
+    public BillService(BillDAO billDAO, CustomerService customerService, PaymentService paymentService) {
         this.billDAO = billDAO;
+        this.customerService = customerService;
+        this.paymentService = paymentService;
     }
 
     public Bill findById(int id) {
@@ -56,7 +64,15 @@ public class BillService {
         return billDAO.findByIsPaid(isPaid);
     }
 
-    // TODO
-    public void closeBill(Bill bill) {
+    public void closeBill(Bill bill, double amount, Payment method) {
+        var amountToPay = bill.getTotalPrice();
+        var customer = customerService.findById(bill.getCustomerId());
+
+        if (DateUtils.isBirthday(customer.getBirthDate())) {
+            amountToPay = paymentService.applyDiscount(amountToPay, 10);
+        }
+
+        paymentService.processPayment(method, amount, amountToPay);
+        bill.setPaid(true);
     }
 }

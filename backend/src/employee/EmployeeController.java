@@ -127,6 +127,10 @@ public class EmployeeController implements HttpHandler {
                 var employee = gson.fromJson(requestBody, Employee.class);
                 var createdBy = user.getId();
 
+                if (userService.existsByUsername(employee.getUser().getUsername())) {
+                    throw new IllegalArgumentException("Username já cadastrado");
+                }
+
                 employeeService.save(
                         new Employee(
                                 employee.getName(),

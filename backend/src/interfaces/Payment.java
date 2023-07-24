@@ -1,5 +1,5 @@
 package interfaces;
 
 public interface Payment {
-    void processPayment(double amount);
+    void processPayment(double amount, double amountToPay);
 }

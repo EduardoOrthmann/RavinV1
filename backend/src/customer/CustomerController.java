@@ -160,6 +160,10 @@ public class CustomerController implements HttpHandler {
 
                 var customer = gson.fromJson(requestBody, Customer.class);
 
+                if (userService.existsByUsername(customer.getUser().getUsername())) {
+                    throw new IllegalArgumentException("Username já cadastrado");
+                }
+
                 customerService.save(
                         new Customer(
                                 customer.getName(),

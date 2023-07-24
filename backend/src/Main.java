@@ -15,6 +15,7 @@ import objectBuilder.Builder;
 import order.OrderController;
 import order.OrderDAO;
 import order.OrderService;
+import payment.PaymentService;
 import product.ProductController;
 import product.ProductDAO;
 import product.ProductService;
@@ -36,7 +37,8 @@ public class Main {
         var menuService = new MenuService(new MenuDAO());
         var customerService = new  CustomerService(new CustomerDAO(), userService);
         var tableService = new TableService(new TableDAO());
-        var billService = new BillService(new BillDAO());
+        var paymentService = new PaymentService();
+        var billService = new BillService(new BillDAO(), customerService, paymentService);
         var orderService = new OrderService(new OrderDAO(), billService);
 
         var builder = new Builder(employeeService, customerService, tableService, productService, menuService);
