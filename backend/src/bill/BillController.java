@@ -9,7 +9,7 @@ import configuration.LocalDateTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
 import customer.CustomerService;
 import enums.Role;
-import exceptions.ErrorResponse;
+import utils.CustomResponse;
 import exceptions.UnauthorizedRequestException;
 import order.Order;
 import order.OrderService;
@@ -57,7 +57,7 @@ public class BillController implements HttpHandler {
             case "GET" -> getHandler(exchange);
             case "POST" -> postHandler(exchange);
             case "PATCH" -> patchHandler(exchange);
-            default -> APIUtils.sendResponse(exchange, HttpURLConnection.HTTP_BAD_METHOD, gson.toJson(new ErrorResponse("Invalid request method")));
+            default -> APIUtils.sendResponse(exchange, HttpURLConnection.HTTP_BAD_METHOD, gson.toJson(new CustomResponse("Invalid request method")));
         }
     }
 
@@ -77,16 +77,16 @@ public class BillController implements HttpHandler {
                 response = gson.toJson(billService.findAll());
                 statusCode = HttpURLConnection.HTTP_OK;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         }
@@ -107,20 +107,20 @@ public class BillController implements HttpHandler {
                 response = gson.toJson(bill);
                 statusCode = HttpURLConnection.HTTP_OK;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         } else {
-            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
@@ -167,20 +167,20 @@ public class BillController implements HttpHandler {
                 response = gson.toJson(createdBill);
                 statusCode = HttpURLConnection.HTTP_CREATED;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse("Invalid id"));
+                response = gson.toJson(new CustomResponse("Invalid id"));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         } else {
-            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
@@ -225,20 +225,20 @@ public class BillController implements HttpHandler {
                 billService.addOrder(bill, createdOrder);
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse("Invalid id"));
+                response = gson.toJson(new CustomResponse("Invalid id"));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         } else {
-            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 

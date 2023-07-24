@@ -6,7 +6,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
-import exceptions.ErrorResponse;
+import utils.CustomResponse;
 import exceptions.UnauthorizedRequestException;
 import product.ProductService;
 import user.UserService;
@@ -47,7 +47,7 @@ public class MenuController implements HttpHandler {
             case "PUT" -> putHandler(exchange);
             case "DELETE" -> deleteHandler(exchange);
             case "PATCH" -> patchHandler(exchange);
-            default -> APIUtils.sendResponse(exchange, HttpURLConnection.HTTP_BAD_METHOD, gson.toJson(new ErrorResponse("Invalid request method")));
+            default -> APIUtils.sendResponse(exchange, HttpURLConnection.HTTP_BAD_METHOD, gson.toJson(new CustomResponse("Invalid request method")));
         }
     }
 
@@ -64,7 +64,7 @@ public class MenuController implements HttpHandler {
                 response = gson.toJson(menuService.findAll());
                 statusCode = HttpURLConnection.HTTP_OK;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         }
@@ -75,17 +75,17 @@ public class MenuController implements HttpHandler {
                 response = gson.toJson(menuService.findById(id));
                 statusCode = HttpURLConnection.HTTP_OK;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse("Invalid id"));
+                response = gson.toJson(new CustomResponse("Invalid id"));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         } else {
-            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
@@ -123,20 +123,20 @@ public class MenuController implements HttpHandler {
 
                 statusCode = HttpURLConnection.HTTP_CREATED;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         } else {
-            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
@@ -178,20 +178,20 @@ public class MenuController implements HttpHandler {
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         } else {
-            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
@@ -218,20 +218,20 @@ public class MenuController implements HttpHandler {
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse("Invalid id"));
+                response = gson.toJson(new CustomResponse("Invalid id"));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         } else {
-            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
@@ -261,16 +261,16 @@ public class MenuController implements HttpHandler {
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse("Invalid id"));
+                response = gson.toJson(new CustomResponse("Invalid id"));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         }
@@ -288,20 +288,20 @@ public class MenuController implements HttpHandler {
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
             } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new ErrorResponse("Invalid id"));
+                response = gson.toJson(new CustomResponse("Invalid id"));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (Exception e) {
-                response = gson.toJson(new ErrorResponse(e.getMessage()));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         } else {
-            response = gson.toJson(new ErrorResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 

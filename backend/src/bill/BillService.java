@@ -52,6 +52,10 @@ public class BillService {
         return billDAO.findByOrderId(orderId).orElseThrow(() -> new NoSuchElementException("Comanda não encontrada"));
     }
 
+    public List<Bill> findByIsPaid(boolean isPaid) {
+        return billDAO.findByIsPaid(isPaid);
+    }
+
     // TODO
     public void closeBill(Bill bill) {
     }

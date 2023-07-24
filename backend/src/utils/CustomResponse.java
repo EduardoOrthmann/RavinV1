@@ -1,9 +1,9 @@
-package exceptions;
+package utils;
 
-public class ErrorResponse {
+public class CustomResponse {
     private final String message;
 
-    public ErrorResponse(String message) {
+    public CustomResponse(String message) {
         this.message = message;
     }
 
