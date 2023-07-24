@@ -1,9 +1,11 @@
 package product;
 
+import interfaces.Auditable;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class Product {
+public class Product implements Auditable {
     private static int lastId = 0;
     private int id;
     private String name;
@@ -19,6 +21,7 @@ public class Product {
     private Integer createdBy;
     private Integer updatedBy;
 
+    // insert
     public Product(String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, Integer createdBy) {
         this.id = ++lastId;
         this.name = name;
@@ -33,6 +36,7 @@ public class Product {
         this.createdBy = createdBy;
     }
 
+    // update
     public Product(int id, String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, boolean isAvailable, Integer updatedBy) {
         this.id = id;
         this.name = name;
@@ -118,54 +122,43 @@ public class Product {
         isAvailable = available;
     }
 
+    @Override
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    @Override
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
+    @Override
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
+    @Override
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
+    @Override
     public Integer getCreatedBy() {
         return createdBy;
     }
 
+    @Override
     public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
 
+    @Override
     public Integer getUpdatedBy() {
         return updatedBy;
     }
 
+    @Override
     public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    @Override
-    public String toString() {
-        return "Product {\n" +
-                "\tid = " + id + "\n" +
-                "\tname = '" + name + '\'' + "\n" +
-                "\tdescription = '" + description + '\'' + "\n" +
-                "\tproductCode = '" + productCode + '\'' + "\n" +
-                "\tcostPrice = " + costPrice + "\n" +
-                "\tsalePrice = " + salePrice + "\n" +
-                "\tpreparationTime = " + preparationTime + "\n" +
-                "\tisActive = " + isActive + "\n" +
-                "\tisAvailable = " + isAvailable + "\n" +
-                "\tcreatedAt = " + createdAt + "\n" +
-                "\tupdatedAt = " + updatedAt + "\n" +
-                "\tcreatedBy = " + createdBy + "\n" +
-                "\tupdatedBy = " + updatedBy + "\n" +
-                '}';
     }
 }

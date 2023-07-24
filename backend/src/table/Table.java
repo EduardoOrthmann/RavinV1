@@ -2,13 +2,14 @@ package table;
 
 import customer.Customer;
 import enums.TableStatus;
+import interfaces.Auditable;
 import order.Order;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Table {
+public class Table implements Auditable {
     private static int lastId = 0;
     private int id;
     private String name;
@@ -22,6 +23,7 @@ public class Table {
     private Integer createdBy;
     private Integer updatedBy;
 
+    // insert
     public Table(String name, short tableNumber, short maxCapacity, Integer createdBy) {
         this.id = ++lastId;
         this.name = name;
@@ -34,6 +36,7 @@ public class Table {
         this.createdBy = createdBy;
     }
 
+    // update
     public Table(int id, String name, short tableNumber, short maxCapacity, TableStatus status, Integer updatedBy) {
         this.id = id;
         this.name = name;
@@ -92,38 +95,6 @@ public class Table {
         this.customers = customers;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Integer getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Integer createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Integer getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(Integer updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
     public Set<Order> getOrders() {
         return orders;
     }
@@ -133,19 +104,42 @@ public class Table {
     }
 
     @Override
-    public String toString() {
-        return "Table {\n" +
-                "\tid = " + id + "\n" +
-                "\tname = '" + name + '\'' + "\n" +
-                "\ttableNumber = " + tableNumber + "\n" +
-                "\tmaxCapacity = " + maxCapacity + "\n" +
-                "\tstatus = " + status + "\n" +
-                "\tcustomers = " + customers + "\n" +
-                "\torders = " + orders + "\n" +
-                "\tcreatedAt = " + createdAt + "\n" +
-                "\tupdatedAt = " + updatedAt + "\n" +
-                "\tcreatedBy = " + createdBy + "\n" +
-                "\tupdatedBy = " + updatedBy + "\n" +
-                '}';
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    @Override
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    @Override
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public Integer getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(Integer createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public Integer getUpdatedBy() {
+        return updatedBy;
+    }
+
+    @Override
+    public void setUpdatedBy(Integer updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

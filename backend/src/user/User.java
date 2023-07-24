@@ -10,6 +10,7 @@ public class User {
     private Role role;
     private String token;
 
+    // insert
     public User(String username, String password, Role role) {
         this.id = ++lastId;
         this.username = username;
@@ -17,11 +18,20 @@ public class User {
         this.role = role;
     }
 
+    // update
     public User(int id, String username, String password, Role role) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -54,23 +64,5 @@ public class User {
 
     public void setToken(String token) {
         this.token = token;
-    }
-
-    @Override
-    public String toString() {
-        return "User {\n" +
-                "\tusername = '" + username + '\'' + "\n" +
-                "\tpassword = '" + password + '\'' + "\n" +
-                "\trole = " + role + "\n" +
-                "\ttoken = '" + token + '\'' + "\n" +
-                '}';
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 }

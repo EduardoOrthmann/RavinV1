@@ -1,12 +1,13 @@
 package person;
 
 import address.Address;
+import interfaces.Auditable;
 import user.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public abstract class Person {
+public abstract class Person implements Auditable {
     private String name;
     private String phoneNumber;
     private LocalDate birthDate;
@@ -19,6 +20,7 @@ public abstract class Person {
     private Integer createdBy;
     private Integer updatedBy;
 
+    // insert
     public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer createdBy) {
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -31,6 +33,7 @@ public abstract class Person {
         this.createdBy = createdBy;
     }
 
+    // update
     public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Integer updatedBy) {
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -89,38 +92,6 @@ public abstract class Person {
         isActive = active;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Integer getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Integer createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public Integer getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(Integer updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
     public User getUser() {
         return user;
     }
@@ -130,19 +101,42 @@ public abstract class Person {
     }
 
     @Override
-    public String toString() {
-        return "Person {" + "\n" +
-                "\tname = '" + name + '\'' + ",\n" +
-                "\tphoneNumber = '" + phoneNumber + '\'' + ",\n" +
-                "\tbirthDate = " + birthDate + ",\n" +
-                "\tcpf = '" + cpf + '\'' + ",\n" +
-                "\taddress =" + address + ",\n" +
-                "\tuser = " + user + ",\n" +
-                "\tisActive = " + isActive + ",\n" +
-                "\tcreatedAt = " + createdAt + ",\n" +
-                "\tupdatedAt = " + updatedAt + ",\n" +
-                "\tcreatedBy = " + createdBy + ",\n" +
-                "\tupdatedBy = " + updatedBy + "\n" +
-                '}';
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    @Override
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    @Override
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public Integer getCreatedBy() {
+        return createdBy;
+    }
+
+    @Override
+    public void setCreatedBy(Integer createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    @Override
+    public Integer getUpdatedBy() {
+        return updatedBy;
+    }
+
+    @Override
+    public void setUpdatedBy(Integer updatedBy) {
+        this.updatedBy = updatedBy;
     }
 }

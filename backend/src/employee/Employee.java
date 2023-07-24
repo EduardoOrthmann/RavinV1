@@ -21,6 +21,7 @@ public class Employee extends Person {
     private LocalDate resignationDate;
     private boolean isAvailable;
 
+    // insert
     public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
         super(name, phoneNumber, birthDate, cpf, address, user, createdBy);
         this.id = ++lastId;
@@ -33,6 +34,7 @@ public class Employee extends Person {
         this.isAvailable = true;
     }
 
+    // update
     public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Integer updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate) {
         super(id, name, phoneNumber, birthDate, cpf, address, updatedBy);
         this.id = id;
@@ -114,20 +116,5 @@ public class Employee extends Person {
 
     public void setAvailable(boolean available) {
         isAvailable = available;
-    }
-
-    @Override
-    public String toString() {
-        return "Employee {\n" +
-                "\tid = " + id + "\n" +
-                "\trg = '" + rg + '\'' + "\n" +
-                "\tmaritalStatus = " + maritalStatus + "\n" +
-                "\teducationLevel = " + educationLevel + "\n" +
-                "\tposition = " + position + "\n" +
-                "\tworkCardNumber = '" + workCardNumber + '\'' + "\n" +
-                "\tadmissionDate = " + admissionDate + "\n" +
-                "\tresignationDate = " + resignationDate + "\n" +
-                "\tisAvailable = " + isAvailable + "\n" +
-                "} " + super.toString();
     }
 }

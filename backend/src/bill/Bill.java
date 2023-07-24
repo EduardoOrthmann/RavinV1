@@ -1,11 +1,12 @@
 package bill;
 
+import interfaces.Auditable;
 import order.Order;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-public class Bill {
+public class Bill implements Auditable {
     private static int lastId = 0;
     private int id;
     private boolean isPaid;
@@ -68,34 +69,42 @@ public class Bill {
         this.totalPrice = totalPrice;
     }
 
+    @Override
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    @Override
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
+    @Override
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
+    @Override
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
+    @Override
     public Integer getCreatedBy() {
         return createdBy;
     }
 
+    @Override
     public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
 
+    @Override
     public Integer getUpdatedBy() {
         return updatedBy;
     }
 
+    @Override
     public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
     }

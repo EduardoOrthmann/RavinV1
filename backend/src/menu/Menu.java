@@ -1,11 +1,12 @@
 package menu;
 
+import interfaces.Auditable;
 import product.Product;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-public class Menu {
+public class Menu implements Auditable {
     private static int lastId = 0;
     private int id;
     private String name;
@@ -17,6 +18,7 @@ public class Menu {
     private Integer createdBy;
     private Integer updatedBy;
 
+    // insert
     public Menu(String name, String menuCode, Set<Product> products, Integer createdBy) {
         this.id = ++lastId;
         this.name = name;
@@ -27,6 +29,7 @@ public class Menu {
         this.createdBy = createdBy;
     }
 
+    // update
     public Menu(int id, String name, String menuCode, Integer updatedBy) {
         this.id = id;
         this.name = name;
@@ -75,50 +78,43 @@ public class Menu {
         isActive = active;
     }
 
+    @Override
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    @Override
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
+    @Override
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
+    @Override
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
+    @Override
     public Integer getCreatedBy() {
         return createdBy;
     }
 
+    @Override
     public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
 
+    @Override
     public Integer getUpdatedBy() {
         return updatedBy;
     }
 
+    @Override
     public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
-    }
-
-    @Override
-    public String toString() {
-        return "Menu {\n" +
-                "\tid = " + id + "\n" +
-                "\tname = '" + name + '\'' + "\n" +
-                "\tproducts = " + products + "\n" +
-                "\tmenuCode = '" + menuCode + '\'' + "\n" +
-                "\tisActive = " + isActive + "\n" +
-                "\tcreatedAt = " + createdAt + "\n" +
-                "\tupdatedAt = " + updatedAt + "\n" +
-                "\tcreatedBy = " + createdBy + "\n" +
-                "\tupdatedBy = " + updatedBy + "\n" +
-                '}';
     }
 }
