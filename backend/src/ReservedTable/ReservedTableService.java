@@ -37,6 +37,10 @@ public class ReservedTableService {
         return reservedTableDAO.findByCustomer(customerId);
     }
 
+    public ReservedTable findByCustomerAndDatetime(int customerId, LocalDateTime dateTime) {
+        return reservedTableDAO.findByCustomerAndDateTime(customerId, dateTime).orElseThrow(() -> new NoSuchElementException("Reserva não encontrada"));
+    }
+
     public List<ReservedTable> findByTable(int tableId) {
         return reservedTableDAO.findByTable(tableId);
     }
@@ -57,9 +61,10 @@ public class ReservedTableService {
     }
 
     public ReservedTable reserveTable(Table table, ReservedTable reservedTable) {
-        if (!isReservedAtValid(reservedTable.getReservedAt())) {
-            throw new IllegalArgumentException("Horário de reserva inválido");
-        }
+        // commented for testing purposes
+//        if (!isReservedAtValid(reservedTable.getReservedAt())) {
+//            throw new IllegalArgumentException("Horário de reserva inválido");
+//        }
 
         if (isOverlapping(table, reservedTable.getReservedAt())) {
             throw new IllegalArgumentException("Mesa não está disponível no horário");

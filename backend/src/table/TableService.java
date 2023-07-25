@@ -1,10 +1,11 @@
 package table;
 
-import enums.OrderStatus;
-import order.Order;
+import customer.Customer;
+import enums.TableStatus;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 public class TableService {
     private final TableDAO tableDAO;
@@ -33,16 +34,21 @@ public class TableService {
         tableDAO.delete(entity);
     }
 
-    public void addOrder(Table table, Order order) {
-        table.getOrders().add(order);
+    public void occupyTable(Table table, Set<Customer> customers) {
+        if (table.getStatus() != TableStatus.AVAILABLE) {
+            throw new IllegalStateException("Mesa já ocupada ou indisponível");
+        }
+
+        table.setCustomers(customers);
+        table.setStatus(TableStatus.OCCUPIED);
     }
 
-    public void removeOrder(Table table, Order order) {
-        table.getOrders().remove(order);
-    }
+    public void freeTable(Table table) {
+        if (table.getStatus() == TableStatus.AVAILABLE) {
+            throw new IllegalStateException("Mesa já está livre");
+        }
 
-    public boolean hasOpenOrders(Table table) {
-        return table.getOrders().stream()
-                .anyMatch(order -> order.getStatus() != OrderStatus.CANCELED && order.getStatus() != OrderStatus.DELIVERED);
+        table.setCustomers(null);
+        table.setStatus(TableStatus.AVAILABLE);
     }
 }

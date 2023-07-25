@@ -2,6 +2,7 @@ package ReservedTable;
 
 import interfaces.Crud;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -53,5 +54,12 @@ public class ReservedTableDAO implements Crud<ReservedTable> {
         return reservedTableList.stream()
                 .filter(reservedTable -> reservedTable.getTable().getId() == tableId)
                 .toList();
+    }
+
+    public Optional<ReservedTable> findByCustomerAndDateTime(int customerId, LocalDateTime dateTime) {
+        return reservedTableList.stream()
+                .filter(reservedTable -> reservedTable.getCustomers().stream().anyMatch(customer -> customer.getId() == customerId))
+                .filter(reservedTable -> reservedTable.getReservedAt().getStart().isBefore(dateTime) && reservedTable.getReservedAt().getEnd().isAfter(dateTime))
+                .findFirst();
     }
 }

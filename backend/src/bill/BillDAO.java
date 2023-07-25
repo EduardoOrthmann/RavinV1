@@ -44,15 +44,14 @@ public class BillDAO implements Crud<Bill> {
         this.billList.remove(command);
     }
 
-    public List<Bill> findByIsPaid(boolean isPaid) {
-        return this.billList.stream()
-                .filter(bill -> bill.isPaid() == isPaid)
-                .toList();
-    }
-
     public Optional<Bill> findByOrderId(int orderId) {
         return this.billList.stream()
                 .filter(bill -> bill.getOrders().stream().anyMatch(order -> order.getId() == orderId))
                 .findFirst();
+    }
+
+    public boolean existsByTableAndIsPaid(int tableId, boolean isPaid) {
+        return this.billList.stream()
+                .anyMatch(bill -> bill.getTable().getId() == tableId && bill.isPaid() == isPaid);
     }
 }

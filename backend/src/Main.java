@@ -66,10 +66,10 @@ public class Main {
         var employeeController = new EmployeeController(EMPLOYEE_PATH, employeeService, userService);
         var productController = new ProductController(PRODUCT_PATH, productService, userService);
         var menuController = new MenuController(MENU_PATH, menuService, productService, userService);
-        var tableController = new TableController(TABLE_PATH, tableService, userService);
-        var reservedTableController = new ReservedTableController(RESERVED_TABLE_PATH, reservedTableService, tableService, customerService, userService);
+        var tableController = new TableController(TABLE_PATH, tableService, reservedTableService, billService, customerService, userService);
+        var reservedTableController = new ReservedTableController(RESERVED_TABLE_PATH, reservedTableService, customerService, userService);
         var orderController = new OrderController(ORDER_PATH, orderService, userService, employeeService, customerService, billService);
-        var billController = new BillController(BILL_PATH, billService, orderService, productService, customerService, userService);
+        var billController = new BillController(BILL_PATH, billService, orderService, reservedTableService, productService, customerService, userService);
 
         InetSocketAddress address = new InetSocketAddress(8080);
         HttpServer server = HttpServer.create(address, 0);

@@ -1,5 +1,6 @@
 package bill;
 
+import ReservedTable.ReservedTableService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
@@ -9,40 +10,46 @@ import configuration.LocalDateTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
 import customer.CustomerService;
 import enums.Role;
+import exceptions.UnauthorizedRequestException;
 import interfaces.Payment;
+import order.Order;
+import order.OrderService;
 import payment.CashPayment;
 import payment.CreditCardPayment;
 import payment.DebitCardPayment;
 import payment.PaymentDTO;
-import utils.CustomResponse;
-import exceptions.UnauthorizedRequestException;
-import order.Order;
-import order.OrderService;
 import product.ProductService;
+import table.TableService;
 import user.UserService;
 import utils.APIUtils;
+import utils.CustomResponse;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class BillController implements HttpHandler {
     private final String billPath;
     private final BillService billService;
     private final OrderService orderService;
+    private final ReservedTableService reservedTableService;
     private final ProductService productService;
     private final CustomerService customerService;
     private final UserService userService;
     private final Gson gson;
 
-    public BillController(String billPath, BillService billService, OrderService orderService, ProductService productService, CustomerService customerService, UserService userService) {
+    public BillController(String billPath, BillService billService, OrderService orderService, ReservedTableService reservedTableService, ProductService productService, CustomerService customerService, UserService userService) {
         this.billPath = billPath;
         this.billService = billService;
         this.orderService = orderService;
+        this.reservedTableService = reservedTableService;
         this.productService = productService;
         this.customerService = customerService;
         this.userService = userService;
@@ -141,9 +148,13 @@ public class BillController implements HttpHandler {
         if (path.matches(billPath)) {
             try {
                 var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.values()));
-
                 var bill = gson.fromJson(requestBody, Bill.class);
+
+                var customer = customerService.findByUserId(user.getId());
+                var reservedTable = reservedTableService.findByCustomerAndDatetime(customer.getId(), LocalDateTime.now());
+
                 var createdBy = user.getId();
+                var table = reservedTable.getTable();
                 var orders = bill.getOrders().stream()
                         .map(order -> {
                             var product = productService.findById(order.getProduct().getId());
@@ -160,7 +171,8 @@ public class BillController implements HttpHandler {
 
                 var createdBill = billService.save(
                         new Bill(
-                                bill.getCustomerId(),
+                                customer.getId(),
+                                table,
                                 orders,
                                 createdBy
                         )
@@ -185,10 +197,9 @@ public class BillController implements HttpHandler {
         // POST /bill/{id}/close-bill
         else if (path.matches(billPath + "/[0-9]+/close-bill")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.values()));
                 int id = Integer.parseInt(path.split("/")[2]);
 
-                var user = userService.findByToken(headerToken);
                 var bill = billService.findById(id);
                 var assignedCustomer = customerService.findById(bill.getCustomerId());
 
@@ -223,7 +234,9 @@ public class BillController implements HttpHandler {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
-        } else {
+        }
+        // invalid endpoint
+        else {
             response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
@@ -242,11 +255,10 @@ public class BillController implements HttpHandler {
         // PATCH /bill/{id}/add-order
         if (path.matches(billPath + "/[0-9]+/add-order")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.values()));
                 String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 int id = Integer.parseInt(splittedPath.get()[2]);
 
-                var user = userService.findByToken(headerToken);
                 var bill = billService.findById(id);
                 var assignedCustomer = customerService.findById(bill.getCustomerId());
 
@@ -281,7 +293,9 @@ public class BillController implements HttpHandler {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
-        } else {
+        }
+        // invalid endpoint
+        else {
             response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }

@@ -2,6 +2,7 @@ package bill;
 
 import interfaces.Auditable;
 import order.Order;
+import table.Table;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -11,6 +12,7 @@ public class Bill implements Auditable {
     private int id;
     private boolean isPaid;
     private Integer customerId;
+    private Table table;
     private Set<Order> orders;
     private double totalPrice;
     private LocalDateTime createdAt;
@@ -19,10 +21,11 @@ public class Bill implements Auditable {
     private Integer updatedBy;
 
     // insert
-    public Bill(Integer customerId, Set<Order> orders, Integer createdBy) {
+    public Bill(Integer customerId, Table table, Set<Order> orders, Integer createdBy) {
         this.id = ++lastId;
         this.isPaid = false;
         this.customerId = customerId;
+        this.table = table;
         this.orders = orders;
         this.totalPrice = 0;
         this.createdAt = LocalDateTime.now();
@@ -59,6 +62,14 @@ public class Bill implements Auditable {
 
     public void setCustomerId(Integer customerId) {
         this.customerId = customerId;
+    }
+
+    public Table getTable() {
+        return table;
+    }
+
+    public void setTable(Table table) {
+        this.table = table;
     }
 
     public double getTotalPrice() {

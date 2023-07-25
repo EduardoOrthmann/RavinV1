@@ -1,8 +1,8 @@
 package table;
 
+import customer.Customer;
 import enums.TableStatus;
 import interfaces.Auditable;
-import order.Order;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -14,8 +14,8 @@ public class Table implements Auditable {
     private String name;
     private short tableNumber;
     private short maxCapacity;
+    private Set<Customer> customers;
     private TableStatus status;
-    private Set<Order> orders;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer createdBy;
@@ -27,8 +27,8 @@ public class Table implements Auditable {
         this.name = name;
         this.tableNumber = tableNumber;
         this.maxCapacity = maxCapacity;
+        this.customers = new HashSet<>();
         this.status = TableStatus.AVAILABLE;
-        this.orders = new HashSet<>();
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
     }
@@ -84,12 +84,12 @@ public class Table implements Auditable {
         this.status = status;
     }
 
-    public Set<Order> getOrders() {
-        return orders;
+    public Set<Customer> getCustomers() {
+        return customers;
     }
 
-    public void setOrders(Set<Order> orders) {
-        this.orders = orders;
+    public void setCustomers(Set<Customer> customers) {
+        this.customers = customers;
     }
 
     @Override
