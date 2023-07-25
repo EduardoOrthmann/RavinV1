@@ -1,3 +1,6 @@
+import ReservedTable.ReservedTableController;
+import ReservedTable.ReservedTableDAO;
+import ReservedTable.ReservedTableService;
 import bill.BillController;
 import com.sun.net.httpserver.HttpServer;
 import bill.BillDAO;
@@ -36,6 +39,7 @@ public class Main {
         var productService = new ProductService(new ProductDAO());
         var menuService = new MenuService(new MenuDAO());
         var customerService = new  CustomerService(new CustomerDAO(), userService);
+        var reservedTableService = new ReservedTableService(new ReservedTableDAO());
         var tableService = new TableService(new TableDAO());
         var paymentService = new PaymentService();
         var billService = new BillService(new BillDAO(), customerService, paymentService);
@@ -54,6 +58,7 @@ public class Main {
         final String PRODUCT_PATH = "/product";
         final String MENU_PATH = "/menu";
         final String TABLE_PATH = "/table";
+        final String RESERVED_TABLE_PATH = "/reserved-table";
         final String ORDER_PATH = "/order";
         final String BILL_PATH = "/bill";
         var userController = new UserController(USER_PATH, userService);
@@ -62,6 +67,7 @@ public class Main {
         var productController = new ProductController(PRODUCT_PATH, productService, userService);
         var menuController = new MenuController(MENU_PATH, menuService, productService, userService);
         var tableController = new TableController(TABLE_PATH, tableService, userService);
+        var reservedTableController = new ReservedTableController(RESERVED_TABLE_PATH, reservedTableService, tableService, customerService, userService);
         var orderController = new OrderController(ORDER_PATH, orderService, userService, employeeService, customerService, billService);
         var billController = new BillController(BILL_PATH, billService, orderService, productService, customerService, userService);
 
@@ -73,6 +79,7 @@ public class Main {
         server.createContext(PRODUCT_PATH, productController);
         server.createContext(MENU_PATH, menuController);
         server.createContext(TABLE_PATH, tableController);
+        server.createContext(RESERVED_TABLE_PATH, reservedTableController);
         server.createContext(ORDER_PATH, orderController);
         server.createContext(BILL_PATH, billController);
         server.createContext(USER_PATH, userController);

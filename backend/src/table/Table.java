@@ -1,6 +1,5 @@
 package table;
 
-import customer.Customer;
 import enums.TableStatus;
 import interfaces.Auditable;
 import order.Order;
@@ -16,7 +15,6 @@ public class Table implements Auditable {
     private short tableNumber;
     private short maxCapacity;
     private TableStatus status;
-    private Set<Customer> customers;
     private Set<Order> orders;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -30,7 +28,6 @@ public class Table implements Auditable {
         this.tableNumber = tableNumber;
         this.maxCapacity = maxCapacity;
         this.status = TableStatus.AVAILABLE;
-        this.customers = new HashSet<>();
         this.orders = new HashSet<>();
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
@@ -85,14 +82,6 @@ public class Table implements Auditable {
 
     public void setStatus(TableStatus status) {
         this.status = status;
-    }
-
-    public Set<Customer> getCustomers() {
-        return customers;
-    }
-
-    public void setCustomers(Set<Customer> customers) {
-        this.customers = customers;
     }
 
     public Set<Order> getOrders() {

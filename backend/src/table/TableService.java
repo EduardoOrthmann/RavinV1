@@ -1,6 +1,5 @@
 package table;
 
-import customer.Customer;
 import enums.OrderStatus;
 import order.Order;
 
@@ -34,14 +33,6 @@ public class TableService {
         tableDAO.delete(entity);
     }
 
-    public void addCustomer(Table table, Customer customer) {
-        table.getCustomers().add(customer);
-    }
-
-    public void removeCustomer(Table table, Customer customer) {
-        table.getCustomers().remove(customer);
-    }
-
     public void addOrder(Table table, Order order) {
         table.getOrders().add(order);
     }
@@ -53,9 +44,5 @@ public class TableService {
     public boolean hasOpenOrders(Table table) {
         return table.getOrders().stream()
                 .anyMatch(order -> order.getStatus() != OrderStatus.CANCELED && order.getStatus() != OrderStatus.DELIVERED);
-    }
-
-    public boolean isAtMaxCapacity(Table table) {
-        return table.getCustomers().size() == table.getMaxCapacity();
     }
 }

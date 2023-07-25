@@ -35,4 +35,8 @@ public class CustomerService {
         customerDAO.delete(entity);
         userService.delete(entity.getUser());
     }
+
+    public Customer findByUserId(int userId) {
+        return customerDAO.findByUserId(userId).orElseThrow(() -> new NoSuchElementException("Cliente não encontrado"));
+    }
 }
