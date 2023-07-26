@@ -1,21 +1,21 @@
 package objectBuilder;
 
-import address.Address;
-import customer.Customer;
-import customer.CustomerService;
-import employee.Employee;
-import employee.EmployeeService;
+import domains.address.Address;
+import domains.customer.Customer;
+import domains.customer.CustomerService;
+import domains.employee.Employee;
+import domains.employee.EmployeeService;
 import enums.EducationLevel;
 import enums.MaritalStatus;
 import enums.Position;
 import enums.Role;
-import menu.Menu;
-import menu.MenuService;
-import product.Product;
-import product.ProductService;
-import table.Table;
-import table.TableService;
-import user.User;
+import domains.menu.Menu;
+import domains.menu.MenuService;
+import domains.product.Product;
+import domains.product.ProductService;
+import domains.table.Table;
+import domains.table.TableService;
+import domains.user.User;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
