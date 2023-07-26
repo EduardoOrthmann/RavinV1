@@ -39,11 +39,11 @@ public class Main {
         var productService = new ProductService(new ProductDAO());
         var menuService = new MenuService(new MenuDAO());
         var customerService = new  CustomerService(new CustomerDAO(), userService);
-        var reservedTableService = new ReservedTableService(new ReservedTableDAO());
-        var tableService = new TableService(new TableDAO());
         var paymentService = new PaymentService();
         var billService = new BillService(new BillDAO(), customerService, paymentService);
         var orderService = new OrderService(new OrderDAO(), billService);
+        var tableService = new TableService(new TableDAO(), billService);
+        var reservedTableService = new ReservedTableService(new ReservedTableDAO());
 
         var builder = new Builder(employeeService, customerService, tableService, productService, menuService);
         builder.employeeBuilder();
@@ -66,7 +66,7 @@ public class Main {
         var employeeController = new EmployeeController(EMPLOYEE_PATH, employeeService, userService);
         var productController = new ProductController(PRODUCT_PATH, productService, userService);
         var menuController = new MenuController(MENU_PATH, menuService, productService, userService);
-        var tableController = new TableController(TABLE_PATH, tableService, reservedTableService, billService, customerService, userService);
+        var tableController = new TableController(TABLE_PATH, tableService, reservedTableService, customerService, userService);
         var reservedTableController = new ReservedTableController(RESERVED_TABLE_PATH, reservedTableService, customerService, userService);
         var orderController = new OrderController(ORDER_PATH, orderService, userService, employeeService, customerService, billService);
         var billController = new BillController(BILL_PATH, billService, orderService, reservedTableService, productService, customerService, userService);

@@ -1,9 +1,9 @@
 package payment;
 
-import enums.PaymentMethod;
+import enums.PaymentMethodFactory;
 
 public record PaymentDTO(
-        PaymentMethod paymentMethod,
+        PaymentMethodFactory paymentMethodFactory,
         double amount
 ) {
 }

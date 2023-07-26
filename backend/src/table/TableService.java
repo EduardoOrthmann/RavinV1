@@ -1,5 +1,6 @@
 package table;
 
+import bill.BillService;
 import customer.Customer;
 import enums.TableStatus;
 
@@ -9,9 +10,11 @@ import java.util.Set;
 
 public class TableService {
     private final TableDAO tableDAO;
+    private final BillService billService;
 
-    public TableService(TableDAO tableDAO) {
+    public TableService(TableDAO tableDAO, BillService billService) {
         this.tableDAO = tableDAO;
+        this.billService = billService;
     }
 
     public Table findById(int id) {
@@ -35,15 +38,30 @@ public class TableService {
     }
 
     public void occupyTable(Table table, Set<Customer> customers) {
+        if (billService.existsByTableAndIsPaid(table.getId(), false)) {
+            throw new IllegalStateException("Não é possível ocupar uma mesa com contas em aberto");
+        }
+
         if (table.getStatus() != TableStatus.AVAILABLE) {
             throw new IllegalStateException("Mesa já ocupada ou indisponível");
         }
+
+        customers.stream()
+                .filter(customer -> !customer.isActive())
+                .findAny()
+                .ifPresent(customer -> {
+                    throw new IllegalStateException("Não é possível atrelar um cliente inativo a uma mesa");
+                });
 
         table.setCustomers(customers);
         table.setStatus(TableStatus.OCCUPIED);
     }
 
     public void freeTable(Table table) {
+        if (billService.existsByTableAndIsPaid(table.getId(), false)) {
+            throw new IllegalStateException("Não é possível liberar uma mesa com contas em aberto");
+        }
+
         if (table.getStatus() == TableStatus.AVAILABLE) {
             throw new IllegalStateException("Mesa já está livre");
         }

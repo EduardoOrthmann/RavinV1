@@ -9,17 +9,13 @@ import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
 import customer.CustomerService;
+import enums.PaymentMethodFactory;
 import enums.Role;
 import exceptions.UnauthorizedRequestException;
-import interfaces.Payment;
 import order.Order;
 import order.OrderService;
-import payment.CashPayment;
-import payment.CreditCardPayment;
-import payment.DebitCardPayment;
 import payment.PaymentDTO;
 import product.ProductService;
-import table.TableService;
 import user.UserService;
 import utils.APIUtils;
 import utils.CustomResponse;
@@ -208,14 +204,7 @@ public class BillController implements HttpHandler {
                 }
 
                 var payment = gson.fromJson(requestBody, PaymentDTO.class);
-                Payment paymentMethod;
-
-                switch (payment.paymentMethod()) {
-                    case CASH -> paymentMethod = new CashPayment();
-                    case CREDIT_CARD -> paymentMethod = new CreditCardPayment();
-                    case DEBIT_CARD -> paymentMethod = new DebitCardPayment();
-                    default -> throw new IllegalArgumentException("Método de pagamento inválido");
-                }
+                var paymentMethod = PaymentMethodFactory.valueOf(payment.paymentMethodFactory().toString()).createPaymentMethod();
 
                 billService.closeBill(bill, payment.amount(), paymentMethod);
 

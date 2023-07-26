@@ -2,7 +2,6 @@ package table;
 
 import ReservedTable.ReservedTable;
 import ReservedTable.ReservedTableService;
-import bill.BillService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
@@ -32,16 +31,14 @@ public class TableController implements HttpHandler {
     private final String tablePath;
     private final TableService tableService;
     private final ReservedTableService reservedTableService;
-    private final BillService billService;
     private final CustomerService customerService;
     private final UserService userService;
     private final Gson gson;
 
-    public TableController(String tablePath, TableService tableService, ReservedTableService reservedTableService, BillService billService, CustomerService customerService, UserService userService) {
+    public TableController(String tablePath, TableService tableService, ReservedTableService reservedTableService, CustomerService customerService, UserService userService) {
         this.tablePath = tablePath;
         this.tableService = tableService;
         this.reservedTableService = reservedTableService;
-        this.billService = billService;
         this.customerService = customerService;
         this.userService = userService;
         this.gson = new GsonBuilder()
@@ -215,10 +212,6 @@ public class TableController implements HttpHandler {
 
                 int id = Integer.parseInt(path.split("/")[2]);
                 var table = tableService.findById(id);
-
-                if (billService.existsByTableAndIsPaid(id, false)) {
-                    throw new IllegalStateException("Não é possível liberar uma mesa com contas em aberto");
-                }
 
                 tableService.freeTable(table);
 
