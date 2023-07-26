@@ -37,6 +37,10 @@ public class ReservedTableService {
         return reservedTableDAO.findByCustomer(customerId);
     }
 
+    public boolean existsByCustomerAndDateTime(int customerId, LocalDateTime dateTime) {
+        return reservedTableDAO.findByCustomerAndDateTime(customerId, dateTime).isPresent();
+    }
+
     public ReservedTable findByCustomerAndDatetime(int customerId, LocalDateTime dateTime) {
         return reservedTableDAO.findByCustomerAndDateTime(customerId, dateTime).orElseThrow(() -> new NoSuchElementException("Reserva não encontrada"));
     }

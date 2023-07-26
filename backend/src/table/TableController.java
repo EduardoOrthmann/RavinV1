@@ -65,34 +65,81 @@ public class TableController implements HttpHandler {
 
         String path = exchange.getRequestURI().getPath();
         final Optional<String[]> splittedPath = Optional.of(path.split("/"));
+        var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
-        // GET /table
+        // GET /table (find all)
         if (path.matches(tablePath)) {
             try {
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE));
+
                 response = gson.toJson(tableService.findAll());
-                statusCode = HttpURLConnection.HTTP_OK;
-            } catch (Exception e) {
-                response = gson.toJson(new CustomResponse(e.getMessage()));
-                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
-            }
-        }
-        // GET /table/{id}
-        else if (path.matches(tablePath + "/[0-9]+")) {
-            try {
-                int id = Integer.parseInt(splittedPath.get()[2]);
-                response = gson.toJson(tableService.findById(id));
                 statusCode = HttpURLConnection.HTTP_OK;
             } catch (NoSuchElementException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_NOT_FOUND;
-            } catch (NumberFormatException e) {
-                response = gson.toJson(new CustomResponse("Invalid id"));
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (Exception e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
-        } else {
+        }
+        // GET /table/{id} (find by id)
+        else if (path.matches(tablePath + "/[0-9]+")) {
+            try {
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.values()));
+                int id = Integer.parseInt(splittedPath.get()[2]);
+                var table = tableService.findById(id);
+
+                if (user.getRole() == Role.CUSTOMER && !reservedTableService.existsByCustomerAndDateTime(customerService.findByUserId(user.getId()).getId(), LocalDateTime.now())) {
+                    throw new UnauthorizedRequestException("Você não tem permissão para acessar essa mesa");
+                }
+
+                response = gson.toJson(table);
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        }
+
+        // GET /table/{id}/customers (find customers by table id)
+        else if (path.matches(tablePath + "/[0-9]+/customers")) {
+            try {
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE));
+
+                int id = Integer.parseInt(splittedPath.get()[2]);
+                response = gson.toJson(tableService.findById(id).getCustomers());
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (Exception e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        }
+        // invalid endpoint
+        else {
             response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
