@@ -21,6 +21,10 @@ public class TableService {
         return tableDAO.findById(id).orElseThrow(() -> new NoSuchElementException("Mesa não encontrado"));
     }
 
+    public boolean existsById(int tableId) {
+        return tableDAO.findById(tableId).isPresent();
+    }
+
     public List<Table> findAll() {
         return tableDAO.findAll();
     }

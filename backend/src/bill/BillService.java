@@ -64,6 +64,10 @@ public class BillService {
         return billDAO.existsByTableAndIsPaid(tableId, isPaid);
     }
 
+    public List<Bill> findByTableAndIsPaid(int tableId, boolean isPaid) {
+        return billDAO.findByTableAndIsPaid(tableId, isPaid);
+    }
+
     public void closeBill(Bill bill, double amount, Payment method) {
         var amountToPay = bill.getTotalPrice();
         var customer = customerService.findById(bill.getCustomerId());

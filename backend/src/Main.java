@@ -69,7 +69,7 @@ public class Main {
         var tableController = new TableController(TABLE_PATH, tableService, reservedTableService, customerService, userService);
         var reservedTableController = new ReservedTableController(RESERVED_TABLE_PATH, reservedTableService, customerService, userService);
         var orderController = new OrderController(ORDER_PATH, orderService, userService, employeeService, customerService, billService);
-        var billController = new BillController(BILL_PATH, billService, orderService, reservedTableService, productService, customerService, userService);
+        var billController = new BillController(BILL_PATH, billService, orderService, tableService, reservedTableService, productService, customerService, userService);
 
         InetSocketAddress address = new InetSocketAddress(8080);
         HttpServer server = HttpServer.create(address, 0);

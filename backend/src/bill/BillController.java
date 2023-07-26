@@ -16,6 +16,7 @@ import order.Order;
 import order.OrderService;
 import payment.PaymentDTO;
 import product.ProductService;
+import table.TableService;
 import user.UserService;
 import utils.APIUtils;
 import utils.CustomResponse;
@@ -35,16 +36,18 @@ public class BillController implements HttpHandler {
     private final String billPath;
     private final BillService billService;
     private final OrderService orderService;
+    private final TableService tableService;
     private final ReservedTableService reservedTableService;
     private final ProductService productService;
     private final CustomerService customerService;
     private final UserService userService;
     private final Gson gson;
 
-    public BillController(String billPath, BillService billService, OrderService orderService, ReservedTableService reservedTableService, ProductService productService, CustomerService customerService, UserService userService) {
+    public BillController(String billPath, BillService billService, OrderService orderService, TableService tableService, ReservedTableService reservedTableService, ProductService productService, CustomerService customerService, UserService userService) {
         this.billPath = billPath;
         this.billService = billService;
         this.orderService = orderService;
+        this.tableService = tableService;
         this.reservedTableService = reservedTableService;
         this.productService = productService;
         this.customerService = customerService;
@@ -74,7 +77,7 @@ public class BillController implements HttpHandler {
         final Optional<String[]> splittedPath = Optional.of(path.split("/"));
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
 
-        // GET /bill
+        // GET /bill (all bills)
         if (path.matches(billPath)) {
             try {
                 userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE));
@@ -95,13 +98,12 @@ public class BillController implements HttpHandler {
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         }
-        // GET /bill/{id}
+        // GET /bill/{id} (bill by id)
         else if (path.matches(billPath + "/[0-9]+")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.values()));
                 int id = Integer.parseInt(splittedPath.get()[2]);
 
-                var user = userService.findByToken(headerToken);
                 var bill = billService.findById(id);
                 var assignedCustomer = customerService.findById(bill.getCustomerId());
 
@@ -124,7 +126,37 @@ public class BillController implements HttpHandler {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
-        } else {
+        }
+        // GET /bill/table/{id} (bill by table id and isPaid)
+        else if (path.matches(billPath + "/table/[0-9]+")) {
+            try {
+                userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE));
+                var queryParams = exchange.getRequestURI().getQuery();
+                int tableId = Integer.parseInt(splittedPath.get()[3]);
+                var isPaid = Boolean.parseBoolean(APIUtils.getQueryParamValue(queryParams, "isPaid"));
+
+                if (!tableService.existsById(tableId)) {
+                    throw new NoSuchElementException("Mesa não encontrada");
+                }
+
+                response = gson.toJson(billService.findByTableAndIsPaid(tableId, isPaid));
+                statusCode = HttpURLConnection.HTTP_OK;
+            } catch (IllegalArgumentException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+            } catch (UnauthorizedRequestException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+            } catch (NoSuchElementException e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
+            } catch (Exception e) {
+                response = gson.toJson(new CustomResponse(e.getMessage()));
+                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
+            }
+        }
+        // invalid endpoint
+        else {
             response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }

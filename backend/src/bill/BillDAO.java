@@ -51,7 +51,12 @@ public class BillDAO implements Crud<Bill> {
     }
 
     public boolean existsByTableAndIsPaid(int tableId, boolean isPaid) {
+        return !findByTableAndIsPaid(tableId, isPaid).isEmpty();
+    }
+
+    public List<Bill> findByTableAndIsPaid(int tableId, boolean isPaid) {
         return this.billList.stream()
-                .anyMatch(bill -> bill.getTable().getId() == tableId && bill.isPaid() == isPaid);
+                .filter(bill -> bill.getTable().getId() == tableId && bill.isPaid() == isPaid)
+                .toList();
     }
 }

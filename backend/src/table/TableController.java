@@ -193,7 +193,7 @@ public class TableController implements HttpHandler {
         // POST /table/{id}/reserve
         else if (path.matches(tablePath + "/[0-9]+/reserve")) {
             try {
-                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.values()));
+                var user = userService.checkUserRoleAndAuthorize(tokenFromHeaders.orElse(null), Set.of(Role.CUSTOMER));
                 var id = Integer.parseInt(splittedPath.get()[2]);
 
                 var reservedTable = gson.fromJson(requestBody, ReservedTable.class);
