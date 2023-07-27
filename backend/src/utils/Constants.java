@@ -1,6 +1,15 @@
 package utils;
 
 public class Constants {
+    // database
+    public static final String DATABASE_NAME = "restaurant";
+    public static final String USERNAME = "postgres";
+    public static final String PASSWORD = "postgres";
+    public static final int PORT = 5432;
+    public static final String DRIVER = "org.postgresql.Driver";
+    public static final String URL = "jdbc:postgresql://localhost:" + PORT + "/" + DATABASE_NAME;
+
+    // paths
     public static final String USER_PATH = "/user";
     public static final String CUSTOMER_PATH = "/customer";
     public static final String EMPLOYEE_PATH = "/employee";
@@ -11,6 +20,7 @@ public class Constants {
     public static final String ORDER_PATH = "/order";
     public static final String BILL_PATH = "/bill";
 
+    // messages
     public static final String USER_NOT_FOUND = "Usuário não encontrado";
     public static final String CUSTOMER_NOT_FOUND = "Cliente não encontrado";
     public static final String EMPLOYEE_NOT_FOUND = "Funcionário não encontrado";

@@ -1,0 +1,148 @@
+-- INSERT DATA (USER)
+-- Row 1 to 10
+INSERT INTO "user"
+    (username, password, role)
+VALUES ('joao', '1234', 'CUSTOMER'),
+       ('maria', '5678', 'CUSTOMER'),
+       ('pedro', '9012', 'CUSTOMER'),
+       ('ana', '3456', 'CUSTOMER'),
+       ('carlos', '7890', 'CUSTOMER'),
+       ('laura', '2468', 'CUSTOMER'),
+       ('miguel', '1357', 'CUSTOMER'),
+       ('isabela', '5793', 'CUSTOMER'),
+       ('rafael', '3579', 'CUSTOMER'),
+       ('larissa', '7891', 'CUSTOMER');
+
+-- Row 11 to 20
+INSERT INTO "user" (username, password, role)
+VALUES ('lariMassa', '7891', 'EMPLOYEE'),
+       ('matheusOliveira', 'pass123', 'EMPLOYEE'),
+       ('lucianaSantos', 'secret321', 'EMPLOYEE'),
+       ('pedroAlmeida', 'qwerty', 'EMPLOYEE'),
+       ('juliaFerreira', 'letmein', 'EMPLOYEE'),
+       ('ricardoSilva', 'password123', 'EMPLOYEE'),
+       ('fernandaCosta', 'hello123', 'EMPLOYEE'),
+       ('gustavoRodrigues', '123456', 'EMPLOYEE'),
+       ('vanessaSouza', 'abc123', 'EMPLOYEE'),
+       ('rafaelLima', 'welcome', 'EMPLOYEE'),
+       ('carolinaCastro', 'employeePass', 'EMPLOYEE');
+
+-- INSERT DATA (CUSTOMER)
+INSERT INTO customer
+(name, phone_number, birth_date, cpf, country, state, city, street, neighborhood, zip_code, user_id)
+VALUES ('Matheus Oliveira', '47937519378', '1990-01-01', '05449107960', 'Brasil', 'SC', 'Blumenau', 'Rua Otto Sasse',
+        'Tribess', '89055420', 1),
+       ('Luciana Santos', '47939998877', '1985-05-15', '22033575643', 'Brasil', 'SC', 'Blumenau', 'Rua 7 de Setembro',
+        'Centro', '89010570', 2),
+       ('Pedro Almeida', '47932123456', '1982-08-20', '95344826599', 'Brasil', 'SC', 'Blumenau', 'Rua Bahia', 'Velha',
+        '89036480', 3),
+       ('Julia Ferreira', '47935559988', '1992-03-30', '77820916288', 'Brasil', 'SC', 'Blumenau', 'Rua Amazonas',
+        'Garcia', '89021345', 4),
+       ('Ricardo Silva', '47934442111', '1988-11-12', '01988263491', 'Brasil', 'SC', 'Blumenau', 'Rua XV de Novembro',
+        'Centro', '89010580', 5),
+       ('Fernanda Costa', '47937777777', '1995-07-05', '79149371211', 'Brasil', 'SC', 'Blumenau', 'Rua Paraíba',
+        'Velha', '89036490', 6),
+       ('Gustavo Rodrigues', '47931123444', '1980-12-25', '22960437804', 'Brasil', 'SC', 'Blumenau',
+        'Rua Alberto Stein', 'Velha', '89036810', 7),
+       ('Vanessa Souza', '47936666999', '1998-09-10', '44222657688', 'Brasil', 'SC', 'Blumenau',
+        'Rua República Argentina', 'Ponta Aguda', '89051005', 8),
+       ('Rafael Lima', '47938888888', '1987-04-18', '90566879872', 'Brasil', 'SC', 'Blumenau', 'Rua Antônio da Veiga',
+        'Victor Konder', '89012456', 9),
+       ('Carolina Castro', '47934444555', '1993-06-22', '67795638206', 'Brasil', 'SC', 'Blumenau', 'Rua dos Caçadores',
+        'Velha', '89036470', 10);
+
+-- INSERT DATA (EMPLOYEE)
+INSERT INTO employee
+(name, phone_number, birth_date, cpf, country, state, city, street, neighborhood, zip_code, user_id, rg, marital_status,
+ education_level, position, work_card_number)
+VALUES ('Matheus Oliveira', '47937519378', '1990-01-01', '05449107960', 'Brasil', 'SC', 'Blumenau', 'Rua Otto Sasse',
+        'Tribess', '89055420', 11, '485168881', 'SINGLE', 'HIGHER_EDUCATION', 'CASHIER', '123456789'),
+       ('Luciana Santos', '47939998877', '1985-05-15', '22033575643', 'Brasil', 'SC', 'Blumenau', 'Rua 7 de Setembro',
+        'Centro', '89010570', 12, '591826358', 'MARRIED', 'HIGHER_EDUCATION', 'MANAGER', '987654321'),
+       ('Pedro Almeida', '47932123456', '1982-08-20', '95344826599', 'Brasil', 'SC', 'Blumenau', 'Rua Bahia', 'Velha',
+        '89036480', 13, '442201754', 'MARRIED', 'MASTERS_EDUCATION', 'COOK', '876543210'),
+       ('Julia Ferreira', '47935559988', '1992-03-30', '77820916288', 'Brasil', 'SC', 'Blumenau', 'Rua Amazonas',
+        'Garcia', '89021345', 14, '357914267', 'SINGLE', 'ELEMENTARY_EDUCATION', 'WAITER', '765432109'),
+       ('Ricardo Silva', '47934442111', '1988-11-12', '01988263491', 'Brasil', 'SC', 'Blumenau', 'Rua XV de Novembro',
+        'Centro', '89010580', 15, '223356198', 'DIVORCED', 'HIGHER_EDUCATION', 'HOST', '654321098'),
+       ('Fernanda Costa', '47937777777', '1995-07-05', '79149371211', 'Brasil', 'SC', 'Blumenau', 'Rua Paraíba',
+        'Velha', '89036490', 16, '471234567', 'SINGLE', 'PRIMARY_EDUCATION', 'CLEANER', '543210987'),
+       ('Gustavo Rodrigues', '47931123444', '1980-12-25', '22960437804', 'Brasil', 'SC', 'Blumenau',
+        'Rua Alberto Stein', 'Velha', '89036810', 17, '369852147', 'MARRIED', 'SECONDARY_EDUCATION', 'WAITER',
+        '432109876'),
+       ('Vanessa Souza', '47936666999', '1998-09-10', '44222657688', 'Brasil', 'SC', 'Blumenau',
+        'Rua República Argentina', 'Ponta Aguda', '89051005', 18, '246813579', 'SINGLE', 'HIGHER_EDUCATION', 'CLEANER',
+        '321098765'),
+       ('Rafael Lima', '47938888888', '1987-04-18', '90566879872', 'Brasil', 'SC', 'Blumenau', 'Rua Antônio da Veiga',
+        'Victor Konder', '89012456', 19, '135792468', 'SINGLE', 'ELEMENTARY_EDUCATION', 'CASHIER', '210987654'),
+       ('Carolina Castro', '47934444555', '1993-06-22', '67795638206', 'Brasil', 'SC', 'Blumenau', 'Rua dos Caçadores',
+        'Velha', '89036470', 20, '573819265', 'SINGLE', 'DOCTORAL_EDUCATION', 'MANAGER', '109876543');
+
+-- INSERT DATA (MENU)
+INSERT INTO menu
+    (name, menu_code)
+VALUES ('Bebidas', 'BEBIDAS'),
+       ('Pratos', 'PRATOS'),
+       ('Sobremesas', 'SOBREMESAS'),
+       ('Entradas', 'ENTRADAS');
+
+-- INSERT DATA (PRODUCT)
+INSERT INTO product
+(name, description, product_code, cost_price, sale_price, preparation_time, menu_id)
+VALUES
+    -- Bebidas
+    ('Café Gelado', 'Uma mistura refrescante de café gelado, leite e um toque de caramelo.', 'CAFEGELADO01', 2.50, 4.50,
+     '05:00:00', 1),
+    ('Smoothie de Frutas Tropicais', 'Uma delícia tropical com uma mistura de abacaxi fresco, manga e banana.',
+     'SMOOTHIE01', 3.00, 5.50, '04:00:00', 1),
+    ('Refrigerante de Cola', 'Refrigerante de cola clássico e refrescante.', 'COLA01', 1.50, 3.00, '00:00:00', 1),
+    ('Água Mineral', 'Água mineral natural.', 'AGUAMINERAL01', 1.00, 2.00, '00:00:00', 1),
+
+    -- Pratos
+    ('Filé de Salmão Grelhado',
+     'Um suculento filé de salmão temperado e grelhado na perfeição, servido com legumes no vapor.', 'SALMAO01', 8.00,
+     15.99, '15:00:00', 2),
+    ('Pad Thai Vegetariano',
+     'Um prato clássico da culinária tailandesa com tofu, brotos de feijão, amendoim e um molho agridoce de tamarindo.',
+     'PADTHAI01', 6.50, 12.99, '12:00:00', 2),
+    ('Hambúrguer Artesanal', 'Um suculento hambúrguer artesanal feito com carne de qualidade e ingredientes frescos.',
+     'HAMBURGUER01', 5.00, 10.99, '10:00:00', 2),
+    ('Lasanha à Bolonhesa', 'Uma clássica lasanha italiana com molho bolonhesa e queijo gratinado.', 'LASANHA01', 7.50,
+     14.50, '18:00:00', 2),
+
+    -- Sobremesas
+    ('Bolo Vulcão de Chocolate',
+     'Um bolo de chocolate decadente com recheio cremoso, servido com uma bola de sorvete de baunilha.', 'BOLOVULCAO01',
+     4.50, 8.99, '20:00:00', 3),
+    ('Parfait de Frutas', 'Camadas de frutas mistas frescas, granola e iogurte, cobertas com um fio de mel.',
+     'PARFAIT01', 3.00, 6.50, '08:00:00', 3),
+    ('Pudim de Leite Condensado', 'Um pudim clássico feito com leite condensado cremoso e calda de caramelo.',
+     'PUDIM01', 3.50, 6.99, '15:00:00', 3),
+    ('Torta de Limão', 'Uma torta refrescante de limão com um recheio leve e saboroso.', 'TORTALIMAO01', 4.00, 7.50,
+     '12:00:00',
+     3),
+
+    -- Entradas
+    ('Pimentões Recheados',
+     'Pimentões picantes recheados com queijo cremoso e empanados, servidos com molho para mergulhar.', 'PIMENTOES01',
+     2.50, 4.99, '10:00:00', 4),
+    ('Tábua de Antepastos', 'Fatias de pão italiano torrado servido com uma seleção de antepastos variados.',
+     'ANTEPASTOS01', 4.00, 8.50, '12:00:00', 4),
+    ('Camarão ao Alho e Óleo', 'Camarão suculento cozido com alho, azeite e temperos, acompanhado de pão quentinho.',
+     'CAMARAO01', 6.50, 12.99, '12:00:00', 4),
+    ('Pastéis Assados', 'Pastéis assados recheados com carne moída temperada, servidos com molho especial.',
+     'PASTEIS01', 3.00, 6.50, '15:00:00', 4);
+
+-- INSERT DATA (TABLE)
+INSERT INTO table_restaurant
+    (name, table_number, max_capacity)
+VALUES ('Mesa 1', 1, 5),
+       ('Mesa 2', 2, 5),
+       ('Mesa 3', 3, 5),
+       ('Mesa 4', 4, 5),
+       ('Mesa 5', 5, 5),
+       ('Mesa 6', 6, 5),
+       ('Mesa 7', 7, 5),
+       ('Mesa 8', 8, 5),
+       ('Mesa 9', 9, 5),
+       ('Mesa 10', 10, 5);

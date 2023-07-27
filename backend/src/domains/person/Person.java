@@ -1,8 +1,8 @@
 package domains.person;
 
 import domains.address.Address;
-import interfaces.Auditable;
 import domains.user.User;
+import interfaces.Auditable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

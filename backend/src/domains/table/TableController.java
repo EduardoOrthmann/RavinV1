@@ -1,7 +1,5 @@
 package domains.table;
 
-import domains.ReservedTable.ReservedTable;
-import domains.ReservedTable.ReservedTableService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
@@ -9,10 +7,12 @@ import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
 import configuration.LocalTimeTypeAdapter;
+import domains.ReservedTable.ReservedTable;
+import domains.ReservedTable.ReservedTableService;
 import domains.customer.CustomerService;
+import domains.user.UserService;
 import enums.Role;
 import exceptions.UnauthorizedRequestException;
-import domains.user.UserService;
 import utils.APIUtils;
 import utils.Constants;
 import utils.CustomResponse;

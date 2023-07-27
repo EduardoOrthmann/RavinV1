@@ -1,8 +1,8 @@
 package domains.order;
 
+import domains.product.Product;
 import enums.OrderStatus;
 import interfaces.Auditable;
-import domains.product.Product;
 
 import java.time.LocalDateTime;
 import java.util.List;

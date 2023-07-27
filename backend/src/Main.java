@@ -1,8 +1,8 @@
+import com.sun.net.httpserver.HttpServer;
 import domains.ReservedTable.ReservedTableController;
 import domains.ReservedTable.ReservedTableDAO;
 import domains.ReservedTable.ReservedTableService;
 import domains.bill.BillController;
-import com.sun.net.httpserver.HttpServer;
 import domains.bill.BillDAO;
 import domains.bill.BillService;
 import domains.customer.CustomerController;
@@ -14,7 +14,6 @@ import domains.employee.EmployeeService;
 import domains.menu.MenuController;
 import domains.menu.MenuDAO;
 import domains.menu.MenuService;
-import objectBuilder.Builder;
 import domains.order.OrderController;
 import domains.order.OrderDAO;
 import domains.order.OrderService;
@@ -28,6 +27,7 @@ import domains.table.TableService;
 import domains.user.UserController;
 import domains.user.UserRepository;
 import domains.user.UserService;
+import objectBuilder.Builder;
 import utils.Constants;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class Main {
         var employeeService = new EmployeeService(new EmployeeDAO(), userService);
         var productService = new ProductService(new ProductDAO());
         var menuService = new MenuService(new MenuDAO());
-        var customerService = new  CustomerService(new CustomerDAO(), userService);
+        var customerService = new CustomerService(new CustomerDAO(), userService);
         var paymentService = new PaymentService();
         var billService = new BillService(new BillDAO(), customerService, paymentService);
         var orderService = new OrderService(new OrderDAO(), billService);

@@ -1,8 +1,8 @@
 package domains.ReservedTable;
 
 import domains.customer.Customer;
-import interfaces.Auditable;
 import domains.table.Table;
+import interfaces.Auditable;
 
 import java.time.LocalDateTime;
 import java.util.Set;

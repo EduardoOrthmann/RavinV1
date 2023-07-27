@@ -6,18 +6,20 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import configuration.LocalDateTimeTypeAdapter;
 import configuration.LocalDateTypeAdapter;
+import domains.user.UserService;
 import enums.Role;
+import exceptions.UnauthorizedRequestException;
+import utils.APIUtils;
 import utils.Constants;
 import utils.CustomResponse;
-import exceptions.UnauthorizedRequestException;
-import domains.user.UserService;
-import utils.APIUtils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
 
 public class CustomerController implements HttpHandler {
     private final String customerPath;

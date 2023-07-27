@@ -1,9 +1,9 @@
 package enums;
 
-import interfaces.Payment;
 import domains.payment.CashPayment;
 import domains.payment.CreditCardPayment;
 import domains.payment.DebitCardPayment;
+import interfaces.Payment;
 
 public enum PaymentMethodFactory {
     CASH {

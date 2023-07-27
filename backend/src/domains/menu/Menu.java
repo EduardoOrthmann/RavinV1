@@ -1,7 +1,7 @@
 package domains.menu;
 
-import interfaces.Auditable;
 import domains.product.Product;
+import interfaces.Auditable;
 
 import java.time.LocalDateTime;
 import java.util.Set;

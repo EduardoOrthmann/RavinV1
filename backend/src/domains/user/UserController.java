@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.UnauthorizedRequestException;
+import utils.APIUtils;
 import utils.Constants;
 import utils.CustomResponse;
-import utils.APIUtils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;

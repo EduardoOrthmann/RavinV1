@@ -1,8 +1,8 @@
 package domains.bill;
 
-import interfaces.Auditable;
 import domains.order.Order;
 import domains.table.Table;
+import interfaces.Auditable;
 
 import java.time.LocalDateTime;
 import java.util.Set;

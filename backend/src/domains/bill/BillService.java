@@ -1,10 +1,10 @@
 package domains.bill;
 
 import domains.customer.CustomerService;
-import enums.OrderStatus;
-import interfaces.Payment;
 import domains.order.Order;
 import domains.payment.PaymentService;
+import enums.OrderStatus;
+import interfaces.Payment;
 import utils.Constants;
 import utils.DateUtils;
 

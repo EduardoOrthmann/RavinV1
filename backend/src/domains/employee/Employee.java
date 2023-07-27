@@ -1,11 +1,11 @@
 package domains.employee;
 
 import domains.address.Address;
+import domains.person.Person;
+import domains.user.User;
 import enums.EducationLevel;
 import enums.MaritalStatus;
 import enums.Position;
-import domains.person.Person;
-import domains.user.User;
 
 import java.time.LocalDate;
 

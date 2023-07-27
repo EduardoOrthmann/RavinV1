@@ -11,7 +11,7 @@ public interface Auditable {
 
     void setUpdatedAt(LocalDateTime updatedAt);
 
-    Integer getCreatedBy() ;
+    Integer getCreatedBy();
 
     void setCreatedBy(Integer createdBy);
 
