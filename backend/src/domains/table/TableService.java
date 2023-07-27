@@ -52,12 +52,11 @@ public class TableService {
             throw new IllegalStateException("Mesa já ocupada ou indisponível");
         }
 
-        customers.stream()
-                .filter(customer -> !customer.isActive())
-                .findAny()
-                .ifPresent(customer -> {
-                    throw new IllegalStateException("Não é possível atrelar um cliente inativo a uma mesa");
-                });
+        for (var customer : customers) {
+            if (!customer.isActive()) {
+                throw new IllegalStateException("Não é possível atrelar um cliente inativo a uma mesa");
+            }
+        }
 
         table.setCustomers(customers);
         table.setStatus(TableStatus.OCCUPIED);

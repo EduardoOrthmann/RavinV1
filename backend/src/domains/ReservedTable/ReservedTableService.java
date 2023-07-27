@@ -75,6 +75,12 @@ public class ReservedTableService {
             throw new IllegalArgumentException("Mesa não está disponível no horário");
         }
 
+        for (var customer : reservedTable.getCustomers()) {
+            if (!customer.isActive()) {
+                throw new IllegalStateException("Não é possível atrelar um cliente inativo a uma mesa");
+            }
+        }
+
         var numberOfPeople = reservedTable.getCustomers().size();
         if (numberOfPeople > table.getMaxCapacity()) {
             throw new IllegalArgumentException("Mesa não comporta o número de pessoas");

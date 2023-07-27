@@ -12,7 +12,6 @@ import utils.CustomResponse;
 import exceptions.UnauthorizedRequestException;
 import domains.user.UserService;
 import utils.APIUtils;
-import utils.DateUtils;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -103,34 +102,8 @@ public class CustomerController implements HttpHandler {
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         }
-        // GET /customer/{id}/birthday (check if is customer's birthday)
-        else if (path.matches(customerPath + "/[0-9]+" + "/birthday")) {
-            try {
-                var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.values()));
-                int id = Integer.parseInt(splittedPath.get()[2]);
-
-                var customer = customerService.findById(id);
-
-                if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
-                    throw new UnauthorizedRequestException();
-                }
-
-                response = gson.toJson(Map.of("isBirthday", DateUtils.isBirthday(customer.getBirthDate())));
-                statusCode = HttpURLConnection.HTTP_OK;
-            } catch (NoSuchElementException e) {
-                response = gson.toJson(new CustomResponse(e.getMessage()));
-                statusCode = HttpURLConnection.HTTP_NOT_FOUND;
-            } catch (UnauthorizedRequestException e) {
-                response = gson.toJson(new CustomResponse(e.getMessage()));
-                statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
-            } catch (IllegalArgumentException e) {
-                response = gson.toJson(new CustomResponse(e.getMessage()));
-                statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
-            } catch (Exception e) {
-                response = gson.toJson(new CustomResponse(e.getMessage()));
-                statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
-            }
-        } else {
+        // invalid endpoint
+        else {
             response = gson.toJson(new CustomResponse(Constants.INVALID_REQUEST_ENDPOINT));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
@@ -239,7 +212,9 @@ public class CustomerController implements HttpHandler {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
-        } else {
+        }
+        // invalid endpoint
+        else {
             response = gson.toJson(new CustomResponse("Invalid endpoint"));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
@@ -283,7 +258,9 @@ public class CustomerController implements HttpHandler {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
-        } else {
+        }
+        // invalid endpoint
+        else {
             response = gson.toJson(new CustomResponse(Constants.INVALID_REQUEST_ENDPOINT));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }

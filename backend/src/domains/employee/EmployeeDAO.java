@@ -42,7 +42,7 @@ public class EmployeeDAO implements Crud<Employee> {
     @Override
     public void delete(Employee entity) {
         var employee = findById(entity.getId()).orElseThrow(() -> new NoSuchElementException(Constants.EMPLOYEE_NOT_FOUND));
-        this.employeeList.remove(employee);
+        employee.setActive(false);
     }
 
     public Optional<Employee> findByUserId(int userId) {

@@ -42,7 +42,7 @@ public class CustomerDAO implements Crud<Customer> {
     @Override
     public void delete(Customer entity) {
         var customer = findById(entity.getId()).orElseThrow(() -> new NoSuchElementException(Constants.CUSTOMER_NOT_FOUND));
-        this.customerList.remove(customer);
+        customer.setActive(false);
     }
 
     public Optional<Customer> findByUserId(int userId) {

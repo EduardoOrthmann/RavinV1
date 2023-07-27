@@ -65,7 +65,6 @@ public class EmployeeService {
 
     public void delete(Employee entity) {
         employeeDAO.delete(entity);
-        userService.delete(entity.getUser());
     }
 
     public Employee findByUserId(int userId) {

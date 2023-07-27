@@ -55,7 +55,6 @@ public class CustomerService {
 
     public void delete(Customer entity) {
         customerDAO.delete(entity);
-        userService.delete(entity.getUser());
     }
 
     public Customer findByUserId(int userId) {
