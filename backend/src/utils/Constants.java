@@ -6,8 +6,12 @@ public class Constants {
     public static final String DATABASE_USERNAME = "postgres";
     public static final String DATABASE_PASSWORD = "postgres";
     public static final int DATABASE_PORT = 5432;
-    public static final String DATABASE_DRIVER = "org.postgresql.Driver";
     public static final String DATABASE_URL = "jdbc:postgresql://localhost:" + DATABASE_PORT + "/" + DATABASE_NAME;
+
+    // database tables
+    public static final String USER_TABLE = "\"user\"";
+    public static final String CUSTOMER_TABLE = "customer";
+    public static final String EMPLOYEE_TABLE = "employee";
 
     // paths
     public static final String USER_PATH = "/user";
@@ -35,8 +39,12 @@ public class Constants {
     public static final String INVALID_REQUEST_ENDPOINT = "Endpoint inválido";
     public static final String SUCCESS_MESSAGE = "Operação realizada com sucesso";
     public static final String USERNAME_ALREADY_EXISTS = "Username já cadastrado";
+    public static final String CPF_ALREADY_EXISTS = "Cpf já cadastrado";
     public static final String DATABASE_QUERY_ERROR = "Aconteceu um erro ao buscar os dados do banco de dados";
     public static final String DATABASE_MUTATION_ERROR = "Aconteceu um erro ao inserir os dados no banco de dados";
+    public static final String MINIMUM_AGE_NOT_REACHED = "Funcionário deve ser maior de idade";
+    public static final String INVALID_PASSWORD = "Senha inválida";
 
+    // others
     public static final int MINIMUM_AGE = 18;
 }

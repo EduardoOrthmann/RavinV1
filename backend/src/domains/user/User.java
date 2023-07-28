@@ -9,18 +9,13 @@ public class User {
     private Role role;
     private String token;
 
+    // all args
     public User(int id, String username, String password, Role role, String token) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.role = role;
         this.token = token;
-    }
-
-    public User(String username, String password, Role role) {
-        this.username = username;
-        this.password = password;
-        this.role = role;
     }
 
     public int getId() {

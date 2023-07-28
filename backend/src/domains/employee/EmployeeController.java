@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 public class EmployeeController implements HttpHandler {
     private final String employeePath;
@@ -78,13 +79,12 @@ public class EmployeeController implements HttpHandler {
         // GET /employee/{id} (find by id)
         else if (path.matches(employeePath + "/[0-9]+")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.EMPLOYEE, Role.MANAGER, Role.ADMIN));
                 int id = Integer.parseInt(splittedPath.get()[2]);
 
-                var user = userService.findByToken(headerToken);
                 var employee = employeeService.findById(id);
 
-                if ((user.getRole() == Role.EMPLOYEE && user.getId() != employee.getUser().getId()) || user.getRole() == Role.CUSTOMER) {
+                if (user.getRole() == Role.EMPLOYEE && user.getId() != employee.getUser().getId()) {
                     throw new UnauthorizedRequestException();
                 }
 
@@ -169,45 +169,13 @@ public class EmployeeController implements HttpHandler {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
                 int id = Integer.parseInt(splittedPath.get()[2]);
 
-                var employee = employeeService.findById(id);
-
-                if (user.getRole() == Role.EMPLOYEE && user.getId() != employee.getUser().getId()) {
+                if (user.getRole() == Role.EMPLOYEE && user.getId() != employeeService.findById(id).getUser().getId()) {
                     throw new UnauthorizedRequestException();
                 }
 
-                var updatedEmployee = gson.fromJson(requestBody, Employee.class);
-                var updatedBy = user.getId();
-
-                updatedEmployee = new Employee(
-                        id,
-                        updatedEmployee.getName(),
-                        updatedEmployee.getPhoneNumber(),
-                        updatedEmployee.getBirthDate(),
-                        updatedEmployee.getCpf(),
-                        updatedEmployee.getAddress(),
-                        updatedBy,
-                        updatedEmployee.getRg(),
-                        updatedEmployee.getMaritalStatus(),
-                        updatedEmployee.getEducationLevel(),
-                        updatedEmployee.getPosition(),
-                        updatedEmployee.getWorkCardNumber(),
-                        updatedEmployee.getAdmissionDate()
-                );
-
+                var employee = gson.fromJson(requestBody, Employee.class);
                 employee.setId(id);
-                employee.setName(updatedEmployee.getName());
-                employee.setPhoneNumber(updatedEmployee.getPhoneNumber());
-                employee.setBirthDate(updatedEmployee.getBirthDate());
-                employee.setCpf(updatedEmployee.getCpf());
-                employee.setAddress(updatedEmployee.getAddress());
-                employee.setUpdatedBy(updatedEmployee.getUpdatedBy());
-                employee.setUpdatedAt(updatedEmployee.getUpdatedAt());
-                employee.setRg(updatedEmployee.getRg());
-                employee.setMaritalStatus(updatedEmployee.getMaritalStatus());
-                employee.setEducationLevel(updatedEmployee.getEducationLevel());
-                employee.setPosition(updatedEmployee.getPosition());
-                employee.setWorkCardNumber(updatedEmployee.getWorkCardNumber());
-                employee.setAdmissionDate(updatedEmployee.getAdmissionDate());
+                employee.setUpdatedBy(user.getId());
 
                 employeeService.update(employee);
 
@@ -219,14 +187,14 @@ public class EmployeeController implements HttpHandler {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
             } catch (IllegalArgumentException e) {
-                response = gson.toJson(new CustomResponse("Invalid id"));
+                response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
             } catch (Exception e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         } else {
-            response = gson.toJson(new CustomResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse(Constants.INVALID_REQUEST_ENDPOINT));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
@@ -247,13 +215,11 @@ public class EmployeeController implements HttpHandler {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
                 int id = Integer.parseInt(splittedPath.get()[2]);
 
-                var employee = employeeService.findById(id);
-
-                if (user.getRole() == Role.EMPLOYEE && user.getId() != employee.getUser().getId()) {
+                if (user.getRole() == Role.EMPLOYEE && user.getId() != employeeService.findById(id).getUser().getId()) {
                     throw new UnauthorizedRequestException();
                 }
 
-                employeeService.delete(employee);
+                employeeService.delete(id);
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {

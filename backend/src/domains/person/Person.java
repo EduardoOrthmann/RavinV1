@@ -20,27 +20,18 @@ public abstract class Person implements Auditable {
     private Integer createdBy;
     private Integer updatedBy;
 
-    // insert
-    public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer createdBy) {
+    // all args
+    public Person(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, User user, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.birthDate = birthDate;
         this.cpf = cpf;
         this.address = address;
+        this.isActive = isActive;
         this.user = user;
-        this.isActive = true;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.createdBy = createdBy;
-    }
-
-    // update
-    public Person(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Integer updatedBy) {
-        this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.birthDate = birthDate;
-        this.cpf = cpf;
-        this.address = address;
-        this.updatedAt = LocalDateTime.now();
         this.updatedBy = updatedBy;
     }
 

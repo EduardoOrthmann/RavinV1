@@ -1,6 +1,7 @@
 package domains.user;
 
 import database.DatabaseConnector;
+import database.Query;
 import enums.Role;
 import interfaces.Crud;
 import utils.Constants;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class UserRepository implements Crud<User> {
-    private static final String TABLE_NAME = "\"user\"";
+    private static final String TABLE_NAME = Constants.USER_TABLE;
     private final DatabaseConnector databaseConnector;
 
     public UserRepository() {
@@ -21,11 +22,15 @@ public class UserRepository implements Crud<User> {
 
     @Override
     public Optional<User> findById(int id) {
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE id = ?";
+        String query = new Query()
+                .select("*")
+                .from(TABLE_NAME)
+                .where("id", "=", "?")
+                .build();
 
         try (ResultSet resultSet = databaseConnector.executeQuery(query, id)) {
             if (resultSet.next()) {
-                return Optional.of(mapResultSetToUser(resultSet));
+                return Optional.of(mapResultSetToEntity(resultSet));
             }
         } catch (SQLException e) {
             System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
@@ -37,11 +42,14 @@ public class UserRepository implements Crud<User> {
     @Override
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
-        String query = "SELECT * FROM " + TABLE_NAME;
+        String query = new Query()
+                .select("*")
+                .from(TABLE_NAME)
+                .build();
 
         try (ResultSet resultSet = databaseConnector.executeQuery(query)) {
             while (resultSet.next()) {
-                users.add(mapResultSetToUser(resultSet));
+                users.add(mapResultSetToEntity(resultSet));
             }
         } catch (SQLException e) {
             System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
@@ -52,11 +60,14 @@ public class UserRepository implements Crud<User> {
 
     @Override
     public User save(User entity) {
-        String query = "INSERT INTO " + TABLE_NAME + " (username, password, role) VALUES (?, ?, ?)";
+        String query = new Query()
+                .insert(TABLE_NAME, "username", "password", "role")
+                .values("?", "?", "CAST(? AS ROLE)")
+                .build();
 
-        try (ResultSet resultSet = databaseConnector.executeUpdate(query, entity.getUsername(), entity.getPassword(), entity.getRole())) {
+        try (ResultSet resultSet = databaseConnector.executeUpdate(query, entity.getUsername(), entity.getPassword(), entity.getRole().toString())) {
             if (resultSet.next()) {
-                return mapResultSetToUser(resultSet);
+                return mapResultSetToEntity(resultSet);
             }
         } catch (SQLException e) {
             System.out.println(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
@@ -67,10 +78,17 @@ public class UserRepository implements Crud<User> {
 
     @Override
     public void update(User entity) {
-        String query = "UPDATE " + TABLE_NAME + " SET username = ?, password = ?, role = ?, token = ? WHERE id = ?";
+        String query = new Query()
+                .update(TABLE_NAME)
+                .set("username", "?")
+                .set("password", "?")
+                .set("role", "CAST(? AS ROLE)")
+                .set("token", "?")
+                .where("id", "=", "?")
+                .build();
 
         try {
-            databaseConnector.executeUpdate(query, entity.getUsername(), entity.getPassword(), entity.getRole(), entity.getToken(), entity.getId());
+            databaseConnector.executeUpdate(query, entity.getUsername(), entity.getPassword(), entity.getRole().toString(), entity.getToken(), entity.getId());
         } catch (SQLException e) {
             System.out.println(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
         }
@@ -78,7 +96,11 @@ public class UserRepository implements Crud<User> {
 
     @Override
     public void delete(User entity) {
-        String query = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        String query = new Query()
+                .delete()
+                .from(TABLE_NAME)
+                .where("id", "=", "?")
+                .build();
 
         try {
             databaseConnector.executeUpdate(query, entity.getId());
@@ -96,24 +118,30 @@ public class UserRepository implements Crud<User> {
     }
 
     private Optional<User> findByColumn(String columnName, String columnValue) {
-        String query = "SELECT * FROM " + TABLE_NAME + " WHERE " + columnName + " = ?";
+        String query = new Query()
+                .select("*")
+                .from(TABLE_NAME)
+                .where(columnName, "=", "?")
+                .build();
+
         try (ResultSet resultSet = databaseConnector.executeQuery(query, columnValue)) {
             if (resultSet.next()) {
-                return Optional.of(mapResultSetToUser(resultSet));
+                return Optional.of(mapResultSetToEntity(resultSet));
             }
         } catch (SQLException e) {
             System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
         }
+
         return Optional.empty();
     }
 
-    private User mapResultSetToUser(ResultSet resultSet) throws SQLException {
-        int id = resultSet.getInt("id");
-        String username = resultSet.getString("username");
-        String password = resultSet.getString("password");
-        Role role = Role.valueOf(resultSet.getString("role"));
-        String token = resultSet.getString("token");
-
-        return new User(id, username, password, role, token);
+    private User mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+        return new User(
+                resultSet.getInt("id"),
+                resultSet.getString("username"),
+                resultSet.getString("password"),
+                Role.valueOf(resultSet.getString("role")),
+                resultSet.getString("token")
+        );
     }
 }

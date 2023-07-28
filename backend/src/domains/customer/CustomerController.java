@@ -171,32 +171,13 @@ public class CustomerController implements HttpHandler {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.values()));
                 int id = Integer.parseInt(splittedPath.get()[2]);
 
-                var customer = customerService.findById(id);
-
-                if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                if (user.getRole() == Role.CUSTOMER && user.getId() != customerService.findById(id).getUser().getId()) {
                     throw new UnauthorizedRequestException();
                 }
 
-                var updatedCustomer = gson.fromJson(requestBody, Customer.class);
-                var updatedBy = user.getId();
-
-                updatedCustomer = new Customer(
-                        id,
-                        updatedCustomer.getName(),
-                        updatedCustomer.getPhoneNumber(),
-                        updatedCustomer.getBirthDate(),
-                        updatedCustomer.getCpf(),
-                        updatedCustomer.getAddress(),
-                        updatedBy
-                );
-
-                customer.setName(updatedCustomer.getName());
-                customer.setPhoneNumber(updatedCustomer.getPhoneNumber());
-                customer.setBirthDate(updatedCustomer.getBirthDate());
-                customer.setCpf(updatedCustomer.getCpf());
-                customer.setAddress(updatedCustomer.getAddress());
-                customer.setUpdatedAt(updatedCustomer.getUpdatedAt());
-                customer.setUpdatedBy(updatedCustomer.getUpdatedBy());
+                var customer = gson.fromJson(requestBody, Customer.class);
+                customer.setId(id);
+                customer.setUpdatedBy(user.getId());
 
                 customerService.update(customer);
 
@@ -217,7 +198,7 @@ public class CustomerController implements HttpHandler {
         }
         // invalid endpoint
         else {
-            response = gson.toJson(new CustomResponse("Invalid endpoint"));
+            response = gson.toJson(new CustomResponse(Constants.INVALID_REQUEST_ENDPOINT));
             statusCode = HttpURLConnection.HTTP_NOT_FOUND;
         }
 
@@ -238,13 +219,11 @@ public class CustomerController implements HttpHandler {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.values()));
                 int id = Integer.parseInt(splittedPath.get()[2]);
 
-                var customer = customerService.findById(id);
-
-                if (user.getRole() == Role.CUSTOMER && user.getId() != customer.getUser().getId()) {
+                if (user.getRole() == Role.CUSTOMER && user.getId() != customerService.findById(id).getUser().getId()) {
                     throw new UnauthorizedRequestException();
                 }
 
-                customerService.delete(customer);
+                customerService.delete(id);
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {

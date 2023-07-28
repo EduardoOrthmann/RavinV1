@@ -8,9 +8,9 @@ import enums.MaritalStatus;
 import enums.Position;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Employee extends Person {
-    private static int lastId = 0;
     private int id;
     private String rg;
     private MaritalStatus maritalStatus;
@@ -21,22 +21,9 @@ public class Employee extends Person {
     private LocalDate resignationDate;
     private boolean isAvailable;
 
-    // insert
-    public Employee(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer createdBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber) {
-        super(name, phoneNumber, birthDate, cpf, address, user, createdBy);
-        this.id = ++lastId;
-        this.rg = rg;
-        this.maritalStatus = maritalStatus;
-        this.educationLevel = educationLevel;
-        this.position = position;
-        this.workCardNumber = workCardNumber;
-        this.admissionDate = LocalDate.now();
-        this.isAvailable = true;
-    }
-
-    // update
-    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Integer updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate) {
-        super(id, name, phoneNumber, birthDate, cpf, address, updatedBy);
+    // all args
+    public Employee(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, User user, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy, String rg, MaritalStatus maritalStatus, EducationLevel educationLevel, Position position, String workCardNumber, LocalDate admissionDate, LocalDate resignationDate, boolean isAvailable) {
+        super(name, phoneNumber, birthDate, cpf, address, isActive, user, createdAt, updatedAt, createdBy, updatedBy);
         this.id = id;
         this.rg = rg;
         this.maritalStatus = maritalStatus;
@@ -44,6 +31,8 @@ public class Employee extends Person {
         this.position = position;
         this.workCardNumber = workCardNumber;
         this.admissionDate = admissionDate;
+        this.resignationDate = resignationDate;
+        this.isAvailable = isAvailable;
     }
 
     public int getId() {

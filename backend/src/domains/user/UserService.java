@@ -26,8 +26,8 @@ public class UserService {
     }
 
     public User save(User entity) {
-        if (userRepository.findByUsername(entity.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Usuário já cadastrado");
+        if (existsByUsername(entity.getUsername())) {
+            throw new IllegalArgumentException(Constants.USERNAME_ALREADY_EXISTS);
         }
 
         return userRepository.save(entity);
@@ -66,17 +66,20 @@ public class UserService {
         User user = findByUsername(username);
 
         if (!user.getPassword().equals(password)) {
-            throw new IllegalArgumentException("Senha incorreta");
+            throw new IllegalArgumentException(Constants.INVALID_PASSWORD);
         }
 
         var token = generateToken();
         user.setToken(token);
+        userRepository.update(user);
+
         return token;
     }
 
     public void logout(String token) {
         User user = findByToken(token);
         user.setToken(null);
+        userRepository.update(user);
     }
 
     public User authorizeUserByRole(String authorizationHeader) throws UnauthorizedRequestException {

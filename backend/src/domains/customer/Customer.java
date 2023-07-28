@@ -5,20 +5,14 @@ import domains.person.Person;
 import domains.user.User;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Customer extends Person {
-    private static int lastId = 0;
     private int id;
 
-    // insert
-    public Customer(String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, User user, Integer createdBy) {
-        super(name, phoneNumber, birthDate, cpf, address, user, createdBy);
-        this.id = ++lastId;
-    }
-
-    // update
-    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, Integer updatedBy) {
-        super(id, name, phoneNumber, birthDate, cpf, address, updatedBy);
+    // all args
+    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, User user, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
+        super(name, phoneNumber, birthDate, cpf, address, isActive, user, createdAt, updatedAt, createdBy, updatedBy);
         this.id = id;
     }
 
