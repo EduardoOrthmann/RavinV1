@@ -27,7 +27,6 @@ import domains.table.TableService;
 import domains.user.UserController;
 import domains.user.UserRepository;
 import domains.user.UserService;
-import objectBuilder.Builder;
 import utils.Constants;
 
 import java.io.IOException;
@@ -45,13 +44,6 @@ public class Main {
         var orderService = new OrderService(new OrderDAO(), billService);
         var tableService = new TableService(new TableDAO(), billService);
         var reservedTableService = new ReservedTableService(new ReservedTableDAO());
-
-        var builder = new Builder(employeeService, customerService, tableService, productService, menuService);
-        builder.employeeBuilder();
-        builder.customerBuilder();
-        builder.tableBuilder();
-        builder.productBuilder();
-        builder.menuBuilder();
 
         var userController = new UserController(Constants.USER_PATH, userService);
         var customerController = new CustomerController(Constants.CUSTOMER_PATH, customerService, userService);

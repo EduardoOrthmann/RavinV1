@@ -3,16 +3,21 @@ package domains.user;
 import enums.Role;
 
 public class User {
-    private static int lastId = 0;
     private int id;
     private String username;
     private String password;
     private Role role;
     private String token;
 
-    // insert
+    public User(int id, String username, String password, Role role, String token) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.token = token;
+    }
+
     public User(String username, String password, Role role) {
-        this.id = ++lastId;
         this.username = username;
         this.password = password;
         this.role = role;
@@ -56,5 +61,17 @@ public class User {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+
+    @Override
+    public String toString() {
+        return "User {\n" +
+                "        \tid = " + id + "\n" +
+                "        \tusername = '" + username + '\'' + "\n" +
+                "        \tpassword = '" + password + '\'' + "\n" +
+                "        \trole = " + role + "\n" +
+                "        \ttoken = '" + token + '\'' + "\n" +
+                '}';
     }
 }

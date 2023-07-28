@@ -2,12 +2,12 @@ package utils;
 
 public class Constants {
     // database
-    public static final String DATABASE_NAME = "restaurant";
-    public static final String USERNAME = "postgres";
-    public static final String PASSWORD = "postgres";
-    public static final int PORT = 5432;
-    public static final String DRIVER = "org.postgresql.Driver";
-    public static final String URL = "jdbc:postgresql://localhost:" + PORT + "/" + DATABASE_NAME;
+    public static final String DATABASE_NAME = "ravin";
+    public static final String DATABASE_USERNAME = "postgres";
+    public static final String DATABASE_PASSWORD = "postgres";
+    public static final int DATABASE_PORT = 5432;
+    public static final String DATABASE_DRIVER = "org.postgresql.Driver";
+    public static final String DATABASE_URL = "jdbc:postgresql://localhost:" + DATABASE_PORT + "/" + DATABASE_NAME;
 
     // paths
     public static final String USER_PATH = "/user";
@@ -35,6 +35,8 @@ public class Constants {
     public static final String INVALID_REQUEST_ENDPOINT = "Endpoint inválido";
     public static final String SUCCESS_MESSAGE = "Operação realizada com sucesso";
     public static final String USERNAME_ALREADY_EXISTS = "Username já cadastrado";
+    public static final String DATABASE_QUERY_ERROR = "Aconteceu um erro ao buscar os dados do banco de dados";
+    public static final String DATABASE_MUTATION_ERROR = "Aconteceu um erro ao inserir os dados no banco de dados";
 
     public static final int MINIMUM_AGE = 18;
 }

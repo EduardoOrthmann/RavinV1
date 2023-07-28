@@ -5,6 +5,7 @@ import exceptions.UnauthorizedRequestException;
 import utils.APIUtils;
 import utils.Constants;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
@@ -16,8 +17,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException(Constants.USER_NOT_FOUND));
+    public User findById(int id) {
+        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.USER_NOT_FOUND));
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
     }
 
     public User save(User entity) {
@@ -34,6 +39,18 @@ public class UserService {
 
     public void delete(User entity) {
         userRepository.delete(entity);
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException(Constants.USER_NOT_FOUND));
+    }
+
+    public User findByToken(String token) {
+        return userRepository.findByToken(token).orElseThrow(() -> new NoSuchElementException(Constants.TOKEN_NOT_FOUND));
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.findByUsername(username).isPresent();
     }
 
     public String generateToken() {
@@ -55,10 +72,6 @@ public class UserService {
         var token = generateToken();
         user.setToken(token);
         return token;
-    }
-
-    public User findByToken(String token) {
-        return userRepository.findByToken(token).orElseThrow(() -> new NoSuchElementException(Constants.TOKEN_NOT_FOUND));
     }
 
     public void logout(String token) {
@@ -90,9 +103,5 @@ public class UserService {
         }
 
         return user;
-    }
-
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
     }
 }
