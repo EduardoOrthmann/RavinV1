@@ -10,7 +10,6 @@ import utils.CustomResponse;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -112,7 +111,9 @@ public class UserController implements HttpHandler {
                 var userCredentials = gson.fromJson(requestBody, User.class);
                 var token = userService.login(userCredentials.getUsername(), userCredentials.getPassword());
 
-                response = gson.toJson(Map.of("token", token));
+                exchange.getResponseHeaders().add("Authorization", token);
+
+                response = gson.toJson(new CustomResponse(Constants.SUCCESS_MESSAGE));
                 statusCode = HttpURLConnection.HTTP_OK;
             } catch (NoSuchElementException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));

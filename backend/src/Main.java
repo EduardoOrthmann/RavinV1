@@ -1,4 +1,5 @@
 import com.sun.net.httpserver.HttpServer;
+import database.PostgresConnector;
 import domains.ReservedTable.ReservedTableController;
 import domains.ReservedTable.ReservedTableDAO;
 import domains.ReservedTable.ReservedTableService;
@@ -34,11 +35,13 @@ import java.net.InetSocketAddress;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        var userService = new UserService(new UserRepository());
-        var employeeService = new EmployeeService(new EmployeeDAO(userService));
+        var databaseConnector = new PostgresConnector();
+
+        var userService = new UserService(new UserRepository(databaseConnector));
+        var customerService = new CustomerService(new CustomerDAO(databaseConnector, userService));
+        var employeeService = new EmployeeService(new EmployeeDAO(databaseConnector, userService));
         var productService = new ProductService(new ProductDAO());
         var menuService = new MenuService(new MenuDAO());
-        var customerService = new CustomerService(new CustomerDAO(userService));
         var paymentService = new PaymentService();
         var billService = new BillService(new BillDAO(), customerService, paymentService);
         var orderService = new OrderService(new OrderDAO(), billService);

@@ -1,11 +1,11 @@
 package domains.customer;
 
-import database.DatabaseConnector;
 import database.Query;
 import domains.address.Address;
 import domains.user.User;
 import domains.user.UserService;
 import interfaces.Crud;
+import interfaces.DatabaseConnector;
 import utils.Constants;
 
 import java.sql.ResultSet;
@@ -19,9 +19,9 @@ public class CustomerDAO implements Crud<Customer> {
     private final UserService userService;
     private final DatabaseConnector databaseConnector;
 
-    public CustomerDAO(UserService userService) {
+    public CustomerDAO(DatabaseConnector databaseConnector, UserService userService) {
         this.userService = userService;
-        this.databaseConnector = new DatabaseConnector();
+        this.databaseConnector = databaseConnector;
     }
 
     @Override
@@ -32,12 +32,13 @@ public class CustomerDAO implements Crud<Customer> {
                 .where("id", "=", "?")
                 .build();
 
-        try (ResultSet resultSet = databaseConnector.executeQuery(query, id)) {
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, id)) {
             if (resultSet.next()) {
                 return Optional.of(mapResultSetToEntity(resultSet));
             }
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
         }
 
         return Optional.empty();
@@ -51,12 +52,13 @@ public class CustomerDAO implements Crud<Customer> {
                 .from(TABLE_NAME)
                 .build();
 
-        try (ResultSet resultSet = databaseConnector.executeQuery(query)) {
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query)) {
             while (resultSet.next()) {
                 customers.add(mapResultSetToEntity(resultSet));
             }
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
         }
 
         return customers;
@@ -85,26 +87,27 @@ public class CustomerDAO implements Crud<Customer> {
 
         User user = userService.save(entity.getUser());
 
-        try (ResultSet resultSet = databaseConnector.executeUpdate(
-                query,
-                entity.getName(),
-                entity.getPhoneNumber(),
-                entity.getBirthDate(),
-                entity.getCpf(),
-                entity.getAddress().country(),
-                entity.getAddress().state(),
-                entity.getAddress().city(),
-                entity.getAddress().zipCode(),
-                entity.getAddress().neighborhood(),
-                entity.getAddress().street(),
-                user.getId(),
-                entity.getCreatedBy()
-        )) {
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeUpdate(
+                     query,
+                     entity.getName(),
+                     entity.getPhoneNumber(),
+                     entity.getBirthDate(),
+                     entity.getCpf(),
+                     entity.getAddress().country(),
+                     entity.getAddress().state(),
+                     entity.getAddress().city(),
+                     entity.getAddress().zipCode(),
+                     entity.getAddress().neighborhood(),
+                     entity.getAddress().street(),
+                     user.getId(),
+                     entity.getCreatedBy()
+             )) {
             if (resultSet.next()) {
                 return mapResultSetToEntity(resultSet);
             }
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
         }
 
         return null;
@@ -128,8 +131,8 @@ public class CustomerDAO implements Crud<Customer> {
                 .where("id", "=", "?")
                 .build();
 
-        try {
-            databaseConnector.executeUpdate(
+        try (DatabaseConnector connector = databaseConnector.connect()) {
+            connector.executeUpdate(
                     query,
                     entity.getName(),
                     entity.getPhoneNumber(),
@@ -144,8 +147,8 @@ public class CustomerDAO implements Crud<Customer> {
                     entity.getUpdatedBy(),
                     entity.getId()
             );
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
         }
     }
 
@@ -157,10 +160,10 @@ public class CustomerDAO implements Crud<Customer> {
                 .where("id", "=", "?")
                 .build();
 
-        try {
-            databaseConnector.executeUpdate(query, entity.isActive(), entity.getId());
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
+        try (DatabaseConnector connector = databaseConnector.connect()) {
+            connector.executeUpdate(query, entity.isActive(), entity.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
         }
     }
 
@@ -171,12 +174,13 @@ public class CustomerDAO implements Crud<Customer> {
                 .where("user_id", "=", "?")
                 .build();
 
-        try (ResultSet resultSet = databaseConnector.executeQuery(query, userId)) {
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, userId)) {
             if (resultSet.next()) {
                 return Optional.of(mapResultSetToEntity(resultSet));
             }
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
         }
 
         return Optional.empty();
@@ -189,12 +193,13 @@ public class CustomerDAO implements Crud<Customer> {
                 .where("cpf", "=", "?")
                 .build();
 
-        try (ResultSet resultSet = databaseConnector.executeQuery(query, cpf)) {
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, cpf)) {
             if (resultSet.next()) {
                 return Optional.of(mapResultSetToEntity(resultSet));
             }
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
         }
 
         return Optional.empty();

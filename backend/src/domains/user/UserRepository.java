@@ -1,9 +1,9 @@
 package domains.user;
 
-import database.DatabaseConnector;
 import database.Query;
 import enums.Role;
 import interfaces.Crud;
+import interfaces.DatabaseConnector;
 import utils.Constants;
 
 import java.sql.ResultSet;
@@ -16,8 +16,8 @@ public class UserRepository implements Crud<User> {
     private static final String TABLE_NAME = Constants.USER_TABLE;
     private final DatabaseConnector databaseConnector;
 
-    public UserRepository() {
-        this.databaseConnector = new DatabaseConnector();
+    public UserRepository(DatabaseConnector databaseConnector) {
+        this.databaseConnector = databaseConnector;
     }
 
     @Override
@@ -28,12 +28,13 @@ public class UserRepository implements Crud<User> {
                 .where("id", "=", "?")
                 .build();
 
-        try (ResultSet resultSet = databaseConnector.executeQuery(query, id)) {
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, id)) {
             if (resultSet.next()) {
                 return Optional.of(mapResultSetToEntity(resultSet));
             }
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
         }
 
         return Optional.empty();
@@ -47,12 +48,13 @@ public class UserRepository implements Crud<User> {
                 .from(TABLE_NAME)
                 .build();
 
-        try (ResultSet resultSet = databaseConnector.executeQuery(query)) {
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query)) {
             while (resultSet.next()) {
                 users.add(mapResultSetToEntity(resultSet));
             }
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
         }
 
         return users;
@@ -65,12 +67,13 @@ public class UserRepository implements Crud<User> {
                 .values("?", "?", "CAST(? AS ROLE)")
                 .build();
 
-        try (ResultSet resultSet = databaseConnector.executeUpdate(query, entity.getUsername(), entity.getPassword(), entity.getRole().toString())) {
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeUpdate(query, entity.getUsername(), entity.getPassword(), entity.getRole().toString())) {
             if (resultSet.next()) {
                 return mapResultSetToEntity(resultSet);
             }
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
         }
 
         return null;
@@ -87,10 +90,10 @@ public class UserRepository implements Crud<User> {
                 .where("id", "=", "?")
                 .build();
 
-        try {
-            databaseConnector.executeUpdate(query, entity.getUsername(), entity.getPassword(), entity.getRole().toString(), entity.getToken(), entity.getId());
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
+        try (DatabaseConnector connector = databaseConnector.connect()) {
+            connector.executeUpdate(query, entity.getUsername(), entity.getPassword(), entity.getRole().toString(), entity.getToken(), entity.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
         }
     }
 
@@ -102,10 +105,10 @@ public class UserRepository implements Crud<User> {
                 .where("id", "=", "?")
                 .build();
 
-        try {
-            databaseConnector.executeUpdate(query, entity.getId());
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
+        try (DatabaseConnector connector = databaseConnector.connect()) {
+            connector.executeUpdate(query, entity.getId());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_MUTATION_ERROR + ": " + e.getMessage());
         }
     }
 
@@ -124,12 +127,13 @@ public class UserRepository implements Crud<User> {
                 .where(columnName, "=", "?")
                 .build();
 
-        try (ResultSet resultSet = databaseConnector.executeQuery(query, columnValue)) {
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, columnValue)) {
             if (resultSet.next()) {
                 return Optional.of(mapResultSetToEntity(resultSet));
             }
-        } catch (SQLException e) {
-            System.out.println(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
         }
 
         return Optional.empty();

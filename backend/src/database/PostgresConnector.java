@@ -1,20 +1,29 @@
 package database;
 
+import interfaces.DatabaseConnector;
 import utils.Constants;
 
 import java.sql.*;
 
-public class DatabaseConnector implements AutoCloseable {
+public class PostgresConnector implements DatabaseConnector {
     private Connection connection;
 
-    public DatabaseConnector() {
+    @Override
+    public DatabaseConnector connect() throws SQLException {
+        if (this.connection != null && !this.connection.isClosed()) {
+            return this;
+        }
+
         try {
-            connection = DriverManager.getConnection(Constants.DATABASE_URL, Constants.DATABASE_USERNAME, Constants.DATABASE_PASSWORD);
+            this.connection = DriverManager.getConnection(Constants.DATABASE_URL, Constants.DATABASE_USERNAME, Constants.DATABASE_PASSWORD);
         } catch (SQLException e) {
             System.out.println("Não foi possível conectar ao banco de dados\n\n" + e.getMessage());
         }
+
+        return this;
     }
 
+    @Override
     public void disconnect() throws SQLException {
         if (this.connection == null || this.connection.isClosed()) {
             return;
@@ -27,13 +36,13 @@ public class DatabaseConnector implements AutoCloseable {
         }
     }
 
-    public Connection getConnection() {
-        return connection;
-    }
-
     @Override
     public void close() throws Exception {
         this.disconnect();
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 
     public ResultSet executeQuery(String sqlQuery, Object... parameters) throws SQLException {
