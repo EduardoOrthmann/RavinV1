@@ -2,62 +2,20 @@ package domains.user;
 
 import database.Query;
 import enums.Role;
-import interfaces.Crud;
+import interfaces.AbstractRepository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-public class UserRepository implements Crud<User> {
+public class UserRepository extends AbstractRepository<User> {
     private static final String TABLE_NAME = Constants.USER_TABLE;
     private final DatabaseConnector databaseConnector;
 
     public UserRepository(DatabaseConnector databaseConnector) {
         this.databaseConnector = databaseConnector;
-    }
-
-    @Override
-    public Optional<User> findById(int id) {
-        String query = new Query()
-                .select("*")
-                .from(TABLE_NAME)
-                .where("id", "=", "?")
-                .build();
-
-        try (DatabaseConnector connector = databaseConnector.connect();
-             ResultSet resultSet = connector.executeQuery(query, id)) {
-            if (resultSet.next()) {
-                return Optional.of(mapResultSetToEntity(resultSet));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public List<User> findAll() {
-        List<User> users = new ArrayList<>();
-        String query = new Query()
-                .select("*")
-                .from(TABLE_NAME)
-                .build();
-
-        try (DatabaseConnector connector = databaseConnector.connect();
-             ResultSet resultSet = connector.executeQuery(query)) {
-            while (resultSet.next()) {
-                users.add(mapResultSetToEntity(resultSet));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
-        }
-
-        return users;
     }
 
     @Override
@@ -112,6 +70,27 @@ public class UserRepository implements Crud<User> {
         }
     }
 
+    @Override
+    protected String getTableName() {
+        return TABLE_NAME;
+    }
+
+    @Override
+    protected DatabaseConnector getDatabaseConnector() {
+        return databaseConnector;
+    }
+
+    @Override
+    protected User mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+        return new User(
+                resultSet.getInt("id"),
+                resultSet.getString("username"),
+                resultSet.getString("password"),
+                Role.valueOf(resultSet.getString("role")),
+                resultSet.getString("token")
+        );
+    }
+
     public Optional<User> findByUsername(String username) {
         return findByColumn("username", username);
     }
@@ -137,15 +116,5 @@ public class UserRepository implements Crud<User> {
         }
 
         return Optional.empty();
-    }
-
-    private User mapResultSetToEntity(ResultSet resultSet) throws SQLException {
-        return new User(
-                resultSet.getInt("id"),
-                resultSet.getString("username"),
-                resultSet.getString("password"),
-                Role.valueOf(resultSet.getString("role")),
-                resultSet.getString("token")
-        );
     }
 }

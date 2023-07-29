@@ -96,7 +96,7 @@ public class MenuController implements HttpHandler {
     }
 
     private void postHandler(HttpExchange exchange) throws IOException {
-        String response = "";
+        String response;
         int statusCode;
 
         String path = exchange.getRequestURI().getPath();
@@ -113,17 +113,11 @@ public class MenuController implements HttpHandler {
                         .map(product -> productService.findById(product.getId()))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
-                var createdBy = user.getId();
 
-                menuService.save(
-                        new Menu(
-                                menu.getName(),
-                                menu.getMenuCode(),
-                                products,
-                                createdBy
-                        )
-                );
+                menu.setProducts(products);
+                menu.setCreatedBy(user.getId());
 
+                response = gson.toJson(menuService.save(menu));
                 statusCode = HttpURLConnection.HTTP_CREATED;
             } catch (IllegalArgumentException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
@@ -155,29 +149,17 @@ public class MenuController implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         final Optional<String[]> splittedPath = Optional.of(path.split("/"));
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+        String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
         // PUT /menu/{id} (update menu)
         if (path.matches(menuPath + "/[0-9]+")) {
             try {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
-
-                String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 int id = Integer.parseInt(splittedPath.get()[2]);
-                var menu = menuService.findById(id);
-                var updatedMenu = gson.fromJson(requestBody, Menu.class);
-                var updatedBy = user.getId();
 
-                updatedMenu = new Menu(
-                        id,
-                        updatedMenu.getName(),
-                        updatedMenu.getMenuCode(),
-                        updatedBy
-                );
-
-                menu.setName(updatedMenu.getName());
-                menu.setMenuCode(updatedMenu.getMenuCode());
-                menu.setUpdatedAt(updatedMenu.getUpdatedAt());
-                menu.setUpdatedBy(updatedMenu.getUpdatedBy());
+                var menu = gson.fromJson(requestBody, Menu.class);
+                menu.setId(id);
+                menu.setUpdatedBy(user.getId());
 
                 menuService.update(menu);
 
@@ -217,11 +199,10 @@ public class MenuController implements HttpHandler {
         if (path.matches(menuPath + "/[0-9]+")) {
             try {
                 userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
-
                 int id = Integer.parseInt(splittedPath.get()[2]);
-                var menu = menuService.findById(id);
 
-                menuService.delete(menu);
+
+                menuService.delete(id);
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {
@@ -283,17 +264,15 @@ public class MenuController implements HttpHandler {
                 statusCode = HttpURLConnection.HTTP_INTERNAL_ERROR;
             }
         }
-        // PATCH /menu/{id}/remove-product/{productId} (remove product from menu)
-        else if (path.matches(menuPath + "/[0-9]+/remove-product/[0-9]+")) {
+        // PATCH /menu/remove-product/{productId} (remove product from menu)
+        else if (path.matches(menuPath + "/remove-product/[0-9]+")) {
             try {
                 userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
 
-                int menuId = Integer.parseInt(splittedPath.get()[2]);
-                int productId = Integer.parseInt(splittedPath.get()[4]);
-                var menu = menuService.findById(menuId);
+                int productId = Integer.parseInt(splittedPath.get()[3]);
                 var product = productService.findById(productId);
 
-                menuService.removeProduct(menu, product);
+                menuService.removeProduct(product);
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {

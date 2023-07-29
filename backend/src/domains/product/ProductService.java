@@ -31,4 +31,8 @@ public class ProductService {
     public void delete(int entityId) {
         productRepository.delete(findById(entityId));
     }
+
+    public List<Product> findByMenuId(int menuId) {
+        return productRepository.findByMenuId(menuId);
+    }
 }

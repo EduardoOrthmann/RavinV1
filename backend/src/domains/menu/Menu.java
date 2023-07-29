@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 public class Menu implements Auditable {
-    private static int lastId = 0;
     private int id;
     private String name;
     private Set<Product> products;
@@ -18,23 +17,15 @@ public class Menu implements Auditable {
     private Integer createdBy;
     private Integer updatedBy;
 
-    // insert
-    public Menu(String name, String menuCode, Set<Product> products, Integer createdBy) {
-        this.id = ++lastId;
+    public Menu(int id, String name, Set<Product> products, String menuCode, boolean isActive, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
+        this.id = id;
         this.name = name;
         this.products = products;
         this.menuCode = menuCode;
-        this.isActive = true;
-        this.createdAt = LocalDateTime.now();
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.createdBy = createdBy;
-    }
-
-    // update
-    public Menu(int id, String name, String menuCode, Integer updatedBy) {
-        this.id = id;
-        this.name = name;
-        this.menuCode = menuCode;
-        this.updatedAt = LocalDateTime.now();
         this.updatedBy = updatedBy;
     }
 

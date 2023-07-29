@@ -13,7 +13,7 @@ import domains.employee.EmployeeController;
 import domains.employee.EmployeeRepository;
 import domains.employee.EmployeeService;
 import domains.menu.MenuController;
-import domains.menu.MenuDAO;
+import domains.menu.MenuRepository;
 import domains.menu.MenuService;
 import domains.order.OrderController;
 import domains.order.OrderDAO;
@@ -41,7 +41,7 @@ public class Main {
         var customerService = new CustomerService(new CustomerRepository(databaseConnector, userService));
         var employeeService = new EmployeeService(new EmployeeRepository(databaseConnector, userService));
         var productService = new ProductService(new ProductRepository(databaseConnector));
-        var menuService = new MenuService(new MenuDAO());
+        var menuService = new MenuService(new MenuRepository(databaseConnector, productService), productService);
         var paymentService = new PaymentService();
         var billService = new BillService(new BillDAO(), customerService, paymentService);
         var orderService = new OrderService(new OrderDAO(), billService);

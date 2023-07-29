@@ -7,6 +7,7 @@ import java.time.LocalTime;
 
 public class Product implements Auditable {
     private int id;
+    private Integer menuId;
     private String name;
     private String description;
     private String productCode;
@@ -21,8 +22,9 @@ public class Product implements Auditable {
     private Integer updatedBy;
 
     // all args constructor
-    public Product(int id, String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, boolean isActive, boolean isAvailable, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
+    public Product(int id, Integer menuId, String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, boolean isActive, boolean isAvailable, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
         this.id = id;
+        this.menuId = menuId;
         this.name = name;
         this.description = description;
         this.productCode = productCode;
@@ -43,6 +45,14 @@ public class Product implements Auditable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Integer getMenuId() {
+        return menuId;
+    }
+
+    public void setMenuId(Integer menuId) {
+        this.menuId = menuId;
     }
 
     public String getName() {

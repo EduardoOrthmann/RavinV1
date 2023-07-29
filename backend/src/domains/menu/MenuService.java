@@ -1,43 +1,55 @@
 package domains.menu;
 
 import domains.product.Product;
+import domains.product.ProductService;
 import utils.Constants;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class MenuService {
-    private final MenuDAO menuDAO;
+    private final MenuRepository menuRepository;
+    private final ProductService productService;
 
-    public MenuService(MenuDAO menuDAO) {
-        this.menuDAO = menuDAO;
+    public MenuService(MenuRepository menuRepository, ProductService productService) {
+        this.menuRepository = menuRepository;
+        this.productService = productService;
     }
 
     public Menu findById(int id) {
-        return menuDAO.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.MENU_NOT_FOUND));
+        return menuRepository.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.MENU_NOT_FOUND));
     }
 
     public List<Menu> findAll() {
-        return menuDAO.findAll();
+        return menuRepository.findAll();
     }
 
     public Menu save(Menu entity) {
-        return menuDAO.save(entity);
+        var menu = menuRepository.save(entity);
+
+        entity.getProducts().forEach(product -> {
+            product.setMenuId(menu.getId());
+            productService.update(product);
+        });
+
+        return menu;
     }
 
     public void update(Menu entity) {
-        menuDAO.update(entity);
+        menuRepository.update(entity);
     }
 
-    public void delete(Menu entity) {
-        menuDAO.delete(entity);
+    public void delete(int entityId) {
+        menuRepository.delete(findById(entityId));
     }
 
     public void addProduct(Menu menu, Product product) {
-        menu.getProducts().add(product);
+        product.setMenuId(menu.getId());
+        productService.update(product);
     }
 
-    public void removeProduct(Menu menu, Product product) {
-        menu.getProducts().remove(product);
+    public void removeProduct(Product product) {
+        product.setMenuId(null);
+        productService.update(product);
     }
 }
