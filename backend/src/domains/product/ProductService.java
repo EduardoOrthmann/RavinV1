@@ -6,29 +6,29 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ProductService {
-    private final ProductDAO productDAO;
+    private final ProductRepository productRepository;
 
-    public ProductService(ProductDAO productDAO) {
-        this.productDAO = productDAO;
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
     public Product findById(int id) {
-        return productDAO.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.PRODUCT_NOT_FOUND));
+        return productRepository.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.PRODUCT_NOT_FOUND));
     }
 
     public List<Product> findAll() {
-        return productDAO.findAll();
+        return productRepository.findAll();
     }
 
     public Product save(Product entity) {
-        return productDAO.save(entity);
+        return productRepository.save(entity);
     }
 
     public void update(Product entity) {
-        productDAO.update(entity);
+        productRepository.update(entity);
     }
 
-    public void delete(Product entity) {
-        productDAO.delete(entity);
+    public void delete(int entityId) {
+        productRepository.delete(findById(entityId));
     }
 }

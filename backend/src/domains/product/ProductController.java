@@ -90,33 +90,22 @@ public class ProductController implements HttpHandler {
     }
 
     private void postHandler(HttpExchange exchange) throws IOException {
-        String response = "";
+        String response;
         int statusCode;
 
         String path = exchange.getRequestURI().getPath();
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+        String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
         // POST /product (create product)
         if (path.matches(productPath)) {
             try {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
 
-                String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 var product = gson.fromJson(requestBody, Product.class);
-                var createdBy = user.getId();
+                product.setCreatedBy(user.getId());
 
-                productService.save(
-                        new Product(
-                                product.getName(),
-                                product.getDescription(),
-                                product.getProductCode(),
-                                product.getCostPrice(),
-                                product.getSalePrice(),
-                                product.getPreparationTime(),
-                                createdBy
-                        )
-                );
-
+                response = gson.toJson(productService.save(product));
                 statusCode = HttpURLConnection.HTTP_CREATED;
             } catch (IllegalArgumentException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
@@ -148,39 +137,17 @@ public class ProductController implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         final Optional<String[]> splittedPath = Optional.of(path.split("/"));
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+        String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
         // PUT /product/{id} (update product)
         if (path.matches(productPath + "/[0-9]+")) {
             try {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
-
-                String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 int id = Integer.parseInt(splittedPath.get()[2]);
-                var product = productService.findById(id);
-                var updatedProduct = gson.fromJson(requestBody, Product.class);
-                var updatedBy = user.getId();
 
-                updatedProduct = new Product(
-                        id,
-                        updatedProduct.getName(),
-                        updatedProduct.getDescription(),
-                        updatedProduct.getProductCode(),
-                        updatedProduct.getCostPrice(),
-                        updatedProduct.getSalePrice(),
-                        updatedProduct.getPreparationTime(),
-                        updatedProduct.isAvailable(),
-                        updatedBy
-                );
-
-                product.setName(updatedProduct.getName());
-                product.setDescription(updatedProduct.getDescription());
-                product.setProductCode(updatedProduct.getProductCode());
-                product.setCostPrice(updatedProduct.getCostPrice());
-                product.setSalePrice(updatedProduct.getSalePrice());
-                product.setPreparationTime(updatedProduct.getPreparationTime());
-                product.setAvailable(updatedProduct.isAvailable());
-                product.setUpdatedAt(updatedProduct.getUpdatedAt());
-                product.setUpdatedBy(updatedProduct.getUpdatedBy());
+                var product = gson.fromJson(requestBody, Product.class);
+                product.setId(id);
+                product.setUpdatedBy(user.getId());
 
                 productService.update(product);
 
@@ -220,10 +187,9 @@ public class ProductController implements HttpHandler {
         if (path.matches(productPath + "/[0-9]+")) {
             try {
                 userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
-
                 int id = Integer.parseInt(splittedPath.get()[2]);
-                var product = productService.findById(id);
-                productService.delete(product);
+
+                productService.delete(id);
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {

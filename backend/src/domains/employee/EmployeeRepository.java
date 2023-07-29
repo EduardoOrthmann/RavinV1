@@ -1,71 +1,33 @@
-package domains.customer;
+package domains.employee;
 
 import database.Query;
 import domains.address.Address;
 import domains.user.User;
 import domains.user.UserService;
-import interfaces.Crud;
+import enums.EducationLevel;
+import enums.MaritalStatus;
+import enums.Position;
+import interfaces.AbstractRepository;
 import interfaces.DatabaseConnector;
+import interfaces.PersonRepository;
 import utils.Constants;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
-public class CustomerDAO implements Crud<Customer> {
-    private static final String TABLE_NAME = Constants.CUSTOMER_TABLE;
+public class EmployeeRepository extends AbstractRepository<Employee> implements PersonRepository<Employee> {
+    private static final String TABLE_NAME = Constants.EMPLOYEE_TABLE;
     private final UserService userService;
     private final DatabaseConnector databaseConnector;
 
-    public CustomerDAO(DatabaseConnector databaseConnector, UserService userService) {
+    public EmployeeRepository(DatabaseConnector databaseConnector, UserService userService) {
         this.userService = userService;
         this.databaseConnector = databaseConnector;
     }
 
     @Override
-    public Optional<Customer> findById(int id) {
-        String query = new Query()
-                .select("*")
-                .from(TABLE_NAME)
-                .where("id", "=", "?")
-                .build();
-
-        try (DatabaseConnector connector = databaseConnector.connect();
-             ResultSet resultSet = connector.executeQuery(query, id)) {
-            if (resultSet.next()) {
-                return Optional.of(mapResultSetToEntity(resultSet));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public List<Customer> findAll() {
-        List<Customer> customers = new ArrayList<>();
-        String query = new Query()
-                .select("*")
-                .from(TABLE_NAME)
-                .build();
-
-        try (DatabaseConnector connector = databaseConnector.connect();
-             ResultSet resultSet = connector.executeQuery(query)) {
-            while (resultSet.next()) {
-                customers.add(mapResultSetToEntity(resultSet));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
-        }
-
-        return customers;
-    }
-
-    @Override
-    public Customer save(Customer entity) {
+    public Employee save(Employee entity) {
         String query = new Query()
                 .insert(
                         TABLE_NAME,
@@ -80,9 +42,14 @@ public class CustomerDAO implements Crud<Customer> {
                         "neighborhood",
                         "street",
                         "user_id",
-                        "created_by"
+                        "created_by",
+                        "rg",
+                        "marital_status",
+                        "education_level",
+                        "position",
+                        "work_card_number"
                 )
-                .autoValues()
+                .values("?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "CAST(? AS MARITAL_STATUS)", "CAST(? AS EDUCATION_LEVEL)", "CAST(? AS POSITION)", "?")
                 .build();
 
         User user = userService.save(entity.getUser());
@@ -101,7 +68,12 @@ public class CustomerDAO implements Crud<Customer> {
                      entity.getAddress().neighborhood(),
                      entity.getAddress().street(),
                      user.getId(),
-                     entity.getCreatedBy()
+                     entity.getCreatedBy(),
+                     entity.getRg(),
+                     entity.getMaritalStatus().toString(),
+                     entity.getEducationLevel().toString(),
+                     entity.getPosition().toString(),
+                     entity.getWorkCardNumber()
              )) {
             if (resultSet.next()) {
                 return mapResultSetToEntity(resultSet);
@@ -114,7 +86,7 @@ public class CustomerDAO implements Crud<Customer> {
     }
 
     @Override
-    public void update(Customer entity) {
+    public void update(Employee entity) {
         String query = new Query()
                 .update(TABLE_NAME)
                 .set("name", "?")
@@ -128,6 +100,11 @@ public class CustomerDAO implements Crud<Customer> {
                 .set("neighborhood", "?")
                 .set("street", "?")
                 .set("updated_by", "?")
+                .set("rg", "?")
+                .set("marital_status", "CAST(? AS MARITAL_STATUS)")
+                .set("education_level", "CAST(? AS EDUCATION_LEVEL)")
+                .set("position", "CAST(? AS POSITION)")
+                .set("work_card_number", "?")
                 .where("id", "=", "?")
                 .build();
 
@@ -145,6 +122,11 @@ public class CustomerDAO implements Crud<Customer> {
                     entity.getAddress().neighborhood(),
                     entity.getAddress().street(),
                     entity.getUpdatedBy(),
+                    entity.getRg(),
+                    entity.getMaritalStatus().toString(),
+                    entity.getEducationLevel().toString(),
+                    entity.getPosition().toString(),
+                    entity.getWorkCardNumber(),
                     entity.getId()
             );
         } catch (Exception e) {
@@ -153,7 +135,7 @@ public class CustomerDAO implements Crud<Customer> {
     }
 
     @Override
-    public void delete(Customer entity) {
+    public void delete(Employee entity) {
         String query = new Query()
                 .update(TABLE_NAME)
                 .set("is_active", "?")
@@ -167,48 +149,11 @@ public class CustomerDAO implements Crud<Customer> {
         }
     }
 
-    public Optional<Customer> findByUserId(int userId) {
-        String query = new Query()
-                .select("*")
-                .from(TABLE_NAME)
-                .where("user_id", "=", "?")
-                .build();
-
-        try (DatabaseConnector connector = databaseConnector.connect();
-             ResultSet resultSet = connector.executeQuery(query, userId)) {
-            if (resultSet.next()) {
-                return Optional.of(mapResultSetToEntity(resultSet));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
-        }
-
-        return Optional.empty();
-    }
-
-    public Optional<Customer> findByCpf(String cpf) {
-        String query = new Query()
-                .select("*")
-                .from(TABLE_NAME)
-                .where("cpf", "=", "?")
-                .build();
-
-        try (DatabaseConnector connector = databaseConnector.connect();
-             ResultSet resultSet = connector.executeQuery(query, cpf)) {
-            if (resultSet.next()) {
-                return Optional.of(mapResultSetToEntity(resultSet));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
-        }
-
-        return Optional.empty();
-    }
-
-    private Customer mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    @Override
+    protected Employee mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         User user = userService.findById(resultSet.getInt("user_id"));
 
-        return new Customer(
+        return new Employee(
                 resultSet.getInt("id"),
                 resultSet.getString("name"),
                 resultSet.getString("phone_number"),
@@ -227,7 +172,65 @@ public class CustomerDAO implements Crud<Customer> {
                 resultSet.getTimestamp("created_at").toLocalDateTime(),
                 resultSet.getTimestamp("updated_at").toLocalDateTime(),
                 resultSet.getInt("created_by"),
-                resultSet.getInt("updated_by")
+                resultSet.getInt("updated_by"),
+                resultSet.getString("rg"),
+                MaritalStatus.valueOf(resultSet.getString("marital_status")),
+                EducationLevel.valueOf(resultSet.getString("education_level")),
+                Position.valueOf(resultSet.getString("position")),
+                resultSet.getString("work_card_number"),
+                resultSet.getDate("admission_date").toLocalDate(),
+                resultSet.getDate("resignation_date").toLocalDate(),
+                resultSet.getBoolean("is_available")
         );
+    }
+
+    @Override
+    protected String getTableName() {
+        return TABLE_NAME;
+    }
+
+    @Override
+    protected DatabaseConnector getDatabaseConnector() {
+        return databaseConnector;
+    }
+
+    @Override
+    public Optional<Employee> findByUserId(int userId) {
+        String query = new Query()
+                .select("*")
+                .from(TABLE_NAME)
+                .where("user_id", "=", "?")
+                .build();
+
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, userId)) {
+            if (resultSet.next()) {
+                return Optional.of(mapResultSetToEntity(resultSet));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Employee> findByCpf(String cpf) {
+        String query = new Query()
+                .select("*")
+                .from(TABLE_NAME)
+                .where("cpf", "=", "?")
+                .build();
+
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, cpf)) {
+            if (resultSet.next()) {
+                return Optional.of(mapResultSetToEntity(resultSet));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        }
+
+        return Optional.empty();
     }
 }

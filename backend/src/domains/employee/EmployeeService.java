@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class EmployeeService {
-    private final EmployeeDAO employeeDAO;
+    private final EmployeeRepository employeeRepository;
 
-    public EmployeeService(EmployeeDAO employeeDAO) {
-        this.employeeDAO = employeeDAO;
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
     }
 
     public Employee findById(int id) {
-        return employeeDAO.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.EMPLOYEE_NOT_FOUND));
+        return employeeRepository.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.EMPLOYEE_NOT_FOUND));
     }
 
     public List<Employee> findAll() {
-        return employeeDAO.findAll();
+        return employeeRepository.findAll();
     }
 
     public Employee save(Employee entity) {
@@ -30,7 +30,7 @@ public class EmployeeService {
             throw new IllegalArgumentException(Constants.CPF_ALREADY_EXISTS);
         }
 
-        return employeeDAO.save(entity);
+        return employeeRepository.save(entity);
     }
 
     public void update(Employee entity) {
@@ -38,25 +38,25 @@ public class EmployeeService {
             throw new NoSuchElementException(Constants.EMPLOYEE_NOT_FOUND);
         }
 
-        employeeDAO.update(entity);
+        employeeRepository.update(entity);
     }
 
     public void delete(int entityId) {
         Employee employee = findById(entityId);
 
         employee.setActive(false);
-        employeeDAO.delete(employee);
+        employeeRepository.delete(employee);
     }
 
     public boolean existsById(int id) {
-        return employeeDAO.findById(id).isPresent();
+        return employeeRepository.findById(id).isPresent();
     }
 
     public Employee findByUserId(int userId) {
-        return employeeDAO.findByUserId(userId).orElseThrow(() -> new NoSuchElementException("Funcionário não encontrado"));
+        return employeeRepository.findByUserId(userId).orElseThrow(() -> new NoSuchElementException("Funcionário não encontrado"));
     }
 
     private boolean existsByCpf(String cpf) {
-        return employeeDAO.findByCpf(cpf).isPresent();
+        return employeeRepository.findByCpf(cpf).isPresent();
     }
 }

@@ -7,18 +7,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class CustomerService {
-    private final CustomerDAO customerDAO;
+    private final CustomerRepository customerRepository;
 
-    public CustomerService(CustomerDAO customerDAO) {
-        this.customerDAO = customerDAO;
+    public CustomerService(CustomerRepository customerRepository) {
+        this.customerRepository = customerRepository;
     }
 
     public Customer findById(int id) {
-        return customerDAO.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.CUSTOMER_NOT_FOUND));
+        return customerRepository.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.CUSTOMER_NOT_FOUND));
     }
 
     public List<Customer> findAll() {
-        return customerDAO.findAll();
+        return customerRepository.findAll();
     }
 
     public Customer save(Customer entity) {
@@ -27,7 +27,7 @@ public class CustomerService {
         }
 
         entity.getUser().setRole(Role.CUSTOMER);
-        return customerDAO.save(entity);
+        return customerRepository.save(entity);
     }
 
     public void update(Customer entity) {
@@ -35,25 +35,22 @@ public class CustomerService {
             throw new NoSuchElementException(Constants.CUSTOMER_NOT_FOUND);
         }
 
-        customerDAO.update(entity);
+        customerRepository.update(entity);
     }
 
     public void delete(int entityId) {
-        Customer customer = findById(entityId);
-
-        customer.setActive(false);
-        customerDAO.delete(customer);
+        customerRepository.delete(findById(entityId));
     }
 
     public Customer findByUserId(int userId) {
-        return customerDAO.findByUserId(userId).orElseThrow(() -> new NoSuchElementException(Constants.CUSTOMER_NOT_FOUND));
+        return customerRepository.findByUserId(userId).orElseThrow(() -> new NoSuchElementException(Constants.CUSTOMER_NOT_FOUND));
     }
 
     public boolean existsByCpf(String cpf) {
-        return customerDAO.findByCpf(cpf).isPresent();
+        return customerRepository.findByCpf(cpf).isPresent();
     }
 
     public boolean existsById(int id) {
-        return customerDAO.findById(id).isPresent();
+        return customerRepository.findById(id).isPresent();
     }
 }

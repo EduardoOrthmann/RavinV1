@@ -12,6 +12,7 @@ public class Constants {
     public static final String USER_TABLE = "\"user\"";
     public static final String CUSTOMER_TABLE = "customer";
     public static final String EMPLOYEE_TABLE = "employee";
+    public static final String PRODUCT_TABLE = "product";
 
     // paths
     public static final String USER_PATH = "/user";

@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Product implements Auditable {
-    private static int lastId = 0;
     private int id;
     private String name;
     private String description;
@@ -21,23 +20,8 @@ public class Product implements Auditable {
     private Integer createdBy;
     private Integer updatedBy;
 
-    // insert
-    public Product(String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, Integer createdBy) {
-        this.id = ++lastId;
-        this.name = name;
-        this.description = description;
-        this.productCode = productCode;
-        this.costPrice = costPrice;
-        this.salePrice = salePrice;
-        this.preparationTime = preparationTime;
-        this.isActive = true;
-        this.isAvailable = true;
-        this.createdAt = LocalDateTime.now();
-        this.createdBy = createdBy;
-    }
-
-    // update
-    public Product(int id, String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, boolean isAvailable, Integer updatedBy) {
+    // all args constructor
+    public Product(int id, String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, boolean isActive, boolean isAvailable, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -45,8 +29,11 @@ public class Product implements Auditable {
         this.costPrice = costPrice;
         this.salePrice = salePrice;
         this.preparationTime = preparationTime;
+        this.isActive = isActive;
         this.isAvailable = isAvailable;
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.createdBy = createdBy;
         this.updatedBy = updatedBy;
     }
 
