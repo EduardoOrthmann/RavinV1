@@ -3,9 +3,9 @@ import database.PostgresConnector;
 import domains.ReservedTable.ReservedTableController;
 import domains.ReservedTable.ReservedTableDAO;
 import domains.ReservedTable.ReservedTableService;
-import domains.bill.BillController;
-import domains.bill.BillDAO;
-import domains.bill.BillService;
+import domains.order.OrderController;
+import domains.order.OrderRepository;
+import domains.order.OrderService;
 import domains.customer.CustomerController;
 import domains.customer.CustomerRepository;
 import domains.customer.CustomerService;
@@ -15,9 +15,9 @@ import domains.employee.EmployeeService;
 import domains.menu.MenuController;
 import domains.menu.MenuRepository;
 import domains.menu.MenuService;
-import domains.order.OrderController;
-import domains.order.OrderDAO;
-import domains.order.OrderService;
+import domains.orderItem.OrderItemController;
+import domains.orderItem.OrderItemRepository;
+import domains.orderItem.OrderItemService;
 import domains.payment.PaymentService;
 import domains.product.ProductController;
 import domains.product.ProductRepository;
@@ -43,8 +43,8 @@ public class Main {
         var productService = new ProductService(new ProductRepository(databaseConnector));
         var menuService = new MenuService(new MenuRepository(databaseConnector, productService), productService);
         var paymentService = new PaymentService();
-        var billService = new BillService(new BillDAO(), customerService, paymentService);
-        var orderService = new OrderService(new OrderDAO(), billService);
+        var billService = new OrderService(new OrderRepository(), customerService, paymentService);
+        var orderService = new OrderItemService(new OrderItemRepository(), billService);
         var tableService = new TableService(new TableDAO(), billService);
         var reservedTableService = new ReservedTableService(new ReservedTableDAO());
 
@@ -55,8 +55,8 @@ public class Main {
         var menuController = new MenuController(Constants.MENU_PATH, menuService, productService, userService);
         var tableController = new TableController(Constants.TABLE_PATH, tableService, reservedTableService, customerService, userService);
         var reservedTableController = new ReservedTableController(Constants.RESERVED_TABLE_PATH, reservedTableService, customerService, userService);
-        var orderController = new OrderController(Constants.ORDER_PATH, orderService, userService, employeeService, customerService, billService);
-        var billController = new BillController(Constants.BILL_PATH, billService, orderService, tableService, reservedTableService, productService, customerService, userService);
+        var orderController = new OrderItemController(Constants.ORDER_ITEM_PATH, orderService, userService, employeeService, customerService, billService);
+        var billController = new OrderController(Constants.ORDER_PATH, billService, orderService, tableService, reservedTableService, productService, customerService, userService);
 
         InetSocketAddress address = new InetSocketAddress(8080);
         HttpServer server = HttpServer.create(address, 0);
@@ -67,8 +67,8 @@ public class Main {
         server.createContext(Constants.MENU_PATH, menuController);
         server.createContext(Constants.TABLE_PATH, tableController);
         server.createContext(Constants.RESERVED_TABLE_PATH, reservedTableController);
-        server.createContext(Constants.ORDER_PATH, orderController);
-        server.createContext(Constants.BILL_PATH, billController);
+        server.createContext(Constants.ORDER_ITEM_PATH, orderController);
+        server.createContext(Constants.ORDER_PATH, billController);
         server.createContext(Constants.USER_PATH, userController);
 
         server.setExecutor(null);

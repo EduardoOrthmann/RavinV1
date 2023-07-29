@@ -23,8 +23,8 @@ public class Constants {
     public static final String MENU_PATH = "/menu";
     public static final String TABLE_PATH = "/table";
     public static final String RESERVED_TABLE_PATH = "/reserved-table";
+    public static final String ORDER_ITEM_PATH = "/order-item";
     public static final String ORDER_PATH = "/order";
-    public static final String BILL_PATH = "/bill";
 
     // messages
     public static final String USER_NOT_FOUND = "Usuário não encontrado";
@@ -34,8 +34,8 @@ public class Constants {
     public static final String MENU_NOT_FOUND = "Cardápio não encontrado";
     public static final String TABLE_NOT_FOUND = "Mesa não encontrada";
     public static final String RESERVED_TABLE_NOT_FOUND = "Mesa reservada não encontrada";
-    public static final String ORDER_NOT_FOUND = "Pedido não encontrado";
-    public static final String BILL_NOT_FOUND = "Comanda não encontrada";
+    public static final String ORDER_ITEM_NOT_FOUND = "Item do pedido não encontrado";
+    public static final String ORDER_NOT_FOUND = "Comanda não encontrada";
     public static final String TOKEN_NOT_FOUND = "Token não encontrado";
     public static final String INVALID_REQUEST_METHOD = "Método de requisição inválido";
     public static final String INVALID_REQUEST_ENDPOINT = "Endpoint inválido";
@@ -46,6 +46,11 @@ public class Constants {
     public static final String DATABASE_MUTATION_ERROR = "Aconteceu um erro ao inserir os dados no banco de dados";
     public static final String MINIMUM_AGE_NOT_REACHED = "Funcionário deve ser maior de idade";
     public static final String INVALID_PASSWORD = "Senha inválida";
+    public static final String ORDER_ITEM_STATUS_NOT_ALLOWED = "Status do item do pedido não permitido";
+    public static final String ORDER_ITEM_NOT_TAKEN = "Item do pedido não foi pego por nenhum funcionário";
+    public static final String ORDER_ITEM_ALREADY_TAKEN = "Item do pedido já foi pego por um funcionário";
+    public static final String ORDER_ITEM_ALREADY_DELIVERED_OR_CANCELED = "Item do pedido já foi entregue ou cancelado";
+    public static final String ORDER_ITEM_ALREADY_CANCELED = "Item do pedido já foi cancelado";
 
     // others
     public static final int MINIMUM_AGE = 18;

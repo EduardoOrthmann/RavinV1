@@ -1,6 +1,6 @@
 package domains.table;
 
-import domains.bill.BillService;
+import domains.order.OrderService;
 import domains.customer.Customer;
 import enums.TableStatus;
 import utils.Constants;
@@ -12,11 +12,11 @@ import java.util.Set;
 
 public class TableService {
     private final TableDAO tableDAO;
-    private final BillService billService;
+    private final OrderService orderService;
 
-    public TableService(TableDAO tableDAO, BillService billService) {
+    public TableService(TableDAO tableDAO, OrderService orderService) {
         this.tableDAO = tableDAO;
-        this.billService = billService;
+        this.orderService = orderService;
     }
 
     public Table findById(int id) {
@@ -44,7 +44,7 @@ public class TableService {
     }
 
     public void occupyTable(Table table, Set<Customer> customers) {
-        if (billService.existsByTableAndIsPaid(table.getId(), false)) {
+        if (orderService.existsByTableAndIsPaid(table.getId(), false)) {
             throw new IllegalStateException("Não é possível ocupar uma mesa com contas em aberto");
         }
 
@@ -63,7 +63,7 @@ public class TableService {
     }
 
     public void freeTable(Table table) {
-        if (billService.existsByTableAndIsPaid(table.getId(), false)) {
+        if (orderService.existsByTableAndIsPaid(table.getId(), false)) {
             throw new IllegalStateException("Não é possível liberar uma mesa com contas em aberto");
         }
 

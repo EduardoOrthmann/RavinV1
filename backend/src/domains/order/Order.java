@@ -1,33 +1,33 @@
 package domains.order;
 
-import domains.product.Product;
-import enums.OrderStatus;
+import domains.orderItem.OrderItem;
+import domains.table.Table;
 import interfaces.Auditable;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 public class Order implements Auditable {
     private static int lastId = 0;
     private int id;
-    private Product product;
-    private Integer employeeId;
-    private int quantity;
-    private double price;
-    private OrderStatus status;
-    private List<String> notes;
+    private boolean isPaid;
+    private Integer customerId;
+    private Table table;
+    private Set<OrderItem> orderItems;
+    private double totalPrice;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer createdBy;
     private Integer updatedBy;
 
     // insert
-    public Order(Product product, int quantity, List<String> notes, Integer createdBy) {
+    public Order(Integer customerId, Table table, Set<OrderItem> orderItems, Integer createdBy) {
         this.id = ++lastId;
-        this.product = product;
-        this.quantity = quantity;
-        this.notes = notes;
-        this.status = OrderStatus.WAITING;
+        this.isPaid = false;
+        this.customerId = customerId;
+        this.table = table;
+        this.orderItems = orderItems;
+        this.totalPrice = 0;
         this.createdAt = LocalDateTime.now();
         this.createdBy = createdBy;
     }
@@ -40,52 +40,44 @@ public class Order implements Auditable {
         this.id = id;
     }
 
-    public Product getProduct() {
-        return product;
+    public boolean isPaid() {
+        return isPaid;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setPaid(boolean paid) {
+        isPaid = paid;
     }
 
-    public int getQuantity() {
-        return quantity;
+    public Set<OrderItem> getOrderItems() {
+        return orderItems;
     }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
+    public void setOrderItems(Set<OrderItem> orderItems) {
+        this.orderItems = orderItems;
     }
 
-    public OrderStatus getStatus() {
-        return status;
+    public Integer getCustomerId() {
+        return customerId;
     }
 
-    public void setStatus(OrderStatus status) {
-        this.status = status;
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
 
-    public List<String> getNotes() {
-        return notes;
+    public Table getTable() {
+        return table;
     }
 
-    public void setNotes(List<String> notes) {
-        this.notes = notes;
+    public void setTable(Table table) {
+        this.table = table;
     }
 
-    public double getPrice() {
-        return price;
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public Integer getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(Integer employeeId) {
-        this.employeeId = employeeId;
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     @Override
