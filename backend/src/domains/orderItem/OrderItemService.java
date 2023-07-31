@@ -32,7 +32,7 @@ public class OrderItemService {
     }
 
     public OrderItem save(OrderItem entity) {
-        if (!entity.getNotes().isEmpty()) {
+        if (entity.getNotes() != null) {
             entity.getNotes().forEach(note -> orderItemCommentRepository.save(new OrderItemComment(entity.getId(), note)));
         }
 

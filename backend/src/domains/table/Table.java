@@ -5,7 +5,6 @@ import enums.TableStatus;
 import interfaces.Auditable;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Table implements Auditable {

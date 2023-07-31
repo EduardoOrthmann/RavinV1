@@ -61,7 +61,7 @@ public class Main {
         var tableController = new TableController(Constants.TABLE_PATH, tableService, reservedTableService, customerService, userService);
         var reservedTableController = new ReservedTableController(Constants.RESERVED_TABLE_PATH, reservedTableService, customerService, userService);
         var orderItemController = new OrderItemController(Constants.ORDER_ITEM_PATH, orderItemService, userService, employeeService, customerService, orderService);
-        var orderController = new OrderController(Constants.ORDER_PATH, orderService, orderItemService, tableService, reservedTableService, productService, customerService, userService);
+        var orderController = new OrderController(Constants.ORDER_PATH, orderService, tableService, reservedTableService, productService, customerService, userService);
 
         InetSocketAddress address = new InetSocketAddress(8080);
         HttpServer server = HttpServer.create(address, 0);

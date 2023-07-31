@@ -27,16 +27,13 @@ import java.net.HttpURLConnection;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class OrderController implements HttpHandler {
     private final String orderPath;
     private final OrderService orderService;
-    private final OrderItemService orderItemService;
     private final TableService tableService;
     private final ReservedTableService reservedTableService;
     private final ProductService productService;
@@ -44,10 +41,9 @@ public class OrderController implements HttpHandler {
     private final UserService userService;
     private final Gson gson;
 
-    public OrderController(String orderPath, OrderService orderService, OrderItemService orderItemService, TableService tableService, ReservedTableService reservedTableService, ProductService productService, CustomerService customerService, UserService userService) {
+    public OrderController(String orderPath, OrderService orderService, TableService tableService, ReservedTableService reservedTableService, ProductService productService, CustomerService customerService, UserService userService) {
         this.orderPath = orderPath;
         this.orderService = orderService;
-        this.orderItemService = orderItemService;
         this.tableService = tableService;
         this.reservedTableService = reservedTableService;
         this.productService = productService;
@@ -256,12 +252,12 @@ public class OrderController implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         final Optional<String[]> splittedPath = Optional.of(path.split("/"));
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+        String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
         // PATCH /order/{id}/add-order-item (add order item to order)
         if (path.matches(orderPath + "/[0-9]+/add-order-item")) {
             try {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.values()));
-                String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 int id = Integer.parseInt(splittedPath.get()[2]);
 
                 var order = orderService.findById(id);
@@ -277,7 +273,7 @@ public class OrderController implements HttpHandler {
                 orderItem.setProduct(product);
                 orderItem.setCreatedBy(user.getId());
 
-                orderService.addOrderItem(order, orderItemService.save(orderItem));
+                orderService.addOrderItem(order, orderItem);
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));

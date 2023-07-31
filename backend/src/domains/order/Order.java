@@ -1,7 +1,6 @@
 package domains.order;
 
 import domains.orderItem.OrderItem;
-import domains.table.Table;
 import interfaces.Auditable;
 
 import java.time.LocalDateTime;
