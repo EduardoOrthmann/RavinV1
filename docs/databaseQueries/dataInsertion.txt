@@ -15,17 +15,17 @@ VALUES ('joao', '1234', 'CUSTOMER'),
 
 -- Row 11 to 20
 INSERT INTO "user" (username, password, role)
-VALUES ('lariMassa', '7891', 'EMPLOYEE'),
-       ('matheusOliveira', 'pass123', 'EMPLOYEE'),
-       ('lucianaSantos', 'secret321', 'EMPLOYEE'),
-       ('pedroAlmeida', 'qwerty', 'EMPLOYEE'),
-       ('juliaFerreira', 'letmein', 'EMPLOYEE'),
-       ('ricardoSilva', 'password123', 'EMPLOYEE'),
-       ('fernandaCosta', 'hello123', 'EMPLOYEE'),
-       ('gustavoRodrigues', '123456', 'EMPLOYEE'),
-       ('vanessaSouza', 'abc123', 'EMPLOYEE'),
-       ('rafaelLima', 'welcome', 'EMPLOYEE'),
-       ('carolinaCastro', 'employeePass', 'EMPLOYEE');
+VALUES ('lariMassa', '1234', 'ADMIN'),
+       ('matheusOliveira', '1234', 'ADMIN'),
+       ('lucianaSantos', '1234', 'MANAGER'),
+       ('pedroAlmeida', '1234', 'MANAGER'),
+       ('juliaFerreira', '1234', 'EMPLOYEE'),
+       ('ricardoSilva', '1234', 'EMPLOYEE'),
+       ('fernandaCosta', '1234', 'EMPLOYEE'),
+       ('gustavoRodrigues', '1234', 'EMPLOYEE'),
+       ('vanessaSouza', '1234', 'EMPLOYEE'),
+       ('rafaelLima', '1234', 'EMPLOYEE'),
+       ('carolinaCastro', '1234', 'EMPLOYEE');
 
 -- INSERT DATA (CUSTOMER)
 INSERT INTO customer
@@ -134,7 +134,7 @@ VALUES
      'PASTEIS01', 3.00, 6.50, '15:00:00', 4);
 
 -- INSERT DATA (TABLE)
-INSERT INTO table_restaurant
+INSERT INTO "table"
     (name, table_number, max_capacity)
 VALUES ('Mesa 1', 1, 5),
        ('Mesa 2', 2, 5),

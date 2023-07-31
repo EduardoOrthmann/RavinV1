@@ -93,8 +93,8 @@ CREATE TABLE customer
     updated_at   TIMESTAMP    NOT NULL DEFAULT NOW(),
     created_by   INTEGER,
     updated_by   INTEGER,
-    FOREIGN KEY (table_id) REFERENCES table_restaurant (id),
-    FOREIGN KEY (user_id) REFERENCES "user" (id)
+    FOREIGN KEY (table_id) REFERENCES "table" (id) ON DELETE SET NULL,
+    FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE
 );
 
 CREATE TRIGGER update_customer_updated_at
@@ -125,14 +125,14 @@ CREATE TABLE employee
     created_by       INTEGER,
     updated_by       INTEGER,
     rg               CHAR(20),
-    marital_status   MARITAL_STATUS  NOT NULL,
-    education_level  EDUCATION_LEVEL NOT NULL,
+    marital_status   MARITAL_STATUS,
+    education_level  EDUCATION_LEVEL,
     position         JOB_POSITION    NOT NULL,
     work_card_number CHAR(20),
     admission_date   DATE            NOT NULL DEFAULT NOW(),
     resignation_date DATE,
     is_available     BOOLEAN         NOT NULL DEFAULT TRUE,
-    FOREIGN KEY (user_id) REFERENCES "user" (id)
+    FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE
 );
 
 CREATE TRIGGER update_employee_updated_at
@@ -174,7 +174,7 @@ CREATE TABLE product
     preparation_time TIME           NOT NULL,
     is_active        BOOLEAN        NOT NULL DEFAULT TRUE,
     is_available     BOOLEAN        NOT NULL DEFAULT TRUE,
-    menu_id          INTEGER        NOT NULL,
+    menu_id          INTEGER,
     created_at       TIMESTAMP      NOT NULL DEFAULT NOW(),
     updated_at       TIMESTAMP      NOT NULL DEFAULT NOW(),
     created_by       INTEGER,
@@ -190,14 +190,13 @@ EXECUTE PROCEDURE
     update_updated_at_column();
 
 -- TABLE
-CREATE TABLE table_restaurant
+CREATE TABLE "table"
 (
     id           SERIAL PRIMARY KEY,
     name         VARCHAR(100) NOT NULL UNIQUE,
     table_number SMALLINT     NOT NULL UNIQUE,
     max_capacity SMALLINT     NOT NULL,
     status       TABLE_STATUS NOT NULL DEFAULT 'AVAILABLE',
-    is_active    BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at   TIMESTAMP    NOT NULL DEFAULT NOW(),
     updated_at   TIMESTAMP    NOT NULL DEFAULT NOW(),
     created_by   INTEGER,
@@ -206,12 +205,12 @@ CREATE TABLE table_restaurant
 
 CREATE TRIGGER update_table_updated_at
     BEFORE UPDATE
-    ON table_restaurant
+    ON "table"
     FOR EACH ROW
 EXECUTE PROCEDURE
     update_updated_at_column();
 
--- reserved table
+-- RESERVED TABLE
 CREATE TABLE reserved_table
 (
     id             SERIAL PRIMARY KEY,
@@ -223,7 +222,7 @@ CREATE TABLE reserved_table
     updated_at     TIMESTAMP NOT NULL DEFAULT NOW(),
     created_by     INTEGER,
     updated_by     INTEGER,
-    FOREIGN KEY (table_id) REFERENCES table_restaurant (id)
+    FOREIGN KEY (table_id) REFERENCES "table" (id) ON DELETE CASCADE
 );
 
 CREATE TRIGGER update_reserved_table_updated_at
@@ -238,23 +237,12 @@ CREATE TABLE reserved_table_customer
     id                SERIAL PRIMARY KEY,
     reserved_table_id INTEGER   NOT NULL,
     customer_id       INTEGER   NOT NULL,
-    created_at        TIMESTAMP NOT NULL DEFAULT NOW(),
-    updated_at        TIMESTAMP NOT NULL DEFAULT NOW(),
-    created_by        INTEGER,
-    updated_by        INTEGER,
-    FOREIGN KEY (reserved_table_id) REFERENCES reserved_table (id),
-    FOREIGN KEY (customer_id) REFERENCES customer (id)
+    FOREIGN KEY (reserved_table_id) REFERENCES reserved_table (id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES customer (id) ON DELETE CASCADE
 );
 
-CREATE TRIGGER update_reserved_table_customer_updated_at
-    BEFORE UPDATE
-    ON reserved_table_customer
-    FOR EACH ROW
-EXECUTE PROCEDURE
-    update_updated_at_column();
-
 -- ORDER
-CREATE TABLE order_restaurant
+CREATE TABLE "order"
 (
     id          SERIAL PRIMARY KEY,
     table_id    INTEGER        NOT NULL,
@@ -265,13 +253,13 @@ CREATE TABLE order_restaurant
     updated_at  TIMESTAMP      NOT NULL DEFAULT NOW(),
     created_by  INTEGER,
     updated_by  INTEGER,
-    FOREIGN KEY (table_id) REFERENCES table_restaurant (id),
-    FOREIGN KEY (customer_id) REFERENCES customer (id)
+    FOREIGN KEY (table_id) REFERENCES "table" (id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES customer (id) ON DELETE CASCADE
 );
 
-CREATE TRIGGER update_order_restaurant_updated_at
+CREATE TRIGGER update_order_updated_at
     BEFORE UPDATE
-    ON order_restaurant
+    ON "order"
     FOR EACH ROW
 EXECUTE PROCEDURE
     update_updated_at_column();
@@ -282,17 +270,17 @@ CREATE TABLE order_item
     id          SERIAL PRIMARY KEY,
     order_id    INTEGER           NOT NULL,
     product_id  INTEGER           NOT NULL,
-    employee_id INTEGER           NOT NULL,
+    employee_id INTEGER,
     quantity    SMALLINT          NOT NULL,
     total_price DECIMAL(10, 2)    NOT NULL,
-    status      ORDER_ITEM_STATUS NOT NULL,
+    status      ORDER_ITEM_STATUS NOT NULL DEFAULT 'WAITING',
     created_at  TIMESTAMP         NOT NULL DEFAULT NOW(),
     updated_at  TIMESTAMP         NOT NULL DEFAULT NOW(),
     created_by  INTEGER,
     updated_by  INTEGER,
-    FOREIGN KEY (order_id) REFERENCES order_restaurant (id),
-    FOREIGN KEY (product_id) REFERENCES product (id),
-    FOREIGN KEY (employee_id) REFERENCES employee (id)
+    FOREIGN KEY (order_id) REFERENCES "order" (id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES product (id) ON DELETE CASCADE,
+    FOREIGN KEY (employee_id) REFERENCES employee (id) ON DELETE SET NULL
 );
 
 CREATE TRIGGER update_order_item_updated_at
@@ -308,5 +296,5 @@ CREATE TABLE order_item_comment
     id            SERIAL PRIMARY KEY,
     order_item_id INTEGER      NOT NULL,
     comment       VARCHAR(100) NOT NULL,
-    FOREIGN KEY (order_item_id) REFERENCES order_item (id)
+    FOREIGN KEY (order_item_id) REFERENCES order_item (id) ON DELETE CASCADE
 );
