@@ -85,7 +85,6 @@ public class Table implements Auditable {
         return createdAt;
     }
 
-    @Override
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -95,7 +94,6 @@ public class Table implements Auditable {
         return updatedAt;
     }
 
-    @Override
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
@@ -105,7 +103,6 @@ public class Table implements Auditable {
         return createdBy;
     }
 
-    @Override
     public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
@@ -115,7 +112,6 @@ public class Table implements Auditable {
         return updatedBy;
     }
 
-    @Override
     public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
     }

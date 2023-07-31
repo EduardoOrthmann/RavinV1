@@ -21,7 +21,6 @@ public class Product implements Auditable {
     private Integer createdBy;
     private Integer updatedBy;
 
-    // all args constructor
     public Product(int id, Integer menuId, String name, String description, String productCode, double costPrice, double salePrice, LocalTime preparationTime, boolean isActive, boolean isAvailable, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
         this.id = id;
         this.menuId = menuId;
@@ -124,7 +123,6 @@ public class Product implements Auditable {
         return createdAt;
     }
 
-    @Override
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -134,7 +132,6 @@ public class Product implements Auditable {
         return updatedAt;
     }
 
-    @Override
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
@@ -144,7 +141,6 @@ public class Product implements Auditable {
         return createdBy;
     }
 
-    @Override
     public void setCreatedBy(Integer createdBy) {
         this.createdBy = createdBy;
     }
@@ -154,7 +150,6 @@ public class Product implements Auditable {
         return updatedBy;
     }
 
-    @Override
     public void setUpdatedBy(Integer updatedBy) {
         this.updatedBy = updatedBy;
     }
