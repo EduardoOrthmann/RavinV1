@@ -179,7 +179,7 @@ public class EmployeeRepository extends AbstractRepository<Employee> implements 
                 Position.valueOf(resultSet.getString("position")),
                 resultSet.getString("work_card_number"),
                 resultSet.getDate("admission_date").toLocalDate(),
-                resultSet.getDate("resignation_date").toLocalDate(),
+                resultSet.getDate("resignation_date") == null ? null : resultSet.getDate("resignation_date").toLocalDate(),
                 resultSet.getBoolean("is_available")
         );
     }

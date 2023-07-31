@@ -71,11 +71,11 @@ public class TableService {
 
     public void freeTable(Table table) {
         if (orderService.existsByTableAndIsPaid(table.getId(), false)) {
-            throw new IllegalStateException("Não é possível liberar uma mesa com contas em aberto");
+            throw new IllegalStateException(Constants.TABLE_NOT_PAID_YET);
         }
 
         if (table.getStatus() == TableStatus.AVAILABLE) {
-            throw new IllegalStateException("Mesa já está livre");
+            throw new IllegalStateException(Constants.TABLE_ALREADY_FREE);
         }
 
         var customers = customerService.findAllByTableId(table.getId());

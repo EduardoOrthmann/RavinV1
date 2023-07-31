@@ -41,10 +41,6 @@ public class OrderItemService {
     }
 
     public void update(OrderItem entity) {
-        if (entity.getStatus() != OrderItemStatus.WAITING) {
-            throw new IllegalArgumentException(Constants.ORDER_ITEM_STATUS_NOT_ALLOWED);
-        }
-
         updateTotalPrice(entity);
         orderItemRepository.update(entity);
     }

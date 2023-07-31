@@ -10,7 +10,6 @@ import configuration.LocalTimeTypeAdapter;
 import domains.ReservedTable.ReservedTableService;
 import domains.customer.CustomerService;
 import domains.orderItem.OrderItem;
-import domains.orderItem.OrderItemService;
 import domains.payment.PaymentDTO;
 import domains.product.ProductService;
 import domains.table.TableService;
@@ -216,7 +215,7 @@ public class OrderController implements HttpHandler {
                 }
 
                 var payment = gson.fromJson(requestBody, PaymentDTO.class);
-                var paymentMethod = PaymentMethodFactory.valueOf(payment.paymentMethodFactory().toString()).createPaymentMethod();
+                var paymentMethod = PaymentMethodFactory.valueOf(payment.paymentMethod().toString()).createPaymentMethod();
 
                 orderService.closeOrder(order, payment.amount(), paymentMethod);
 

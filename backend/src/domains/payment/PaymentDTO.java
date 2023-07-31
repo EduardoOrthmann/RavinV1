@@ -3,7 +3,7 @@ package domains.payment;
 import enums.PaymentMethodFactory;
 
 public record PaymentDTO(
-        PaymentMethodFactory paymentMethodFactory,
+        PaymentMethodFactory paymentMethod,
         double amount
 ) {
 }

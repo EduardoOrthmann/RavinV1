@@ -47,9 +47,12 @@ public class Main {
         var paymentService = new PaymentService();
         var orderItemCommentRepository = new OrderItemCommentRepository(databaseConnector);
         var orderItemRepository = new OrderItemRepository(databaseConnector, productService, orderItemCommentRepository);
-        var orderService = new OrderService(new OrderRepository(databaseConnector, orderItemRepository), orderItemRepository, customerService, paymentService);
+        var orderRepository = new OrderRepository(databaseConnector, null);
+        var orderService = new OrderService(orderRepository, null, customerService, paymentService);
         var reservedTableCustomerRepository = new ReservedTableCustomerRepository(databaseConnector, customerService);
         var orderItemService = new OrderItemService(orderItemRepository, orderService, orderItemCommentRepository);
+        orderRepository.setOrderItemService(orderItemService);
+        orderService.setOrderItemService(orderItemService);
         var tableService = new TableService(new TableRepository(databaseConnector, customerService), orderService, customerService);
         var reservedTableService = new ReservedTableService(new ReservedTableRepository(databaseConnector, tableService, reservedTableCustomerRepository), reservedTableCustomerRepository);
 

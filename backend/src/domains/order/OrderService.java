@@ -2,7 +2,7 @@ package domains.order;
 
 import domains.customer.CustomerService;
 import domains.orderItem.OrderItem;
-import domains.orderItem.OrderItemRepository;
+import domains.orderItem.OrderItemService;
 import domains.payment.PaymentService;
 import enums.OrderItemStatus;
 import interfaces.Payment;
@@ -16,15 +16,20 @@ import java.util.Set;
 
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
     private final CustomerService customerService;
     private final PaymentService paymentService;
+    private OrderItemService orderItemService;
 
-    public OrderService(OrderRepository orderRepository, OrderItemRepository orderItemRepository, CustomerService customerService, PaymentService paymentService) {
+    public OrderService(OrderRepository orderRepository, OrderItemService orderItemService, CustomerService customerService, PaymentService paymentService) {
         this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
+        this.orderItemService = orderItemService;
         this.customerService = customerService;
         this.paymentService = paymentService;
+    }
+
+    // setter injection to avoid circular dependency
+    public void setOrderItemService(OrderItemService orderItemService) {
+        this.orderItemService = orderItemService;
     }
 
     public Order findById(int id) {
@@ -41,7 +46,7 @@ public class OrderService {
 
         entity.getOrderItems().forEach(orderItem -> {
             orderItem.setOrderId(order.getId());
-            orderItems.add(orderItemRepository.save(orderItem));
+            orderItems.add(orderItemService.save(orderItem));
         });
 
         order.setOrderItems(orderItems);
@@ -62,7 +67,7 @@ public class OrderService {
 
     public void addOrderItem(Order order, OrderItem orderItem) {
         orderItem.setOrderId(order.getId());
-        OrderItem item = orderItemRepository.save(orderItem);
+        OrderItem item = orderItemService.save(orderItem);
 
         order.getOrderItems().add(item);
         updateTotalPrice(order);
@@ -97,5 +102,6 @@ public class OrderService {
 
         paymentService.processPayment(method, amount, amountToPay);
         order.setPaid(true);
+        orderRepository.update(order);
     }
 }

@@ -48,9 +48,7 @@ public class OrderItemRepository extends AbstractRepository<OrderItem> {
                      entity.getProduct().getId(),
                      entity.getEmployeeId(),
                      entity.getQuantity(),
-                     // this is totally wrong, but I don't have time to fix it, the reason is that the total price should be calculated
-                     // in the service layer, therefore, I need to fix a circular dependency between OrderItem and Order
-                     entity.getTotalPrice() == 0 ? entity.getProduct().getSalePrice() * entity.getQuantity() : entity.getTotalPrice(),
+                     entity.getTotalPrice(),
                      entity.getCreatedBy()
              )) {
             if (resultSet.next()) {
@@ -82,9 +80,7 @@ public class OrderItemRepository extends AbstractRepository<OrderItem> {
                     entity.getProduct().getId(),
                     entity.getEmployeeId(),
                     entity.getQuantity(),
-                    // this is totally wrong, but I don't have time to fix it, the reason is that the total price should be calculated
-                    // in the service layer, therefore, I need to fix a circular dependency between OrderItem and Order
-                    entity.getTotalPrice() == 0 ? entity.getProduct().getSalePrice() * entity.getQuantity() : entity.getTotalPrice(),
+                    entity.getTotalPrice(),
                     entity.getStatus().toString(),
                     entity.getUpdatedBy(),
                     entity.getId()

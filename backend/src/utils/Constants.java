@@ -53,7 +53,6 @@ public class Constants {
     public static final String DATABASE_MUTATION_ERROR = "Aconteceu um erro ao inserir os dados no banco de dados";
     public static final String MINIMUM_AGE_NOT_REACHED = "Funcionário deve ser maior de idade";
     public static final String INVALID_PASSWORD = "Senha inválida";
-    public static final String ORDER_ITEM_STATUS_NOT_ALLOWED = "Status do item do pedido não permitido";
     public static final String ORDER_ITEM_NOT_TAKEN = "Item do pedido não foi pego por nenhum funcionário";
     public static final String ORDER_ITEM_ALREADY_TAKEN = "Item do pedido já foi pego por um funcionário";
     public static final String ORDER_ITEM_ALREADY_DELIVERED_OR_CANCELED = "Item do pedido já foi entregue ou cancelado";
@@ -61,6 +60,8 @@ public class Constants {
     public static final String TABLE_OCCUPIED = "Mesa já ocupada ou indisponível";
     public static final String RESERVED_TABLE_OVERLAPPING = "Mesa já reservada para esse horário";
     public static final String RESERVED_TABLE_MAX_CAPACITY = "Mesa reservada excede a capacidade máxima";
+    public static final String TABLE_NOT_PAID_YET = "Os pedidos da mesa ainda não foram pagos";
+    public static final String TABLE_ALREADY_FREE = "Mesa já está livre";
 
     // others
     public static final int MINIMUM_AGE = 18;
