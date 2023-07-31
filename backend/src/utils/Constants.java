@@ -14,6 +14,12 @@ public class Constants {
     public static final String EMPLOYEE_TABLE = "employee";
     public static final String PRODUCT_TABLE = "product";
     public static final String MENU_TABLE = "menu";
+    public static final String ORDER_TABLE = "\"order\"";
+    public static final String ORDER_ITEM_TABLE = "order_item";
+    public static final String ORDER_ITEM_COMMENT_TABLE = "order_item_comment";
+    public static final String TABLE_TABLE = "\"table\"";
+    public static final String RESERVED_TABLE_TABLE = "reserved_table";
+    public static final String RESERVED_TABLE_CUSTOMER_TABLE = "reserved_table_customer";
 
     // paths
     public static final String USER_PATH = "/user";
@@ -42,6 +48,7 @@ public class Constants {
     public static final String SUCCESS_MESSAGE = "Operação realizada com sucesso";
     public static final String USERNAME_ALREADY_EXISTS = "Username já cadastrado";
     public static final String CPF_ALREADY_EXISTS = "Cpf já cadastrado";
+    public static final String INACTIVE_CUSTOMER = "Cliente inativo";
     public static final String DATABASE_QUERY_ERROR = "Aconteceu um erro ao buscar os dados do banco de dados";
     public static final String DATABASE_MUTATION_ERROR = "Aconteceu um erro ao inserir os dados no banco de dados";
     public static final String MINIMUM_AGE_NOT_REACHED = "Funcionário deve ser maior de idade";
@@ -51,6 +58,9 @@ public class Constants {
     public static final String ORDER_ITEM_ALREADY_TAKEN = "Item do pedido já foi pego por um funcionário";
     public static final String ORDER_ITEM_ALREADY_DELIVERED_OR_CANCELED = "Item do pedido já foi entregue ou cancelado";
     public static final String ORDER_ITEM_ALREADY_CANCELED = "Item do pedido já foi cancelado";
+    public static final String TABLE_OCCUPIED = "Mesa já ocupada ou indisponível";
+    public static final String RESERVED_TABLE_OVERLAPPING = "Mesa já reservada para esse horário";
+    public static final String RESERVED_TABLE_MAX_CAPACITY = "Mesa reservada excede a capacidade máxima";
 
     // others
     public static final int MINIMUM_AGE = 18;

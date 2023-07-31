@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 
 public class Customer extends Person {
     private int id;
+    private Integer tableId;
 
-    // all args
-    public Customer(int id, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, User user, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
+    public Customer(int id, Integer tableId, String name, String phoneNumber, LocalDate birthDate, String cpf, Address address, boolean isActive, User user, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
         super(name, phoneNumber, birthDate, cpf, address, isActive, user, createdAt, updatedAt, createdBy, updatedBy);
         this.id = id;
+        this.tableId = tableId;
     }
 
     public int getId() {
@@ -22,5 +23,13 @@ public class Customer extends Person {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Integer getTableId() {
+        return tableId;
+    }
+
+    public void setTableId(Integer tableId) {
+        this.tableId = tableId;
     }
 }

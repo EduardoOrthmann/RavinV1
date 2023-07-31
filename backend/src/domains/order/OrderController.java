@@ -184,30 +184,13 @@ public class OrderController implements HttpHandler {
 
                 var createdBy = user.getId();
                 var table = reservedTable.getTable();
-                var orderItems = order.getOrderItems().stream()
-                        .map(orderItem -> {
-                            var product = productService.findById(orderItem.getProduct().getId());
-                            return orderItemService.save(
-                                    new OrderItem(
-                                            product,
-                                            orderItem.getQuantity(),
-                                            orderItem.getNotes() == null ? new ArrayList<>() : orderItem.getNotes(),
-                                            createdBy
-                                    )
-                            );
-                        })
-                        .collect(Collectors.toSet());
 
-                var createdOrder = orderService.save(
-                        new Order(
-                                customer.getId(),
-                                table,
-                                orderItems,
-                                createdBy
-                        )
-                );
+                order.getOrderItems().forEach(orderItem -> orderItem.setProduct(productService.findById(orderItem.getProduct().getId())));
+                order.setCustomerId(customer.getId());
+                order.setTableId(table.getId());
+                order.setCreatedBy(createdBy);
 
-                response = gson.toJson(createdOrder);
+                response = gson.toJson(orderService.save(order));
                 statusCode = HttpURLConnection.HTTP_CREATED;
             } catch (NoSuchElementException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
@@ -290,17 +273,11 @@ public class OrderController implements HttpHandler {
 
                 var orderItem = gson.fromJson(requestBody, OrderItem.class);
                 var product = productService.findById(orderItem.getProduct().getId());
-                var createdBy = user.getId();
-                var createdOrderItem = orderItemService.save(
-                        new OrderItem(
-                                product,
-                                orderItem.getQuantity(),
-                                orderItem.getNotes() == null ? new ArrayList<>() : orderItem.getNotes(),
-                                createdBy
-                        )
-                );
 
-                orderService.addOrderItem(order, createdOrderItem);
+                orderItem.setProduct(product);
+                orderItem.setCreatedBy(user.getId());
+
+                orderService.addOrderItem(order, orderItemService.save(orderItem));
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));

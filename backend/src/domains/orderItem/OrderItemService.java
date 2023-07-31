@@ -1,22 +1,26 @@
 package domains.orderItem;
 
+import domains.order.Order;
 import domains.order.OrderService;
 import domains.employee.Employee;
+import domains.orderItemComment.OrderItemComment;
+import domains.orderItemComment.OrderItemCommentRepository;
 import enums.OrderItemStatus;
 import exceptions.UnauthorizedRequestException;
 import utils.Constants;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public class OrderItemService {
     private final OrderItemRepository orderItemRepository;
     private final OrderService orderService;
+    private final OrderItemCommentRepository orderItemCommentRepository;
 
-    public OrderItemService(OrderItemRepository orderItemRepository, OrderService orderService) {
+    public OrderItemService(OrderItemRepository orderItemRepository, OrderService orderService, OrderItemCommentRepository orderItemCommentRepository) {
         this.orderItemRepository = orderItemRepository;
         this.orderService = orderService;
+        this.orderItemCommentRepository = orderItemCommentRepository;
     }
 
     public OrderItem findById(int id) {
@@ -28,6 +32,10 @@ public class OrderItemService {
     }
 
     public OrderItem save(OrderItem entity) {
+        if (!entity.getNotes().isEmpty()) {
+            entity.getNotes().forEach(note -> orderItemCommentRepository.save(new OrderItemComment(entity.getId(), note)));
+        }
+
         updateTotalPrice(entity);
         return orderItemRepository.save(entity);
     }
@@ -41,8 +49,8 @@ public class OrderItemService {
         orderItemRepository.update(entity);
     }
 
-    public void delete(OrderItem entity) {
-        orderItemRepository.delete(entity);
+    public void delete(int entityId) {
+        orderItemRepository.delete(findById(entityId));
     }
 
     public void updateStatus(OrderItem orderItem, OrderItemStatus status, Integer updatedBy) throws UnauthorizedRequestException {
@@ -54,12 +62,14 @@ public class OrderItemService {
             throw new IllegalArgumentException(Constants.ORDER_ITEM_ALREADY_DELIVERED_OR_CANCELED);
         }
 
-        orderItem.setUpdatedAt(LocalDateTime.now());
         orderItem.setUpdatedBy(updatedBy);
         orderItem.setStatus(status);
+        update(orderItem);
 
         if (status == OrderItemStatus.CANCELED) {
-            orderService.updateTotalPrice(orderService.findByOrderItemId(orderItem.getId()));
+            Order order = orderService.findById(orderItem.getOrderId());
+            orderService.updateTotalPrice(order);
+            orderService.update(order);
         }
     }
 
@@ -68,15 +78,17 @@ public class OrderItemService {
             throw new IllegalArgumentException(Constants.ORDER_ITEM_ALREADY_TAKEN);
         }
 
-        orderItem.setUpdatedAt(LocalDateTime.now());
         orderItem.setUpdatedBy(updatedBy);
         orderItem.setStatus(OrderItemStatus.CANCELED);
+        update(orderItem);
 
-        orderService.updateTotalPrice(orderService.findByOrderItemId(orderItem.getId()));
+        Order order = orderService.findById(orderItem.getOrderId());
+        orderService.updateTotalPrice(order);
+        orderService.update(order);
     }
 
     private void updateTotalPrice(OrderItem orderItem) {
-        orderItem.setPrice(orderItem.getProduct().getSalePrice() * orderItem.getQuantity());
+        orderItem.setTotalPrice(orderItem.getProduct().getSalePrice() * orderItem.getQuantity());
     }
 
     public void takeOrderItem(OrderItem orderItem, Employee employee) {
@@ -86,7 +98,12 @@ public class OrderItemService {
 
         orderItem.setEmployeeId(employee.getId());
         orderItem.setStatus(OrderItemStatus.PREPARING);
-        orderItem.setUpdatedAt(LocalDateTime.now());
         orderItem.setUpdatedBy(employee.getUser().getId());
+
+        update(orderItem);
+    }
+
+    public List<OrderItem> findAllByOrderId(int orderId) {
+        return orderItemRepository.findAllByOrderId(orderId);
     }
 }

@@ -8,10 +8,9 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 public class ReservedTable implements Auditable {
-    private static int lastId = 0;
     private int id;
-    private Set<Customer> customers;
     private Table table;
+    private Set<Customer> customers;
     private int numberOfPeople;
     private Reservation reservedAt;
     private LocalDateTime createdAt;
@@ -19,15 +18,16 @@ public class ReservedTable implements Auditable {
     private Integer createdBy;
     private Integer updatedBy;
 
-    // insert
-    public ReservedTable(Set<Customer> customers, Reservation reservedAt, Table table, int numberOfPeople, Integer createdBy) {
-        this.id = ++lastId;
-        this.customers = customers;
-        this.reservedAt = reservedAt;
+    public ReservedTable(int id, Table table, Set<Customer> customers, int numberOfPeople, Reservation reservedAt, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
+        this.id = id;
         this.table = table;
+        this.customers = customers;
         this.numberOfPeople = numberOfPeople;
-        this.createdAt = LocalDateTime.now();
+        this.reservedAt = reservedAt;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
     }
 
     public int getId() {

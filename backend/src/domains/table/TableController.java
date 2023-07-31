@@ -163,19 +163,9 @@ public class TableController implements HttpHandler {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
 
                 var table = gson.fromJson(requestBody, Table.class);
-                var createdBy = user.getId();
+                table.setCreatedBy(user.getId());
 
-                response = gson.toJson(
-                        tableService.save(
-                                new Table(
-                                        table.getName(),
-                                        table.getTableNumber(),
-                                        table.getMaxCapacity(),
-                                        createdBy
-                                )
-                        )
-                );
-
+                response = gson.toJson(tableService.save(table));
                 statusCode = HttpURLConnection.HTTP_CREATED;
             } catch (IllegalArgumentException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
@@ -199,16 +189,17 @@ public class TableController implements HttpHandler {
 
                 var reservedTable = gson.fromJson(requestBody, ReservedTable.class);
                 var table = tableService.findById(id);
-                var createdBy = user.getId();
+
                 var customers = reservedTable.getCustomers().stream()
                         .map(customer -> customerService.findById(customer.getId()))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toSet());
 
+                reservedTable.setTable(table);
                 reservedTable.setCustomers(customers);
-                reservedTable.setCreatedBy(createdBy);
+                reservedTable.setCreatedBy(user.getId());
 
-                response = gson.toJson(reservedTableService.reserveTable(table, reservedTable));
+                response = gson.toJson(reservedTableService.reserveTable(reservedTable));
                 statusCode = HttpURLConnection.HTTP_CREATED;
             } catch (IllegalArgumentException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));
@@ -257,8 +248,8 @@ public class TableController implements HttpHandler {
         else if (path.matches(tablePath + "/[0-9]+/free")) {
             try {
                 userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.ADMIN, Role.MANAGER, Role.EMPLOYEE));
-
                 int id = Integer.parseInt(path.split("/")[2]);
+
                 var table = tableService.findById(id);
 
                 tableService.freeTable(table);
@@ -298,33 +289,17 @@ public class TableController implements HttpHandler {
         String path = exchange.getRequestURI().getPath();
         final Optional<String[]> splittedPath = Optional.of(path.split("/"));
         var tokenFromHeaders = Optional.ofNullable(exchange.getRequestHeaders().getFirst("Authorization"));
+        String requestBody = new String(exchange.getRequestBody().readAllBytes());
 
         // PUT /table/{id} (update table)
         if (path.matches(tablePath + "/[0-9]+")) {
             try {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
-
-                String requestBody = new String(exchange.getRequestBody().readAllBytes());
                 int id = Integer.parseInt(splittedPath.get()[2]);
-                var table = tableService.findById(id);
-                var updatedTable = gson.fromJson(requestBody, Table.class);
-                var updatedBy = user.getId();
 
-                updatedTable = new Table(
-                        id,
-                        updatedTable.getName(),
-                        updatedTable.getTableNumber(),
-                        updatedTable.getMaxCapacity(),
-                        updatedTable.getStatus(),
-                        updatedBy
-                );
-
-                table.setName(updatedTable.getName());
-                table.setTableNumber(updatedTable.getTableNumber());
-                table.setMaxCapacity(updatedTable.getMaxCapacity());
-                table.setStatus(updatedTable.getStatus());
-                table.setUpdatedAt(updatedTable.getUpdatedAt());
-                table.setUpdatedBy(updatedTable.getUpdatedBy());
+                var table = gson.fromJson(requestBody, Table.class);
+                table.setId(id);
+                table.setUpdatedBy(user.getId());
 
                 tableService.update(table);
 
@@ -364,11 +339,9 @@ public class TableController implements HttpHandler {
         if (path.matches(tablePath + "/[0-9]+")) {
             try {
                 userService.authorizeUserByRole(tokenFromHeaders.orElse(null));
-
                 int id = Integer.parseInt(splittedPath.get()[2]);
-                var table = tableService.findById(id);
 
-                tableService.delete(table);
+                tableService.delete(id);
 
                 statusCode = HttpURLConnection.HTTP_NO_CONTENT;
             } catch (NoSuchElementException e) {

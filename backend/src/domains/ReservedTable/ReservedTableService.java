@@ -1,5 +1,7 @@
 package domains.ReservedTable;
 
+import domains.reservedTableCustomer.ReservedTableCustomer;
+import domains.reservedTableCustomer.ReservedTableCustomerRepository;
 import domains.table.Table;
 import utils.Constants;
 
@@ -8,46 +10,57 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ReservedTableService {
-    private final ReservedTableDAO reservedTableDAO;
+    private final ReservedTableRepository reservedTableRepository;
+    private final ReservedTableCustomerRepository reservedTableCustomerRepository;
 
-    public ReservedTableService(ReservedTableDAO reservedTableDAO) {
-        this.reservedTableDAO = reservedTableDAO;
+    public ReservedTableService(ReservedTableRepository reservedTableRepository, ReservedTableCustomerRepository reservedTableCustomerRepository) {
+        this.reservedTableRepository = reservedTableRepository;
+        this.reservedTableCustomerRepository = reservedTableCustomerRepository;
     }
 
     public ReservedTable findById(int id) {
-        return reservedTableDAO.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.RESERVED_TABLE_NOT_FOUND));
+        return reservedTableRepository.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.RESERVED_TABLE_NOT_FOUND));
     }
 
     public List<ReservedTable> findAll() {
-        return reservedTableDAO.findAll();
+        return reservedTableRepository.findAll();
     }
 
     public ReservedTable save(ReservedTable entity) {
-        return reservedTableDAO.save(entity);
+        var reservedTable = reservedTableRepository.save(entity);
+
+        entity.getCustomers()
+                .forEach(customer -> reservedTable.getCustomers().add(
+                        reservedTableCustomerRepository.save(new ReservedTableCustomer(reservedTable.getId(), customer)).getCustomer())
+                );
+
+        return reservedTable;
     }
 
     public void update(ReservedTable entity) {
-        reservedTableDAO.update(entity);
+        reservedTableRepository.update(entity);
     }
 
-    public void delete(ReservedTable entity) {
-        reservedTableDAO.delete(entity);
+    public void delete(int entityId) {
+        reservedTableRepository.delete(findById(entityId));
     }
 
     public List<ReservedTable> findByCustomer(int customerId) {
-        return reservedTableDAO.findByCustomer(customerId);
+        return reservedTableRepository.findByCustomer(customerId);
     }
 
     public boolean existsByCustomerAndDateTime(int customerId, LocalDateTime dateTime) {
-        return reservedTableDAO.findByCustomerAndDateTime(customerId, dateTime).isPresent();
+        return !reservedTableRepository.findAllByCustomerAndDateTime(customerId, dateTime).isEmpty();
     }
 
     public ReservedTable findByCustomerAndDatetime(int customerId, LocalDateTime dateTime) {
-        return reservedTableDAO.findByCustomerAndDateTime(customerId, dateTime).orElseThrow(() -> new NoSuchElementException(Constants.RESERVED_TABLE_NOT_FOUND));
+        return reservedTableRepository.findAllByCustomerAndDateTime(customerId, dateTime).stream()
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException(Constants.RESERVED_TABLE_NOT_FOUND));
     }
 
     public List<ReservedTable> findByTable(int tableId) {
-        return reservedTableDAO.findByTable(tableId);
+        return reservedTableRepository.findByTable(tableId);
     }
 
     public boolean isReservedAtValid(Reservation reservedAt) {
@@ -65,35 +78,29 @@ public class ReservedTableService {
         });
     }
 
-    public ReservedTable reserveTable(Table table, ReservedTable reservedTable) {
+    public ReservedTable reserveTable(ReservedTable reservedTable) {
         // commented for testing purposes
 //        if (!isReservedAtValid(reservedTable.getReservedAt())) {
 //            throw new IllegalArgumentException("Horário de reserva inválido");
 //        }
 
-        if (isOverlapping(table, reservedTable.getReservedAt())) {
-            throw new IllegalArgumentException("Mesa não está disponível no horário");
+        if (isOverlapping(reservedTable.getTable(), reservedTable.getReservedAt())) {
+            throw new IllegalArgumentException(Constants.RESERVED_TABLE_OVERLAPPING);
         }
 
         for (var customer : reservedTable.getCustomers()) {
             if (!customer.isActive()) {
-                throw new IllegalStateException("Não é possível atrelar um cliente inativo a uma mesa");
+                throw new IllegalStateException(Constants.INACTIVE_CUSTOMER);
             }
         }
 
         var numberOfPeople = reservedTable.getCustomers().size();
-        if (numberOfPeople > table.getMaxCapacity()) {
-            throw new IllegalArgumentException("Mesa não comporta o número de pessoas");
+        if (numberOfPeople > reservedTable.getTable().getMaxCapacity()) {
+            throw new IllegalArgumentException(Constants.RESERVED_TABLE_MAX_CAPACITY);
         }
 
-        return save(
-                new ReservedTable(
-                        reservedTable.getCustomers(),
-                        new Reservation(reservedTable.getReservedAt().start(), reservedTable.getReservedAt().end()),
-                        table,
-                        numberOfPeople,
-                        reservedTable.getCreatedBy()
-                )
-        );
+        reservedTable.setNumberOfPeople(numberOfPeople);
+
+        return save(reservedTable);
     }
 }

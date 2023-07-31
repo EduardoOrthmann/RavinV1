@@ -155,13 +155,12 @@ public class ReservedTableController implements HttpHandler {
             try {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.values()));
                 int id = Integer.parseInt(splittedPath.get()[2]);
-                var reservedTable = reservedTableService.findById(id);
 
-                if (user.getRole() == Role.CUSTOMER && !reservedTable.getCustomers().contains(customerService.findByUserId(user.getId()))) {
+                if (user.getRole() == Role.CUSTOMER && !reservedTableService.findById(id).getCustomers().contains(customerService.findByUserId(user.getId()))) {
                     throw new UnauthorizedRequestException();
                 }
 
-                reservedTableService.delete(reservedTable);
+                reservedTableService.delete(id);
                 statusCode = HttpURLConnection.HTTP_OK;
             } catch (NoSuchElementException e) {
                 response = gson.toJson(new CustomResponse(e.getMessage()));

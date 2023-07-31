@@ -8,28 +8,28 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 public class Order implements Auditable {
-    private static int lastId = 0;
     private int id;
+    private int tableId;
+    private int customerId;
     private boolean isPaid;
-    private Integer customerId;
-    private Table table;
-    private Set<OrderItem> orderItems;
     private double totalPrice;
+    private Set<OrderItem> orderItems;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer createdBy;
     private Integer updatedBy;
 
-    // insert
-    public Order(Integer customerId, Table table, Set<OrderItem> orderItems, Integer createdBy) {
-        this.id = ++lastId;
-        this.isPaid = false;
+    public Order(int id, int tableId, int customerId, boolean isPaid, double totalPrice, Set<OrderItem> orderItems, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
+        this.id = id;
+        this.tableId = tableId;
         this.customerId = customerId;
-        this.table = table;
+        this.isPaid = isPaid;
+        this.totalPrice = totalPrice;
         this.orderItems = orderItems;
-        this.totalPrice = 0;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
     }
 
     public int getId() {
@@ -56,20 +56,20 @@ public class Order implements Auditable {
         this.orderItems = orderItems;
     }
 
-    public Integer getCustomerId() {
+    public int getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Integer customerId) {
+    public void setCustomerId(int customerId) {
         this.customerId = customerId;
     }
 
-    public Table getTable() {
-        return table;
+    public int getTableId() {
+        return tableId;
     }
 
-    public void setTable(Table table) {
-        this.table = table;
+    public void setTableId(int tableId) {
+        this.tableId = tableId;
     }
 
     public double getTotalPrice() {

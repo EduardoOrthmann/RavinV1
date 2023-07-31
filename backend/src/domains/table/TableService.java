@@ -1,5 +1,6 @@
 package domains.table;
 
+import domains.customer.CustomerService;
 import domains.order.OrderService;
 import domains.customer.Customer;
 import enums.TableStatus;
@@ -11,55 +12,62 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class TableService {
-    private final TableDAO tableDAO;
+    private final TableRepository tableRepository;
     private final OrderService orderService;
+    private final CustomerService customerService;
 
-    public TableService(TableDAO tableDAO, OrderService orderService) {
-        this.tableDAO = tableDAO;
+    public TableService(TableRepository tableRepository, OrderService orderService, CustomerService customerService) {
+        this.tableRepository = tableRepository;
         this.orderService = orderService;
+        this.customerService = customerService;
     }
 
     public Table findById(int id) {
-        return tableDAO.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.TABLE_NOT_FOUND));
-    }
-
-    public boolean existsById(int tableId) {
-        return tableDAO.findById(tableId).isPresent();
+        return tableRepository.findById(id).orElseThrow(() -> new NoSuchElementException(Constants.TABLE_NOT_FOUND));
     }
 
     public List<Table> findAll() {
-        return tableDAO.findAll();
+        return tableRepository.findAll();
     }
 
     public Table save(Table entity) {
-        return tableDAO.save(entity);
+        return tableRepository.save(entity);
     }
 
     public void update(Table entity) {
-        tableDAO.update(entity);
+        tableRepository.update(entity);
     }
 
-    public void delete(Table entity) {
-        tableDAO.delete(entity);
+    public void delete(int entityId) {
+        tableRepository.delete(findById(entityId));
+    }
+
+    public boolean existsById(int tableId) {
+        return tableRepository.findById(tableId).isPresent();
     }
 
     public void occupyTable(Table table, Set<Customer> customers) {
         if (orderService.existsByTableAndIsPaid(table.getId(), false)) {
-            throw new IllegalStateException("Não é possível ocupar uma mesa com contas em aberto");
+            throw new IllegalStateException(Constants.TABLE_OCCUPIED);
         }
 
         if (table.getStatus() != TableStatus.AVAILABLE) {
-            throw new IllegalStateException("Mesa já ocupada ou indisponível");
+            throw new IllegalStateException(Constants.TABLE_OCCUPIED);
         }
 
         for (var customer : customers) {
             if (!customer.isActive()) {
-                throw new IllegalStateException("Não é possível atrelar um cliente inativo a uma mesa");
+                throw new IllegalStateException(Constants.INACTIVE_CUSTOMER);
             }
         }
 
-        table.setCustomers(customers);
+        customers.forEach(customer -> {
+            customer.setTableId(table.getId());
+            customerService.update(customer);
+        });
+
         table.setStatus(TableStatus.OCCUPIED);
+        update(table);
     }
 
     public void freeTable(Table table) {
@@ -71,7 +79,14 @@ public class TableService {
             throw new IllegalStateException("Mesa já está livre");
         }
 
-        table.setCustomers(new HashSet<>());
+        var customers = customerService.findAllByTableId(table.getId());
+
+        customers.forEach(customer -> {
+            customer.setTableId(null);
+            customerService.update(customer);
+        });
+
         table.setStatus(TableStatus.AVAILABLE);
+        update(table);
     }
 }

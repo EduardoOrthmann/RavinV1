@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderItem implements Auditable {
-    private static int lastId = 0;
     private int id;
+    private int orderId;
     private Product product;
     private Integer employeeId;
     private int quantity;
-    private double price;
+    private double totalPrice;
     private OrderItemStatus status;
     private List<String> notes;
     private LocalDateTime createdAt;
@@ -21,15 +21,19 @@ public class OrderItem implements Auditable {
     private Integer createdBy;
     private Integer updatedBy;
 
-    // insert
-    public OrderItem(Product product, int quantity, List<String> notes, Integer createdBy) {
-        this.id = ++lastId;
+    public OrderItem(int id, int orderId, Product product, Integer employeeId, int quantity, double totalPrice, OrderItemStatus status, List<String> notes, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
+        this.id = id;
+        this.orderId = orderId;
         this.product = product;
+        this.employeeId = employeeId;
         this.quantity = quantity;
+        this.totalPrice = totalPrice;
+        this.status = status;
         this.notes = notes;
-        this.status = OrderItemStatus.WAITING;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
     }
 
     public int getId() {
@@ -38,6 +42,14 @@ public class OrderItem implements Auditable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
     }
 
     public Product getProduct() {
@@ -72,12 +84,12 @@ public class OrderItem implements Auditable {
         this.notes = notes;
     }
 
-    public double getPrice() {
-        return price;
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public Integer getEmployeeId() {

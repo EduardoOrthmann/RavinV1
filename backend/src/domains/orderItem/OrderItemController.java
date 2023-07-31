@@ -66,11 +66,10 @@ public class OrderItemController implements HttpHandler {
         // PATCH /order-item/{id}/update-status/{status} (update order item status)
         if (path.matches(orderItemPath + "/[0-9]+/update-status/[a-zA-Z]+")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.EMPLOYEE, Role.MANAGER, Role.ADMIN));
                 var orderId = Integer.parseInt(splittedPath.get()[2]);
                 var orderStatus = OrderItemStatus.valueOf(splittedPath.get()[4]);
 
-                var user = userService.findByToken(headerToken);
                 var orderItem = orderItemService.findById(orderId);
 
                 var assignedEmployeeUserId = employeeService.findById(orderItem.getEmployeeId()).getUser().getId();
@@ -99,8 +98,8 @@ public class OrderItemController implements HttpHandler {
         else if (path.matches(orderItemPath + "/[0-9]+/take-order")) {
             try {
                 var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.EMPLOYEE, Role.MANAGER, Role.ADMIN));
-
                 var orderId = Integer.parseInt(splittedPath.get()[2]);
+
                 var orderItem = orderItemService.findById(orderId);
                 var employee = employeeService.findByUserId(user.getId());
 
@@ -124,12 +123,11 @@ public class OrderItemController implements HttpHandler {
         // // PATCH /order-item/{id}/cancel-order (cancel order item)
         else if (path.matches(orderItemPath + "/[0-9]+/cancel-order")) {
             try {
-                var headerToken = APIUtils.extractTokenFromAuthorizationHeader(tokenFromHeaders.orElse(null));
+                var user = userService.authorizeUserByRole(tokenFromHeaders.orElse(null), Set.of(Role.values()));
                 var id = Integer.parseInt(splittedPath.get()[2]);
 
-                var user = userService.findByToken(headerToken);
                 var orderItem = orderItemService.findById(id);
-                var associatedOrder = orderService.findByOrderItemId(orderItem.getId());
+                var associatedOrder = orderService.findById(orderItem.getOrderId());
                 var associatedCustomer = customerService.findById(associatedOrder.getCustomerId());
 
                 if (associatedCustomer.getUser().getId() != user.getId()) {

@@ -1,8 +1,8 @@
-package domains.order;
+package domains.reservedTableCustomer;
 
 import database.Query;
-import domains.orderItem.OrderItem;
-import domains.orderItem.OrderItemRepository;
+import domains.customer.Customer;
+import domains.customer.CustomerService;
 import interfaces.AbstractRepository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
@@ -10,30 +10,25 @@ import utils.Constants;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-public class OrderRepository extends AbstractRepository<Order> {
-    private static final String TABLE_NAME = Constants.ORDER_TABLE;
+public class ReservedTableCustomerRepository extends AbstractRepository<ReservedTableCustomer> {
+    private static final String TABLE_NAME = Constants.RESERVED_TABLE_CUSTOMER_TABLE;
     private final DatabaseConnector databaseConnector;
-    private final OrderItemRepository orderItemRepository;
+    private final CustomerService customerService;
 
-    public OrderRepository(DatabaseConnector databaseConnector, OrderItemRepository orderItemRepository) {
+    public ReservedTableCustomerRepository(DatabaseConnector databaseConnector, CustomerService customerService) {
         this.databaseConnector = databaseConnector;
-        this.orderItemRepository = orderItemRepository;
+        this.customerService = customerService;
     }
 
     @Override
-    public Order save(Order entity) {
+    public ReservedTableCustomer save(ReservedTableCustomer entity) {
         String query = new Query()
                 .insert(
                         TABLE_NAME,
-                        "table_id",
-                        "customer_id",
-                        "is_paid",
-                        "total_price",
-                        "created_by"
+                        "reserved_table_id",
+                        "customer_id"
                 )
                 .autoValues()
                 .build();
@@ -41,11 +36,8 @@ public class OrderRepository extends AbstractRepository<Order> {
         try (DatabaseConnector connector = databaseConnector.connect();
              ResultSet resultSet = connector.executeUpdate(
                      query,
-                     entity.getTableId(),
-                     entity.getCustomerId(),
-                     entity.isPaid(),
-                     entity.getTotalPrice(),
-                     entity.getCreatedBy()
+                     entity.getReservedTableId(),
+                     entity.getCustomer().getId()
 
              )) {
             if (resultSet.next()) {
@@ -59,25 +51,19 @@ public class OrderRepository extends AbstractRepository<Order> {
     }
 
     @Override
-    public void update(Order entity) {
+    public void update(ReservedTableCustomer entity) {
         String query = new Query()
                 .update(TABLE_NAME)
-                .set("table_id", "?")
+                .set("reserved_table_id", "?")
                 .set("customer_id", "?")
-                .set("is_paid", "?")
-                .set("total_price", "?")
-                .set("updated_by", "?")
                 .where("id", "=", "?")
                 .build();
 
         try (DatabaseConnector connector = databaseConnector.connect()) {
             connector.executeUpdate(
                     query,
-                    entity.getTableId(),
-                    entity.getCustomerId(),
-                    entity.isPaid(),
-                    entity.getTotalPrice(),
-                    entity.getUpdatedBy(),
+                    entity.getReservedTableId(),
+                    entity.getCustomer().getId(),
                     entity.getId()
             );
         } catch (Exception e) {
@@ -86,7 +72,7 @@ public class OrderRepository extends AbstractRepository<Order> {
     }
 
     @Override
-    public void delete(Order entity) {
+    public void delete(ReservedTableCustomer entity) {
         String query = new Query()
                 .delete()
                 .from(TABLE_NAME)
@@ -111,41 +97,53 @@ public class OrderRepository extends AbstractRepository<Order> {
     }
 
     @Override
-    protected Order mapResultSetToEntity(ResultSet resultSet) throws SQLException {
-        Set<OrderItem> orderItems = new HashSet<>(orderItemRepository.findAllByOrderId(resultSet.getInt("id")));
+    protected ReservedTableCustomer mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+        Customer customer = customerService.findById(resultSet.getInt("customer_id"));
 
-        return new Order(
+        return new ReservedTableCustomer(
                 resultSet.getInt("id"),
-                resultSet.getInt("table_id"),
-                resultSet.getInt("customer_id"),
-                resultSet.getBoolean("is_paid"),
-                resultSet.getDouble("total_price"),
-                orderItems,
-                resultSet.getTimestamp("created_at").toLocalDateTime(),
-                resultSet.getTimestamp("updated_at").toLocalDateTime(),
-                resultSet.getInt("created_by"),
-                resultSet.getInt("updated_by")
+                resultSet.getInt("reserved_table_id"),
+                customer
         );
     }
 
-    public List<Order> findAllByTableAndIsPaid(int tableId, boolean isPaid) {
-        List<Order> orders = new ArrayList<>();
+    public List<Customer> findCustomersByReservedTableId(int reservedTableId) {
+        List<Customer> customers = new ArrayList<>();
         String query = new Query()
                 .select("*")
                 .from(TABLE_NAME)
-                .where("table_id", "=", "?")
-                .and("is_paid", "=", "?")
+                .where("reserved_table_id", "=", "?")
                 .build();
 
         try (DatabaseConnector connector = databaseConnector.connect();
-             ResultSet resultSet = connector.executeQuery(query, tableId, isPaid)) {
+             ResultSet resultSet = connector.executeQuery(query, reservedTableId)) {
             while (resultSet.next()) {
-                orders.add(mapResultSetToEntity(resultSet));
+                customers.add(mapResultSetToEntity(resultSet).getCustomer());
             }
         } catch (Exception e) {
             throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
         }
 
-        return orders;
+        return customers;
+    }
+
+    public List<Integer> findReservedTableIdByCustomerId(int customerId) {
+        List<Integer> reservedTableIds = new ArrayList<>();
+        String query = new Query()
+                .select("*")
+                .from(TABLE_NAME)
+                .where("customer_id", "=", "?")
+                .build();
+
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, customerId)) {
+            while (resultSet.next()) {
+                reservedTableIds.add(mapResultSetToEntity(resultSet).getReservedTableId());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        }
+
+        return reservedTableIds;
     }
 }

@@ -120,6 +120,18 @@ public class Query {
         return this;
     }
 
+    public Query join(String table) {
+        this.query.append(" JOIN ").append(table);
+
+        return this;
+    }
+
+    public Query on(String column1, String operator, String column2) {
+        this.query.append(" ON ").append(column1).append(" ").append(operator).append(" ").append(column2);
+
+        return this;
+    }
+
     public String build() {
         return this.query.toString();
     }

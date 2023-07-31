@@ -11,6 +11,8 @@ import utils.Constants;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class CustomerRepository extends AbstractRepository<Customer> implements PersonRepository<Customer> {
@@ -76,6 +78,7 @@ public class CustomerRepository extends AbstractRepository<Customer> implements 
     public void update(Customer entity) {
         String query = new Query()
                 .update(TABLE_NAME)
+                .set("table_id", "?")
                 .set("name", "?")
                 .set("phone_number", "?")
                 .set("birth_date", "?")
@@ -93,6 +96,7 @@ public class CustomerRepository extends AbstractRepository<Customer> implements 
         try (DatabaseConnector connector = databaseConnector.connect()) {
             connector.executeUpdate(
                     query,
+                    entity.getTableId(),
                     entity.getName(),
                     entity.getPhoneNumber(),
                     entity.getBirthDate(),
@@ -132,6 +136,7 @@ public class CustomerRepository extends AbstractRepository<Customer> implements 
 
         return new Customer(
                 resultSet.getInt("id"),
+                resultSet.getInt("table_id"),
                 resultSet.getString("name"),
                 resultSet.getString("phone_number"),
                 resultSet.getDate("birth_date").toLocalDate(),
@@ -201,5 +206,25 @@ public class CustomerRepository extends AbstractRepository<Customer> implements 
         }
 
         return Optional.empty();
+    }
+
+    public List<Customer> findAllByTableId(int tableId) {
+        List<Customer> customers = new ArrayList<>();
+        String query = new Query()
+                .select("*")
+                .from(TABLE_NAME)
+                .where("table_id", "=", "?")
+                .build();
+
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, tableId)) {
+            while (resultSet.next()) {
+                customers.add(mapResultSetToEntity(resultSet));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        }
+
+        return customers;
     }
 }

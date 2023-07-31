@@ -53,4 +53,8 @@ public class CustomerService {
     public boolean existsById(int id) {
         return customerRepository.findById(id).isPresent();
     }
+
+    public List<Customer> findAllByTableId(int tableId) {
+        return customerRepository.findAllByTableId(tableId);
+    }
 }

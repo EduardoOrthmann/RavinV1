@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Table implements Auditable {
-    private static int lastId = 0;
     private int id;
     private String name;
     private short tableNumber;
@@ -21,26 +20,16 @@ public class Table implements Auditable {
     private Integer createdBy;
     private Integer updatedBy;
 
-    // insert
-    public Table(String name, short tableNumber, short maxCapacity, Integer createdBy) {
-        this.id = ++lastId;
-        this.name = name;
-        this.tableNumber = tableNumber;
-        this.maxCapacity = maxCapacity;
-        this.customers = new HashSet<>();
-        this.status = TableStatus.AVAILABLE;
-        this.createdAt = LocalDateTime.now();
-        this.createdBy = createdBy;
-    }
-
-    // update
-    public Table(int id, String name, short tableNumber, short maxCapacity, TableStatus status, Integer updatedBy) {
+    public Table(int id, String name, short tableNumber, short maxCapacity, Set<Customer> customers, TableStatus status, LocalDateTime createdAt, LocalDateTime updatedAt, Integer createdBy, Integer updatedBy) {
         this.id = id;
         this.name = name;
         this.tableNumber = tableNumber;
         this.maxCapacity = maxCapacity;
+        this.customers = customers;
         this.status = status;
-        this.updatedAt = LocalDateTime.now();
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.createdBy = createdBy;
         this.updatedBy = updatedBy;
     }
 
