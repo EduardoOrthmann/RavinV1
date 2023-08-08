@@ -3,7 +3,7 @@ package domains.order;
 import database.Query;
 import domains.orderItem.OrderItem;
 import domains.orderItem.OrderItemService;
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
 
@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class OrderRepository extends AbstractRepository<Order> {
+public class OrderRepository implements Repository<Order> {
     private static final String TABLE_NAME = Constants.ORDER_TABLE;
     private final DatabaseConnector databaseConnector;
     private OrderItemService orderItemService;
@@ -105,17 +105,17 @@ public class OrderRepository extends AbstractRepository<Order> {
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 
     @Override
-    protected Order mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public Order mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         Set<OrderItem> orderItems = new HashSet<>(orderItemService.findAllByOrderId(resultSet.getInt("id")));
 
         return new Order(

@@ -7,7 +7,7 @@ import domains.user.UserService;
 import enums.EducationLevel;
 import enums.MaritalStatus;
 import enums.Position;
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import interfaces.PersonRepository;
 import utils.Constants;
@@ -16,7 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-public class EmployeeRepository extends AbstractRepository<Employee> implements PersonRepository<Employee> {
+public class EmployeeRepository implements Repository<Employee>, PersonRepository<Employee> {
     private static final String TABLE_NAME = Constants.EMPLOYEE_TABLE;
     private final UserService userService;
     private final DatabaseConnector databaseConnector;
@@ -150,7 +150,7 @@ public class EmployeeRepository extends AbstractRepository<Employee> implements 
     }
 
     @Override
-    protected Employee mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public Employee mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         User user = userService.findById(resultSet.getInt("user_id"));
 
         return new Employee(
@@ -185,12 +185,12 @@ public class EmployeeRepository extends AbstractRepository<Employee> implements 
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 

@@ -2,7 +2,7 @@ package domains.orderItemComment;
 
 import database.Query;
 
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
 
@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderItemCommentRepository extends AbstractRepository<OrderItemComment> {
+public class OrderItemCommentRepository implements Repository<OrderItemComment> {
     private static final String TABLE_NAME = Constants.ORDER_ITEM_COMMENT_TABLE;
     private final DatabaseConnector databaseConnector;
 
@@ -71,17 +71,17 @@ public class OrderItemCommentRepository extends AbstractRepository<OrderItemComm
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 
     @Override
-    protected OrderItemComment mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public OrderItemComment mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         return new OrderItemComment(
                 resultSet.getInt("id"),
                 resultSet.getInt("order_item_id"),

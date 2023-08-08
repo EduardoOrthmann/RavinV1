@@ -1,7 +1,7 @@
 package domains.product;
 
 import database.Query;
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
 
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductRepository extends AbstractRepository<Product> {
+public class ProductRepository implements Repository<Product> {
     private static final String TABLE_NAME = Constants.PRODUCT_TABLE;
     private final DatabaseConnector databaseConnector;
 
@@ -107,17 +107,17 @@ public class ProductRepository extends AbstractRepository<Product> {
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 
     @Override
-    protected Product mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public Product mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         return new Product(
                 resultSet.getInt("id"),
                 resultSet.getInt("menu_id"),

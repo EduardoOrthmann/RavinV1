@@ -5,8 +5,8 @@ import domains.customer.Customer;
 import domains.reservedTableCustomer.ReservedTableCustomerRepository;
 import domains.table.Table;
 import domains.table.TableService;
-import interfaces.AbstractRepository;
 import interfaces.DatabaseConnector;
+import interfaces.Repository;
 import utils.Constants;
 
 import java.sql.ResultSet;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ReservedTableRepository extends AbstractRepository<ReservedTable> {
+public class ReservedTableRepository implements Repository<ReservedTable> {
     private static final String TABLE_NAME = Constants.RESERVED_TABLE_TABLE;
     private final DatabaseConnector databaseConnector;
     private final TableService tableService;
@@ -103,17 +103,17 @@ public class ReservedTableRepository extends AbstractRepository<ReservedTable> {
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 
     @Override
-    protected ReservedTable mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public ReservedTable mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         Table table = tableService.findById(resultSet.getInt("table_id"));
         Set<Customer> customers = new HashSet<>(reservedTableCustomerRepository.findCustomersByReservedTableId(resultSet.getInt("id")));
 
@@ -131,26 +131,6 @@ public class ReservedTableRepository extends AbstractRepository<ReservedTable> {
                 resultSet.getInt("created_by"),
                 resultSet.getInt("updated_by")
         );
-    }
-
-    private List<ReservedTable> findAllByColumn(String columnName, int columnValue) {
-        List<ReservedTable> reservedTableList = new ArrayList<>();
-        String query = new Query()
-                .select("*")
-                .from(TABLE_NAME)
-                .where(columnName, "=", "?")
-                .build();
-
-        try (DatabaseConnector connector = databaseConnector.connect();
-             ResultSet resultSet = connector.executeQuery(query, columnValue)) {
-            while (resultSet.next()) {
-                reservedTableList.add(mapResultSetToEntity(resultSet));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
-        }
-
-        return reservedTableList;
     }
 
     public List<ReservedTable> findByCustomer(int customerId) {
@@ -185,7 +165,23 @@ public class ReservedTableRepository extends AbstractRepository<ReservedTable> {
     }
 
     public List<ReservedTable> findByTable(int tableId) {
-        return findAllByColumn("table_id", tableId);
+        List<ReservedTable> reservedTableList = new ArrayList<>();
+        String query = new Query()
+                .select("*")
+                .from(TABLE_NAME)
+                .where("table_id", "=", "?")
+                .build();
+
+        try (DatabaseConnector connector = databaseConnector.connect();
+             ResultSet resultSet = connector.executeQuery(query, tableId)) {
+            while (resultSet.next()) {
+                reservedTableList.add(mapResultSetToEntity(resultSet));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(Constants.DATABASE_QUERY_ERROR + ": " + e.getMessage());
+        }
+
+        return reservedTableList;
     }
 
     public List<ReservedTable> findAllByCustomerAndDateTime(int customerId, LocalDateTime dateTime) {

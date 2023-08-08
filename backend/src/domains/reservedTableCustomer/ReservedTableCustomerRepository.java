@@ -3,7 +3,7 @@ package domains.reservedTableCustomer;
 import database.Query;
 import domains.customer.Customer;
 import domains.customer.CustomerService;
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
 
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReservedTableCustomerRepository extends AbstractRepository<ReservedTableCustomer> {
+public class ReservedTableCustomerRepository implements Repository<ReservedTableCustomer> {
     private static final String TABLE_NAME = Constants.RESERVED_TABLE_CUSTOMER_TABLE;
     private final DatabaseConnector databaseConnector;
     private final CustomerService customerService;
@@ -87,17 +87,17 @@ public class ReservedTableCustomerRepository extends AbstractRepository<Reserved
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 
     @Override
-    protected ReservedTableCustomer mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public ReservedTableCustomer mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         Customer customer = customerService.findById(resultSet.getInt("customer_id"));
 
         return new ReservedTableCustomer(

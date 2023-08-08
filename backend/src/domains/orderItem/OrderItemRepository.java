@@ -5,7 +5,7 @@ import domains.orderItemComment.OrderItemCommentRepository;
 import domains.product.Product;
 import domains.product.ProductService;
 import enums.OrderItemStatus;
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
 
@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderItemRepository extends AbstractRepository<OrderItem> {
+public class OrderItemRepository implements Repository<OrderItem> {
     private static final String TABLE_NAME = Constants.ORDER_ITEM_TABLE;
     private final DatabaseConnector databaseConnector;
     private final ProductService productService;
@@ -107,17 +107,17 @@ public class OrderItemRepository extends AbstractRepository<OrderItem> {
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 
     @Override
-    protected OrderItem mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public OrderItem mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         Product product = productService.findById(resultSet.getInt("product_id"));
         List<String> orderItemComments = orderItemCommentRepository.findCommentByOrderItemId(resultSet.getInt("id"));
 

@@ -4,7 +4,7 @@ import database.Query;
 import domains.address.Address;
 import domains.user.User;
 import domains.user.UserService;
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import interfaces.PersonRepository;
 import utils.Constants;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CustomerRepository extends AbstractRepository<Customer> implements PersonRepository<Customer> {
+public class CustomerRepository implements Repository<Customer>, PersonRepository<Customer> {
     private static final String TABLE_NAME = Constants.CUSTOMER_TABLE;
     private final UserService userService;
     private final DatabaseConnector databaseConnector;
@@ -131,7 +131,7 @@ public class CustomerRepository extends AbstractRepository<Customer> implements 
     }
 
     @Override
-    protected Customer mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public Customer mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         User user = userService.findById(resultSet.getInt("user_id"));
 
         return new Customer(
@@ -159,12 +159,12 @@ public class CustomerRepository extends AbstractRepository<Customer> implements 
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 

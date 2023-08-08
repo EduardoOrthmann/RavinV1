@@ -3,7 +3,7 @@ package domains.menu;
 import database.Query;
 import domains.product.Product;
 import domains.product.ProductService;
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
 
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class MenuRepository extends AbstractRepository<Menu> {
+public class MenuRepository implements Repository<Menu> {
     private static final String TABLE_NAME = Constants.MENU_TABLE;
     private final DatabaseConnector databaseConnector;
     private final ProductService productService;
@@ -90,17 +90,17 @@ public class MenuRepository extends AbstractRepository<Menu> {
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 
     @Override
-    protected Menu mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public Menu mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         Set<Product> products = new HashSet<>(productService.findByMenuId(resultSet.getInt("id")));
 
         return new Menu(

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AbstractRepository<T> {
-    public Optional<T> findById(int id) {
+public interface Repository<T> {
+    default Optional<T> findById(int id) {
         String query = new Query()
                 .select("*")
                 .from(getTableName())
@@ -29,7 +29,7 @@ public abstract class AbstractRepository<T> {
         return Optional.empty();
     }
 
-    public List<T> findAll() {
+    default List<T> findAll() {
         List<T> entities = new ArrayList<>();
         String query = new Query()
                 .select("*")
@@ -48,11 +48,11 @@ public abstract class AbstractRepository<T> {
         return entities;
     }
 
-    public abstract T save(T entity);
-    public abstract void update(T entity);
-    public abstract void delete(T entity);
+    T save(T entity);
+    void update(T entity);
+    void delete(T entity);
 
-    protected abstract String getTableName();
-    protected abstract DatabaseConnector getDatabaseConnector();
-    protected abstract T mapResultSetToEntity(ResultSet resultSet) throws SQLException;
+    String getTableName();
+    DatabaseConnector getDatabaseConnector();
+    T mapResultSetToEntity(ResultSet resultSet) throws SQLException;
 }

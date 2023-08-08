@@ -4,7 +4,7 @@ import database.Query;
 import domains.customer.Customer;
 import domains.customer.CustomerService;
 import enums.TableStatus;
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
 
@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TableRepository extends AbstractRepository<Table> {
+public class TableRepository implements Repository<Table> {
     private static final String TABLE_NAME = Constants.TABLE_TABLE;
     private final DatabaseConnector databaseConnector;
     private final CustomerService customerService;
@@ -97,17 +97,17 @@ public class TableRepository extends AbstractRepository<Table> {
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 
     @Override
-    protected Table mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public Table mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         Set<Customer> customers = new HashSet<>(customerService.findAllByTableId(resultSet.getInt("id")));
 
         return new Table(

@@ -2,7 +2,7 @@ package domains.user;
 
 import database.Query;
 import enums.Role;
-import interfaces.AbstractRepository;
+import interfaces.Repository;
 import interfaces.DatabaseConnector;
 import utils.Constants;
 
@@ -10,7 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Optional;
 
-public class UserRepository extends AbstractRepository<User> {
+public class UserRepository implements Repository<User> {
     private static final String TABLE_NAME = Constants.USER_TABLE;
     private final DatabaseConnector databaseConnector;
 
@@ -71,17 +71,17 @@ public class UserRepository extends AbstractRepository<User> {
     }
 
     @Override
-    protected String getTableName() {
+    public String getTableName() {
         return TABLE_NAME;
     }
 
     @Override
-    protected DatabaseConnector getDatabaseConnector() {
+    public DatabaseConnector getDatabaseConnector() {
         return databaseConnector;
     }
 
     @Override
-    protected User mapResultSetToEntity(ResultSet resultSet) throws SQLException {
+    public User mapResultSetToEntity(ResultSet resultSet) throws SQLException {
         return new User(
                 resultSet.getInt("id"),
                 resultSet.getString("username"),
