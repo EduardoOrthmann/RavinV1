@@ -62,6 +62,8 @@ public class Constants {
     public static final String RESERVED_TABLE_MAX_CAPACITY = "Mesa reservada excede a capacidade máxima";
     public static final String TABLE_NOT_PAID_YET = "Os pedidos da mesa ainda não foram pagos";
     public static final String TABLE_ALREADY_FREE = "Mesa já está livre";
+    public static final String DATABASE_CONNECTION_ERROR = "Aconteceu um erro ao conectar com o banco de dados";
+    public static final String DATABASE_UNABLE_TO_EXECUTE_QUERY = "Não foi possível executar a query pois a conexão com o banco de dados não está aberta";
 
     // others
     public static final int MINIMUM_AGE = 18;

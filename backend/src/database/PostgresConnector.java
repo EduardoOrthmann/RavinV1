@@ -17,7 +17,7 @@ public class PostgresConnector implements DatabaseConnector {
         try {
             this.connection = DriverManager.getConnection(Constants.DATABASE_URL, Constants.DATABASE_USERNAME, Constants.DATABASE_PASSWORD);
         } catch (SQLException e) {
-            System.out.println("Não foi possível conectar ao banco de dados\n\n" + e.getMessage());
+            System.out.println(Constants.DATABASE_CONNECTION_ERROR + "\n\n" + e.getMessage());
         }
 
         return this;
@@ -32,7 +32,7 @@ public class PostgresConnector implements DatabaseConnector {
         try {
             this.connection.close();
         } catch (SQLException e) {
-            System.out.println("Não foi possível desconectar do banco de dados\n\n" + e.getMessage());
+            System.out.println(Constants.DATABASE_CONNECTION_ERROR + "\n\n" + e.getMessage());
         }
     }
 
@@ -47,7 +47,7 @@ public class PostgresConnector implements DatabaseConnector {
 
     public ResultSet executeQuery(String sqlQuery, Object... parameters) throws SQLException {
         if (this.connection == null || this.connection.isClosed()) {
-            throw new IllegalStateException("Não foi possível executar a query pois a conexão com o banco de dados não está aberta");
+            throw new IllegalStateException(Constants.DATABASE_UNABLE_TO_EXECUTE_QUERY);
         }
 
         Connection connection = getConnection();
@@ -62,7 +62,7 @@ public class PostgresConnector implements DatabaseConnector {
 
     public ResultSet executeUpdate(String sqlQuery, Object... parameters) throws SQLException {
         if (this.connection == null || this.connection.isClosed()) {
-            throw new IllegalStateException("Não foi possível executar a query pois a conexão com o banco de dados não está aberta");
+            throw new IllegalStateException(Constants.DATABASE_UNABLE_TO_EXECUTE_QUERY);
         }
 
         Connection connection = getConnection();
